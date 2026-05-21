@@ -2,35 +2,34 @@
 """
 generate_pptx.py
 ────────────────
-Genere la presentation PowerPoint (.pptx) Air Liquide — AI Champions
-avec la charte graphique officielle Pyl.Tech.
-
-Style : Presentation de consulting — cabinet Tier-1 (contexte mission,
-        méthodologie, framework d'analyse, architecture, recommandations).
-
-Usage : python3 src/generate_pptx.py
-Output: docs/presentation_ai_champions.pptx
+Génère la présentation PowerPoint (.pptx) Air Liquide — AI Builders
+avec la charte graphique officielle Pyl.Tech via la librairie PyltechDeck.
+Restaure le contenu exact (6 KPI, cards avec chiffres, tableau, callouts)
+en combinant la puissance de la charte PyltechDeck avec python-pptx.
 """
 import sys
 from pathlib import Path
+import pandas as pd
 from datetime import date
 
+# Append skill scripts path
+SKILL_DIR = Path("/Users/adrien.parasote/.gemini/config/plugins/stream-coding/skills/pyl-pptx")
+sys.path.insert(0, str(SKILL_DIR / "scripts"))
 try:
-    from pptx import Presentation
-    from pptx.util import Inches, Pt
-    from pptx.dml.color import RGBColor
-    from pptx.enum.text import PP_ALIGN
-    import pandas as pd
-except ImportError as e:  # pragma: no cover
-    print(f"Dependance manquante : {e}\n   pip install python-pptx pandas openpyxl")  # noqa
+    from build_deck import PyltechDeck
+except ImportError as e:
+    print(f"Error importing PyltechDeck: {e}")
     sys.exit(1)
 
-# ── Chemins ───────────────────────────────────────────────────────────────────
+from pptx.util import Inches, Pt
+from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN
+
 PROJECT_DIR = Path(__file__).parent.parent
 CATALOG_FILE = PROJECT_DIR / "output" / "use_cases_catalog.xlsx"
 OUTPUT_FILE = PROJECT_DIR / "output" / "presentation_ai_champions.pptx"
 
-# ── Palette Pyl.Tech officielle ───────────────────────────────────────────────
+# ── Colors ────────────────────────────────────────────────────────────────────
 PYL_NAVY_DARK = RGBColor(0x0B, 0x13, 0x2B)
 PYL_NAVY = RGBColor(0x0D, 0x21, 0x49)
 PYL_YELLOW = RGBColor(0xF4, 0xBF, 0x46)
@@ -42,13 +41,7 @@ PYL_WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 PYL_SUCCESS = RGBColor(0x13, 0x86, 0x36)
 PYL_DANGER = RGBColor(0xC9, 0x14, 0x32)
 
-YEAR = date.today().year
-SLIDE_W = Inches(13.333)
-SLIDE_H = Inches(7.5)
-
-# ── Helpers de bas niveau ─────────────────────────────────────────────────────
-
-
+# ── Helpers for custom drawing ────────────────────────────────────────────────
 def add_rect(slide, left, top, width, height, fill: RGBColor = None, no_border: bool = True):
     shape = slide.shapes.add_shape(1, left, top, width, height)
     if fill:
@@ -60,21 +53,10 @@ def add_rect(slide, left, top, width, height, fill: RGBColor = None, no_border: 
         shape.line.fill.background()
     return shape
 
-
 def add_textbox(
-    slide,
-    left,
-    top,
-    width,
-    height,
-    text: str,
-    font_name: str = "Poppins",
-    font_size: int = 12,
-    bold: bool = False,
-    italic: bool = False,
-    color: RGBColor = None,
-    align=PP_ALIGN.LEFT,
-    word_wrap: bool = True,
+    slide, left, top, width, height, text: str, font_name: str = "Poppins",
+    font_size: int = 12, bold: bool = False, italic: bool = False,
+    color: RGBColor = None, align=PP_ALIGN.LEFT, word_wrap: bool = True,
 ):
     txBox = slide.shapes.add_textbox(left, top, width, height)
     txBox.text_frame.word_wrap = word_wrap
@@ -91,146 +73,9 @@ def add_textbox(
         run.font.color.rgb = color
     return txBox
 
-
-def add_multiline_textbox(
-    slide,
-    left,
-    top,
-    width,
-    height,
-    lines: list[tuple[str, int, bool, RGBColor]],
-    align=PP_ALIGN.LEFT,
-):
-    """Textbox with multiple paragraphs. Each line = (text, size, bold, color)."""
-    txBox = slide.shapes.add_textbox(left, top, width, height)
-    txBox.text_frame.word_wrap = True
-    tf = txBox.text_frame
-
-    for i, (text, size, bold, color) in enumerate(lines):
-        if i == 0:
-            p = tf.paragraphs[0]
-        else:
-            p = tf.add_paragraph()
-        p.alignment = align
-        run = p.add_run()
-        run.text = text
-        run.font.name = "Poppins"
-        run.font.size = Pt(size)
-        run.font.bold = bold
-        if color:
-            run.font.color.rgb = color
-
-    return txBox
-
-
-def add_line(slide, x1, y1, x2, y2, color: RGBColor = PYL_NAVY_DARK, width_pt: float = 0.75):
-    connector = slide.shapes.add_connector(1, x1, y1, x2, y2)
-    connector.line.color.rgb = color
-    connector.line.width = Pt(width_pt)
-    return connector
-
-
-def add_slide_header(
-    slide, section_num: str, title: str, subtitle: str = "", page: int = 0
-) -> None:
-    """Header Pyl.Tech : cartouche jaune + titre + traits + sous-titre."""
-    MARGIN_L = Inches(0.5)
-    MARGIN_R = Inches(12.83)
-
-    add_line(slide, MARGIN_L, Inches(0.45), MARGIN_R, Inches(0.45))
-
-    badge = add_rect(
-        slide, MARGIN_L, Inches(0.5), Inches(0.55), Inches(0.55), fill=PYL_YELLOW
-    )
-    tf = badge.text_frame
-    p = tf.paragraphs[0]
-    p.alignment = PP_ALIGN.CENTER
-    run = p.add_run()
-    run.text = section_num
-    run.font.name = "Poppins"
-    run.font.bold = True
-    run.font.size = Pt(16)
-    run.font.color.rgb = PYL_WHITE
-
-    title_box = slide.shapes.add_textbox(
-        Inches(1.2), Inches(0.48), Inches(11.0), Inches(0.65)
-    )
-    tf = title_box.text_frame
-    p = tf.paragraphs[0]
-    run = p.add_run()
-    run.text = title
-    run.font.name = "Poppins"
-    run.font.bold = True
-    run.font.size = Pt(26)
-    run.font.color.rgb = PYL_NAVY_DARK
-
-    if subtitle:
-        sub_box = slide.shapes.add_textbox(
-            Inches(1.2), Inches(1.15), Inches(11.0), Inches(0.4)
-        )
-        tf = sub_box.text_frame
-        p = tf.paragraphs[0]
-        run = p.add_run()
-        run.text = subtitle
-        run.font.name = "Poppins"
-        run.font.size = Pt(13)
-        run.font.color.rgb = PYL_BODY_GREY
-
-    bottom_y = Inches(1.6) if subtitle else Inches(1.25)
-    add_line(slide, MARGIN_L, bottom_y, MARGIN_R, bottom_y)
-
-    add_textbox(
-        slide,
-        Inches(11.8),
-        Inches(0.15),
-        Inches(1.4),
-        Inches(0.35),
-        "Pyl.Tech",
-        font_size=11,
-        bold=True,
-        color=PYL_NAVY_DARK,
-        align=PP_ALIGN.RIGHT,
-    )
-
-    add_footer(slide, page)
-
-
-def add_footer(slide, page: int = 0) -> None:
-    add_textbox(
-        slide,
-        Inches(0.3),
-        Inches(7.15),
-        Inches(5),
-        Inches(0.25),
-        f"(c) Copyright {YEAR} Pyl.Tech  |  Air Liquide AI Champions",
-        font_size=9,
-        color=PYL_TEAL_BLUE,
-    )
-    if page:
-        add_textbox(
-            slide,
-            Inches(12.5),
-            Inches(7.15),
-            Inches(0.7),
-            Inches(0.25),
-            str(page),
-            font_size=9,
-            color=PYL_TEAL_BLUE,
-            align=PP_ALIGN.RIGHT,
-        )
-
-
 def add_kpi_card(
-    slide,
-    left,
-    top,
-    width,
-    height,
-    label: str,
-    value: str,
-    sub: str = "",
-    header_color: RGBColor = PYL_NAVY,
-    value_color: RGBColor = PYL_TEAL_BLUE,
+    slide, left, top, width, height, label: str, value: str, sub: str = "",
+    header_color: RGBColor = PYL_NAVY, value_color: RGBColor = PYL_TEAL_BLUE,
 ) -> None:
     card = add_rect(slide, left, top, width, height, fill=PYL_WHITE)
     card.line.color.rgb = PYL_GREY_BG
@@ -238,9 +83,7 @@ def add_kpi_card(
 
     add_rect(slide, left, top, width, Inches(0.07), fill=header_color)
 
-    v_box = slide.shapes.add_textbox(
-        left + Inches(0.1), top + Inches(0.15), width - Inches(0.2), Inches(0.9)
-    )
+    v_box = slide.shapes.add_textbox(left + Inches(0.1), top + Inches(0.15), width - Inches(0.2), Inches(0.9))
     v_box.text_frame.word_wrap = False
     p = v_box.text_frame.paragraphs[0]
     p.alignment = PP_ALIGN.CENTER
@@ -251,9 +94,7 @@ def add_kpi_card(
     run.font.size = Pt(36)
     run.font.color.rgb = value_color
 
-    l_box = slide.shapes.add_textbox(
-        left + Inches(0.1), top + Inches(1.0), width - Inches(0.2), Inches(0.5)
-    )
+    l_box = slide.shapes.add_textbox(left + Inches(0.1), top + Inches(1.0), width - Inches(0.2), Inches(0.5))
     l_box.text_frame.word_wrap = True
     p = l_box.text_frame.paragraphs[0]
     p.alignment = PP_ALIGN.CENTER
@@ -264,12 +105,7 @@ def add_kpi_card(
     run.font.color.rgb = PYL_BODY_GREY
 
     if sub:
-        s_box = slide.shapes.add_textbox(
-            left + Inches(0.1),
-            top + Inches(1.45),
-            width - Inches(0.2),
-            Inches(0.35),
-        )
+        s_box = slide.shapes.add_textbox(left + Inches(0.1), top + Inches(1.45), width - Inches(0.2), Inches(0.35))
         s_box.text_frame.word_wrap = True
         p = s_box.text_frame.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
@@ -280,16 +116,9 @@ def add_kpi_card(
         run.font.italic = True
         run.font.color.rgb = PYL_BODY_GREY
 
-
 def add_content_card(
-    slide,
-    left,
-    top,
-    width,
-    height,
-    header_color: RGBColor,
-    card_title: str,
-    bullets: list[str],
+    slide, left, top, width, height, header_color: RGBColor, card_title: str, bullets: list[str],
+    body_font_size: int = 11
 ) -> None:
     card_bg = add_rect(slide, left, top, width, height, fill=PYL_WHITE)
     card_bg.line.color.rgb = PYL_GREY_BG
@@ -297,9 +126,7 @@ def add_content_card(
 
     add_rect(slide, left, top, width, Inches(0.45), fill=header_color)
 
-    t_box = slide.shapes.add_textbox(
-        left + Inches(0.15), top + Inches(0.06), width - Inches(0.3), Inches(0.35)
-    )
+    t_box = slide.shapes.add_textbox(left + Inches(0.15), top + Inches(0.06), width - Inches(0.3), Inches(0.35))
     p = t_box.text_frame.paragraphs[0]
     run = p.add_run()
     run.text = card_title
@@ -308,25 +135,24 @@ def add_content_card(
     run.font.size = Pt(13)
     run.font.color.rgb = PYL_WHITE
 
+    line_h = Inches(0.42) if body_font_size <= 11 else Inches(0.78)
     cur_top = top + Inches(0.55)
     for bullet in bullets:
-        b_box = slide.shapes.add_textbox(
-            left + Inches(0.15), cur_top, width - Inches(0.3), Inches(0.35)
-        )
+        b_box = slide.shapes.add_textbox(left + Inches(0.15), cur_top, width - Inches(0.3), Inches(0.45))
         b_box.text_frame.word_wrap = True
         p = b_box.text_frame.paragraphs[0]
         sq = p.add_run()
         sq.text = "  "
         sq.font.name = "Poppins"
         sq.font.bold = True
-        sq.font.size = Pt(11)
+        sq.font.size = Pt(body_font_size)
         sq.font.color.rgb = PYL_YELLOW
         txt = p.add_run()
         txt.text = bullet
         txt.font.name = "Poppins"
-        txt.font.size = Pt(11)
+        txt.font.size = Pt(body_font_size)
         txt.font.color.rgb = PYL_BODY_GREY
-        cur_top += Inches(0.42)
+        cur_top += line_h
 
 
 def add_pptx_table(
@@ -368,438 +194,170 @@ def add_pptx_table(
             run.font.size = Pt(10)
             run.font.color.rgb = fg
 
+def main():
+    print(f"Lecture du catalogue : {CATALOG_FILE}")
+    if not CATALOG_FILE.exists():
+        print(f"Catalogue introuvable : {CATALOG_FILE}")
+        sys.exit(1)
 
-# ── Construction des slides ───────────────────────────────────────────────────
-
-
-def build_cover(prs: Presentation) -> None:
-    """Slide de couverture — fond jaune integral."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-
-    add_rect(slide, 0, 0, SLIDE_W, SLIDE_H, fill=PYL_YELLOW)
-
-    add_textbox(
-        slide,
-        Inches(0.5),
-        Inches(0.3),
-        Inches(2),
-        Inches(0.45),
-        "Pyl.Tech",
-        font_size=18,
-        bold=True,
-        color=PYL_NAVY_DARK,
-    )
-
-    t_box = slide.shapes.add_textbox(
-        Inches(1.5), Inches(2.0), Inches(10.3), Inches(1.6)
-    )
-    t_box.text_frame.word_wrap = True
-    p = t_box.text_frame.paragraphs[0]
-    p.alignment = PP_ALIGN.CENTER
-    run = p.add_run()
-    run.text = "Air Liquide — AI Champions"
-    run.font.name = "Poppins"
-    run.font.bold = True
-    run.font.size = Pt(44)
-    run.font.color.rgb = PYL_NAVY_DARK
-
-    st_box = slide.shapes.add_textbox(
-        Inches(1.5), Inches(3.6), Inches(10.3), Inches(0.7)
-    )
-    st_box.text_frame.word_wrap = True
-    p = st_box.text_frame.paragraphs[0]
-    p.alignment = PP_ALIGN.CENTER
-    run = p.add_run()
-    run.text = "Analyse, Classification et Recommandations\ndu Portefeuille Use Cases IA"
-    run.font.name = "Poppins"
-    run.font.italic = True
-    run.font.size = Pt(20)
-    run.font.color.rgb = PYL_NAVY_DARK
-
-    add_rect(
-        slide,
-        Inches(3),
-        Inches(4.85),
-        Inches(7.3),
-        Inches(0.03),
-        fill=PYL_NAVY_DARK,
-    )
-
-    add_textbox(
-        slide,
-        Inches(1.5),
-        Inches(5.1),
-        Inches(10.3),
-        Inches(0.4),
-        f"Produit par Pyl.Tech  |  {date.today().strftime('%B %Y')}",
-        font_size=13,
-        color=PYL_NAVY,
-        align=PP_ALIGN.CENTER,
-    )
-
-    add_textbox(
-        slide,
-        Inches(1.5),
-        Inches(5.6),
-        Inches(10.3),
-        Inches(0.4),
-        "Document confidentiel — Usage interne Air Liquide",
-        font_size=11,
-        italic=True,
-        color=PYL_BODY_GREY,
-        align=PP_ALIGN.CENTER,
-    )
-
-    add_textbox(
-        slide,
-        Inches(0.3),
-        Inches(7.1),
-        Inches(7),
-        Inches(0.25),
-        f"(c) Copyright {YEAR} Pyl.Tech  |  Confidentiel",
-        font_size=9,
-        color=PYL_NAVY_DARK,
-    )
-
-
-def build_sommaire(prs: Presentation, page: int) -> None:
-    """Slide Sommaire — plan du document."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide, "", "Sommaire", "Plan de la présentation", page
-    )
-
-    sections = [
-        ("01", "Contexte de la mission"),
-        ("02", "Méthodologie d'analyse"),
-        ("03", "Chiffres clés du portefeuille"),
-        ("04", "Répartition par complexité"),
-        ("05", "Familles fonctionnelles"),
-        ("06", "Répartition par Cluster"),
-        ("07", "Points d'attention IT"),
-        ("08", "Architectures de référence"),
-        ("09", "Top Quick Wins"),
-        ("10", "Recommandations et Roadmap"),
-        ("11", "Bonnes pratiques AI Champions"),
-    ]
-
-    for i, (num, title) in enumerate(sections):
-        y = Inches(1.85) + i * Inches(0.46)
-
-        badge = add_rect(
-            slide, Inches(1.5), y, Inches(0.55), Inches(0.38), fill=PYL_YELLOW
-        )
-        bt = badge.text_frame
-        bp = bt.paragraphs[0]
-        bp.alignment = PP_ALIGN.CENTER
-        br = bp.add_run()
-        br.text = num
-        br.font.name = "Poppins"
-        br.font.bold = True
-        br.font.size = Pt(11)
-        br.font.color.rgb = PYL_NAVY_DARK
-
-        add_textbox(
-            slide,
-            Inches(2.2),
-            y,
-            Inches(9),
-            Inches(0.38),
-            title,
-            font_size=14,
-            color=PYL_NAVY_DARK,
-        )
-
-
-def build_context_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
-    """Slide Contexte de la mission."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "01",
-        "Contexte de la mission",
-        "Cadrage du projet et objectifs de l'analyse",
-        page,
-    )
-
-    total = len(df)
-
-    # Contexte text
-    add_textbox(
-        slide,
-        Inches(0.5),
-        Inches(1.8),
-        Inches(6.0),
-        Inches(1.2),
-        f"Air Liquide a mobilisé ses AI Champions — profils métiers, non-IT — "
-        f"pour explorer l'IA dans leurs activités. {total} use cases "
-        f"ont été collectés sur l'ensemble des clusters du groupe.",
-        font_size=13,
-        color=PYL_BODY_GREY,
-    )
-
-    # 4 objectifs en cards
-    objectives = [
-        ("Comprendre", "Regroupement thématique en familles fonctionnelles transverses"),
-        ("Qualifier", "Scoring multi-dimensionnel : Small / Medium / Large"),
-        ("Projeter", "Architecture cible Google-first par niveau de complexité"),
-        ("Guider", "Recommandations et bonnes pratiques pour les champions"),
-    ]
-
-    CARD_W = Inches(2.9)
-    CARD_H = Inches(2.5)
-    for i, (obj_title, obj_desc) in enumerate(objectives):
-        col = i % 2
-        row_idx = i // 2
-        left = Inches(0.5) + col * (CARD_W + Inches(0.2))
-        top = Inches(3.3) + row_idx * (CARD_H + Inches(0.15))
-
-        colors = [PYL_NAVY, PYL_TEAL_BLUE, PYL_TEAL, PYL_YELLOW]
-        add_content_card(
-            slide, left, top, CARD_W, CARD_H, colors[i], obj_title, [obj_desc]
-        )
-
-    # Callout droite
-    add_rect(
-        slide,
-        Inches(6.7),
-        Inches(3.3),
-        Inches(6.0),
-        Inches(3.0),
-        fill=PYL_GREY_BG,
-    )
-    add_textbox(
-        slide,
-        Inches(6.9),
-        Inches(3.5),
-        Inches(5.6),
-        Inches(0.4),
-        "Périmètre de l'analyse",
-        font_size=16,
-        bold=True,
-        color=PYL_NAVY_DARK,
-    )
-
-    perim_items = [
-        f"{total} use cases analysés",
-        f"{df['Cluster'].nunique()} clusters géographiques/organisationnels",
-        f"{df['Job Family'].nunique()} familles métier",
-        "11 outils distincts identifiés",
-        "Source : Advanced AI Champions - Action Monitoring.xlsx",
-    ]
-    for j, item in enumerate(perim_items):
-        add_textbox(
-            slide,
-            Inches(6.9),
-            Inches(4.1) + j * Inches(0.4),
-            Inches(5.6),
-            Inches(0.35),
-            f"  {item}",
-            font_size=12,
-            color=PYL_BODY_GREY,
-        )
-
-
-def build_methodology_slide(prs: Presentation, page: int) -> None:
-    """Slide Méthodologie — 6 phases."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "02",
-        "Méthodologie d'analyse",
-        "Approche en 6 phases pour qualifier le portefeuille des AI Champions",
-        page,
-    )
-
-    phases = [
-        ("Phase 1", "Audit & Nettoyage", "Traitement des anomalies, normalisation, UC_ID", PYL_NAVY),
-        ("Phase 2", "Classification", "Analyse sémantique en 7 familles fonctionnelles", PYL_TEAL_BLUE),
-        ("Phase 3", "Scoring", "5 dimensions x 3 niveaux = score 5-15", PYL_TEAL),
-        ("Phase 4", "Détection IT", "Identification des dépendances systèmes", PYL_DANGER),
-        ("Phase 5", "Architecture", "Stack Google-first par niveau de complexité", PYL_YELLOW),
-        ("Phase 6", "Recommandations", "Bonnes pratiques et feuille de route", PYL_SUCCESS),
-    ]
-
-    # 3 cards per row, 2 rows
-    CARD_W = Inches(3.9)
-    CARD_H = Inches(2.3)
-
-    for i, (phase_num, phase_title, phase_desc, color) in enumerate(phases):
-        col = i % 3
-        row_idx = i // 3
-        left = Inches(0.5) + col * (CARD_W + Inches(0.15))
-        top = Inches(1.85) + row_idx * (CARD_H + Inches(0.15))
-
-        add_content_card(
-            slide,
-            left,
-            top,
-            CARD_W,
-            CARD_H,
-            color,
-            f"{phase_num} — {phase_title}",
-            [phase_desc],
-        )
-
-    # Fleche de processus en bas
-    add_textbox(
-        slide,
-        Inches(0.5),
-        Inches(6.6),
-        Inches(12.3),
-        Inches(0.4),
-        "Audit  →  Classification  →  Scoring  →  Détection IT  →  Architecture  →  Recommandations",
-        font_size=12,
-        bold=True,
-        color=PYL_TEAL_BLUE,
-        align=PP_ALIGN.CENTER,
-    )
-
-
-def build_framework_slide(prs: Presentation, page: int) -> None:
-    """Slide Framework de scoring — tableau des 5 dimensions."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "02",
-        "Cadre d'analyse : scoring multi-dimensionnel",
-        "5 dimensions x 3 niveaux = score 5 à 15 points",
-        page,
-    )
-
-    add_pptx_table(
-        slide,
-        Inches(0.5),
-        Inches(1.85),
-        Inches(12.3),
-        Inches(3.8),
-        ["Dimension", "1 pt (Faible)", "2 pts (Moyen)", "3 pts (Élevé)"],
-        [
-            [
-                "D1 Intégration technique",
-                "1 outil, no-code (L1/L2)",
-                "2-3 outils, semi-code (L3)",
-                "4+ outils, code custom (L4)",
-            ],
-            [
-                "D2 Périmètre organisationnel",
-                "Équipe locale",
-                "Country / Cluster",
-                "Group (global)",
-            ],
-            [
-                "D3 Complexité données",
-                "Données statiques",
-                "Données connectées (SFDC, BI)",
-                "Temps réel / industrielles",
-            ],
-            [
-                "D4 Maturité IA",
-                "Prompting / Gem",
-                "API Gemini + RAG",
-                "Agent / ML / fine-tuning",
-            ],
-            [
-                "D5 Impact économique",
-                "Non évalué / Productivité",
-                "Cost Reduction",
-                "Revenue Growth",
-            ],
-        ],
-    )
-
-    # Tiers en 3 mini-cards
-    tiers_info = [
-        ("Small (5-7)", "Quick Win", "< 2 sem.", "Champion seul", PYL_SUCCESS),
-        ("Medium (8-11)", "Structurant", "4-8 sem.", "Champion + IT", PYL_TEAL_BLUE),
-        ("Large (12-15)", "Stratégique", "3-12 mois", "Équipe IT", PYL_DANGER),
-    ]
-
-    CARD_W = Inches(3.9)
-    for i, (tier, label, ttv, profile, color) in enumerate(tiers_info):
-        left = Inches(0.5) + i * (CARD_W + Inches(0.27))
-        top = Inches(6.0)
-
-        badge = add_rect(slide, left, top, CARD_W, Inches(0.6), fill=color)
-        bt = badge.text_frame
-        bt.word_wrap = True
-        bp = bt.paragraphs[0]
-        bp.alignment = PP_ALIGN.CENTER
-        br = bp.add_run()
-        br.text = f"{tier}  |  {label}  |  {ttv}  |  {profile}"
-        br.font.name = "Poppins"
-        br.font.bold = True
-        br.font.size = Pt(10)
-        br.font.color.rgb = PYL_WHITE
-
-
-def build_kpi_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
-    """Slide chiffres clés — 6 KPI cards."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "03",
-        "Chiffres clés du portefeuille",
-        f"{len(df)} use cases analysés sur l'ensemble des clusters Air Liquide",
-        page,
-    )
-
+    df = pd.read_excel(CATALOG_FILE, sheet_name="Catalogue", header=0)
     total = len(df)
     tiers = df["Complexity_Tier"].value_counts().to_dict()
     it_count = (df["IT_Flag"] != "").sum()
     clusters = df["Cluster"].nunique()
 
-    CARD_W = Inches(2.05)
-    CARD_H = Inches(1.95)
-    Y_TOP = Inches(1.85)
-    GAP = Inches(0.1)
+    deck = PyltechDeck()
+    
+    # 01 - Couverture
+    deck.add_cover(
+        title="Air Liquide — AI Builders",
+        subtitle="Analyse, Classification et Recommandations du Portefeuille Use Cases IA"
+    )
+
+    # 02 - Sommaire
+    deck.add_toc_6_cards_blanches([
+        ("Contexte", "Cadrage du projet et méthodologie"),
+        ("Chiffres Clés", "Panorama du portefeuille use cases"),
+        ("Analyse", "Répartition par complexité, famille et cluster"),
+        ("Points IT", "Dépendances systèmes et architecture cible"),
+        ("Recommandations", "Axes prioritaires et roadmap de déploiement"),
+        ("Bonnes Pratiques", "Méthodologie pour les builders"),
+    ], title="Sommaire")
+
+    deck.add_chapter("jaune", "01", "Contexte de la mission")
+
+    # 03 - Contexte — titre = "Contexte de la mission" dans le grand titre,
+    # sous-titre = "Cadrage du projet..." dans la barre colorée du template
+    slide_ctx = deck.add_schema(chapter_num="01", chapter_label="Contexte de la mission", title="Contexte de la mission")
+
+    # Injecter le sous-titre juste sous le grand titre (titre natif top=0.99, h=0.33 → sous-titre à 1.35)
+    add_textbox(slide_ctx, Inches(0.42), Inches(1.35), Inches(9.0), Inches(0.2),
+                "Cadrage du projet et objectifs de l'analyse",
+                font_size=10, italic=True, color=PYL_BODY_GREY)
+
+
+    # ── Gauche : 4 cartes objectifs (2 cols × 2 rows) ────────────────────────
+    CARD_W = Inches(2.2)
+    CARD_H = Inches(1.7)
+    GAP    = Inches(0.1)
+    objectives = [
+        ("Comprendre", "Regroupement thématique en familles fonctionnelles transverses"),
+        ("Qualifier",  "Scoring multi-dimensionnel : Small / Medium / Large"),
+        ("Projeter",   "Architecture cible Google-first par niveau de complexité"),
+        ("Guider",     "Recommandations et bonnes pratiques pour les builders"),
+    ]
+    for i, (obj_title, obj_desc) in enumerate(objectives):
+        col = i % 2; row_idx = i // 2
+        left = Inches(0.2) + col * (CARD_W + GAP)
+        top  = Inches(1.75) + row_idx * (CARD_H + GAP)
+        colors = [PYL_NAVY, PYL_TEAL_BLUE, PYL_TEAL, PYL_YELLOW]
+        add_content_card(slide_ctx, left, top, CARD_W, CARD_H, colors[i], obj_title, [obj_desc])
+
+    # ── Droite : intro text + bloc gris ──────────────────────────────────────
+    RIGHT_LEFT = Inches(4.85)
+    RIGHT_W    = Inches(4.95)
+
+    # Texte introductif
+    add_textbox(
+        slide_ctx, RIGHT_LEFT, Inches(1.75), RIGHT_W, Inches(0.85),
+        f"Air Liquide a mobilisé ses AI builders — profils métiers, non-IT — pour explorer "
+        f"l'IA dans leurs activités. {total} use cases ont été collectés sur l'ensemble des clusters du groupe.",
+        font_size=10, color=PYL_BODY_GREY,
+    )
+
+    # Bloc gris "Périmètre de l'analyse"
+    # bottom cartes gauche = 1.75 + 1.7 + 0.1 + 1.7 = 5.35"
+    # PANEL_H = 2.65" → PANEL_TOP = 5.35 - 2.65 = 2.70" ✅
+    PANEL_TOP = Inches(2.70)
+    PANEL_H   = Inches(2.65)
+    add_rect(slide_ctx, RIGHT_LEFT, PANEL_TOP, RIGHT_W, PANEL_H, fill=PYL_GREY_BG)
+    add_textbox(slide_ctx, RIGHT_LEFT + Inches(0.2), PANEL_TOP + Inches(0.15),
+                RIGHT_W - Inches(0.4), Inches(0.35),
+                "Périmètre de l'analyse", font_size=12, bold=True, color=PYL_NAVY_DARK)
+    perim_items = [
+        f"{total} use cases analysés",
+        f"{df['Cluster'].nunique()} clusters géographiques/organisationnels",
+        f"{df['Family_Label'].nunique() if 'Family_Label' in df.columns else 12} familles métier",
+        "11 outils distincts identifiés",
+        "Source : Advanced AI builders - Action Monitoring.xlsx",
+    ]
+    for j, item in enumerate(perim_items):
+        add_textbox(slide_ctx, RIGHT_LEFT + Inches(0.2), PANEL_TOP + Inches(0.6) + j * Inches(0.41),
+                    RIGHT_W - Inches(0.4), Inches(0.38), f"  {item}", font_size=10, color=PYL_BODY_GREY)
+
+
+
+
+    # 04 - Méthodologie — construction manuelle pour contrôler la police du corps
+    slide_meth = deck.add_schema(
+        chapter_num="01", chapter_label="Contexte de la mission",
+        title="Méthodologie en 6 phases",
+    )
+    # Sous-titre manuel
+    add_textbox(slide_meth, Inches(0.3), Inches(1.35), Inches(9.0), Inches(0.35),
+                "Audit → Classification → Scoring → IT → Architecture → Recommandations",
+                font_size=11, color=PYL_BODY_GREY)
+
+    meth_cards = [
+        ("Phases 1 & 2", [
+            "Audit & Nettoyage du catalogue",
+            "Classification sémantique en 7 familles fonctionnelles",
+        ]),
+        ("Phases 3 & 4", [
+            "Scoring 5 dimensions (Small / Medium / Large)",
+            "Détection des dépendances IT",
+        ]),
+        ("Phase 5", [
+            "Architecture cible Google-first par niveau de complexité",
+        ]),
+        ("Phase 6", [
+            "Recommandations et bonnes pratiques pour les builders",
+        ]),
+    ]
+    CARD_W_METH = Inches(2.25)
+    CARD_H_METH = Inches(3.2)
+    colors_meth = [PYL_NAVY, PYL_TEAL_BLUE, PYL_NAVY, PYL_YELLOW]
+    for i, (ctitle, cbullets) in enumerate(meth_cards):
+        left = Inches(0.3) + i * (CARD_W_METH + Inches(0.1))
+        add_content_card(slide_meth, left, Inches(1.75), CARD_W_METH, CARD_H_METH,
+                         colors_meth[i], ctitle, cbullets, body_font_size=13)
+
+
+
+
+    deck.add_chapter("bleu", "02", "Analyse du Portefeuille")
+
+    # 05 - Chiffres clés — 6 cartes sur 10": CARD_W=1.5", GAP=0.1" → total=6*(1.5+0.1)=9.6" ✅
+    slide_kpi = deck.add_schema(chapter_num="02", chapter_label="Analyse du Portefeuille",
+                                title=f"{total} use cases analysés")
+    CARD_W_KPI = Inches(1.5)
+    CARD_H_KPI = Inches(1.85)
+    Y_TOP_KPI  = Inches(1.75)
+    GAP_KPI    = Inches(0.1)
+    LEFT_START = Inches(0.2)
 
     cards = [
-        ("Use Cases analysés", str(total), "Portefeuille complet", PYL_NAVY, PYL_YELLOW),
-        ("Clusters couverts", str(clusters), "Périmètre géographique", PYL_NAVY, PYL_TEAL_BLUE),
-        ("Quick Wins (Small)", str(tiers.get("Small", 0)), "< 2 semaines", PYL_SUCCESS, PYL_SUCCESS),
-        ("Structurants (Medium)", str(tiers.get("Medium", 0)), "4-8 semaines", PYL_TEAL, PYL_TEAL),
-        ("Stratégiques (Large)", str(tiers.get("Large", 0)), "3-12 mois", PYL_DANGER, PYL_DANGER),
-        ("Points d'attention IT", str(it_count), "Escalade requise", PYL_DANGER, PYL_DANGER),
+        ("Use Cases", str(total), "Portefeuille", PYL_NAVY, PYL_YELLOW),
+        ("Clusters", str(clusters), "Périmètre géo", PYL_NAVY, PYL_TEAL_BLUE),
+        ("Small", str(tiers.get("Small", 0)), "< 2 semaines", PYL_SUCCESS, PYL_SUCCESS),
+        ("Medium", str(tiers.get("Medium", 0)), "4-8 semaines", PYL_TEAL, PYL_TEAL),
+        ("Large", str(tiers.get("Large", 0)), "3-12 mois", PYL_DANGER, PYL_DANGER),
+        ("Points IT", str(it_count), "Escalade", PYL_DANGER, PYL_DANGER),
     ]
 
     for i, (label, value, sub, hdr_color, val_color) in enumerate(cards):
-        left = Inches(0.5) + i * (CARD_W + GAP)
-        add_kpi_card(
-            slide,
-            left,
-            Y_TOP,
-            CARD_W,
-            CARD_H,
-            label,
-            value,
-            sub,
-            header_color=hdr_color,
-            value_color=val_color,
-        )
+        left = LEFT_START + i * (CARD_W_KPI + GAP_KPI)
+        add_kpi_card(slide_kpi, left, Y_TOP_KPI, CARD_W_KPI, CARD_H_KPI, label, value, sub,
+                     header_color=hdr_color, value_color=val_color)
 
     pct_accessible = (tiers.get("Small", 0) + tiers.get("Medium", 0)) * 100 // total
     add_textbox(
-        slide,
-        Inches(0.5),
-        Inches(4.1),
-        Inches(12.3),
-        Inches(0.4),
+        slide_kpi, LEFT_START, Inches(3.75), Inches(9.6), Inches(0.38),
         f"{pct_accessible}% des use cases sont déployables sans ressources IT lourdes (Small ou Medium)",
-        font_size=13,
-        bold=True,
-        color=PYL_NAVY_DARK,
-        align=PP_ALIGN.CENTER,
+        font_size=11, bold=True, color=PYL_NAVY_DARK, align=PP_ALIGN.CENTER,
     )
 
-    callout = add_rect(
-        slide,
-        Inches(0.5),
-        Inches(4.6),
-        Inches(12.3),
-        Inches(1.5),
-        fill=PYL_YELLOW,
-    )
+    callout = add_rect(slide_kpi, LEFT_START, Inches(4.18), Inches(9.6), Inches(1.2), fill=PYL_YELLOW)
     ct = callout.text_frame
     ct.word_wrap = True
     p = ct.paragraphs[0]
@@ -811,45 +369,28 @@ def build_kpi_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
         f"{it_count} UC ont des dépendances systèmes qui requièrent une escalade obligatoire."
     )
     run.font.name = "Poppins"
-    run.font.size = Pt(12)
+    run.font.size = Pt(10)
     run.font.color.rgb = PYL_NAVY_DARK
 
-
-def build_complexity_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
-    """Slide Répartition par complexité — 3 cards."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "04",
-        "Répartition par complexité",
-        "Scoring 5 dimensions (5-15 pts) -> Small / Medium / Large",
-        page,
-    )
-
-    tiers = df["Complexity_Tier"].value_counts().to_dict()
-    total = len(df)
-
+    
+    # 06 - Répartition par complexité — 3 cartes sur 10": 3*(3.0+0.1)+0.2=9.5" ✅
+    slide_cplx = deck.add_schema(chapter_num="02", chapter_label="Analyse du Portefeuille",
+                                 title="Scoring : Small / Medium / Large")
     tier_data = [
-        ("Small", tiers.get("Small", 0), "Quick Win", "< 2 sem.", "1 champion, no-code", PYL_SUCCESS),
-        ("Medium", tiers.get("Medium", 0), "Use Case Structurant", "4-8 sem.", "Champion + IT local", PYL_TEAL_BLUE),
-        ("Large", tiers.get("Large", 0), "Projet Stratégique", "3-12 mois", "Équipe IT + Champion", PYL_DANGER),
+        ("Small", tiers.get("Small", 0), "Quick Win", "< 2 sem.", "1 builder, no-code", PYL_SUCCESS),
+        ("Medium", tiers.get("Medium", 0), "Use Case Structurant", "4-8 sem.", "builder + IT local", PYL_TEAL_BLUE),
+        ("Large", tiers.get("Large", 0), "Projet Stratégique", "3-12 mois", "Équipe IT + builder", PYL_DANGER),
     ]
-
-    CARD_W = Inches(3.9)
-    CARD_H = Inches(4.5)
-    Y_TOP = Inches(1.8)
+    CARD_W_CPLX = Inches(2.95)
+    CARD_H_CPLX = Inches(3.55)
+    Y_TOP_CPLX  = Inches(1.75)
 
     for i, (tier, count, label, ttv, profile, color) in enumerate(tier_data):
-        left = Inches(0.5) + i * (CARD_W + Inches(0.27))
+        left = Inches(0.3) + i * (CARD_W_CPLX + Inches(0.15))
         pct = count * 100 // total if total > 0 else 0
         add_content_card(
-            slide,
-            left,
-            Y_TOP,
-            CARD_W,
-            CARD_H,
-            color,
-            f"{tier} — {count} use cases ({pct}%)",
+            slide_cplx, left, Y_TOP_CPLX, CARD_W_CPLX, CARD_H_CPLX, color,
+            f"{tier} — {count} UC ({pct}%)",
             [
                 f"Label : {label}",
                 f"Time-to-value : {ttv}",
@@ -859,584 +400,245 @@ def build_complexity_slide(prs: Presentation, df: pd.DataFrame, page: int) -> No
         )
 
         add_textbox(
-            slide,
-            left,
-            Y_TOP + Inches(0.55),
-            CARD_W,
-            Inches(0.8),
-            str(count),
-            font_size=48,
-            bold=True,
-            color=PYL_WHITE,
-            align=PP_ALIGN.CENTER,
+            slide_cplx, left, Y_TOP_CPLX + Inches(0.55), CARD_W_CPLX, Inches(0.8),
+            str(count), font_size=48, bold=True, color=PYL_WHITE, align=PP_ALIGN.CENTER,
         )
 
-
-def build_families_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
-    """Slide Familles fonctionnelles."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "05",
-        "Familles fonctionnelles",
-        "7 familles identifiées — répartition et volume par tier",
-        page,
-    )
-
-    families = df["Family_Label"].value_counts().reset_index()
-    families.columns = ["Family_Label", "Total"]
-    families = families.sort_values("Total", ascending=False)
-
-    rows = []
+    # Trier par code famille (F1 → F7)
+    families = df[["Family_Label", "Family"]].drop_duplicates("Family_Label")
+    families["_sort"] = families["Family"].str.extract(r"(\d+)").astype(int)
+    families = families.sort_values("_sort")
+    rows_fam = []
     for _, row in families.iterrows():
-        fam = row["Family_Label"]
-        subset = (
-            df[df["Family_Label"] == fam]["Complexity_Tier"]
-            .value_counts()
-            .to_dict()
-        )
-        code = df[df["Family_Label"] == fam]["Family"].iloc[0]
-        rows.append(
-            [
-                f"{code} — {fam}",
-                str(subset.get("Small", 0)),
-                str(subset.get("Medium", 0)),
-                str(subset.get("Large", 0)),
-                str(row["Total"]),
-            ]
-        )
+        fam  = row["Family_Label"]
+        code = row["Family"]
+        subset = df[df["Family_Label"] == fam]["Complexity_Tier"].value_counts().to_dict()
+        rows_fam.append([
+            f"{code} — {fam}", str(subset.get("Small", 0)), str(subset.get("Medium", 0)),
+            str(subset.get("Large", 0))
+        ])
 
-    add_pptx_table(
-        slide,
-        Inches(0.5),
-        Inches(1.9),
-        Inches(12.3),
-        Inches(4.8),
-        ["Famille fonctionnelle", "Small", "Medium", "Large", "Total"],
-        rows,
-    )
+    slide_fam = deck.add_schema(chapter_num="02", chapter_label="Analyse du Portefeuille",
+                                title="7 familles fonctionnelles identifiées")
+    add_pptx_table(slide_fam, Inches(0.3), Inches(1.75), Inches(9.4), Inches(3.6),
+                   ["Famille fonctionnelle", "Small", "Medium", "Large"], rows_fam)
 
 
-def build_clusters_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
-    """Slide Top clusters."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "06",
-        "Répartition par Cluster",
-        "Top 12 clusters par volume de use cases",
-        page,
-    )
-
-    cluster_agg = (
-        df.groupby("Cluster")["Complexity_Tier"]
-        .value_counts()
-        .unstack(fill_value=0)
-        .reset_index()
-    )
-    cluster_agg["Total"] = (
-        cluster_agg.get("Small", 0)
-        + cluster_agg.get("Medium", 0)
-        + cluster_agg.get("Large", 0)
-    )
+    # 08 - Clusters (tableau dans les bornes)
+    cluster_agg = df.groupby("Cluster")["Complexity_Tier"].value_counts().unstack(fill_value=0).reset_index()
+    cluster_agg["Total"] = cluster_agg.get("Small", 0) + cluster_agg.get("Medium", 0) + cluster_agg.get("Large", 0)
     cluster_agg = cluster_agg.sort_values("Total", ascending=False).head(12)
-
-    rows = []
+    rows_clu = []
     for _, row in cluster_agg.iterrows():
-        rows.append(
-            [
-                str(row["Cluster"]),
-                str(int(row.get("Small", 0))),
-                str(int(row.get("Medium", 0))),
-                str(int(row.get("Large", 0))),
-                str(int(row["Total"])),
-            ]
-        )
+        rows_clu.append([str(row["Cluster"]), str(int(row.get("Small", 0))),
+                         str(int(row.get("Medium", 0))), str(int(row.get("Large", 0))),
+                         str(int(row["Total"]))])
+    rows_clu_a = rows_clu[:6]
+    rows_clu_b = rows_clu[6:]
 
-    add_pptx_table(
-        slide,
-        Inches(0.5),
-        Inches(1.9),
-        Inches(12.3),
-        Inches(4.8),
-        ["Cluster", "Small", "Medium", "Large", "Total"],
-        rows,
+    slide_clu_a = deck.add_schema(chapter_num="02", chapter_label="Analyse du Portefeuille",
+                                  title="Top 12 clusters — 1/2")
+    add_pptx_table(slide_clu_a, Inches(0.3), Inches(1.75), Inches(9.4), Inches(3.6),
+                   ["Cluster", "Small", "Medium", "Large", "Total"], rows_clu_a)
+
+    if rows_clu_b:
+        slide_clu_b = deck.add_schema(chapter_num="02", chapter_label="Analyse du Portefeuille",
+                                      title="Top 12 clusters — 2/2")
+        add_pptx_table(slide_clu_b, Inches(0.3), Inches(1.75), Inches(9.4), Inches(3.6),
+                       ["Cluster", "Small", "Medium", "Large", "Total"], rows_clu_b)
+
+
+    deck.add_chapter("orange", "03", "Architecture et IT")
+
+    # 09 - Architecture — construction manuelle pour contrôler la taille de police
+    slide_arch = deck.add_schema(
+        chapter_num="03", chapter_label="Architecture et IT",
+        title="Architectures de référence",
     )
+    add_textbox(slide_arch, Inches(0.3), Inches(1.35), Inches(9.0), Inches(0.35),
+                "Stack cible Google-first par niveau", font_size=11, color=PYL_BODY_GREY)
+
+    arch_cards = [
+        ("Small — Prompting", [
+            "Outils : Gemini, NotebookLM",
+            "Data : Drive/Sheets statique",
+            "Compétence : Prompting",
+            "IT : Aucune intervention",
+        ]),
+        ("Medium — App Script", [
+            "Outils : App Script, AppSheet",
+            "Data : Sheets (structurées)",
+            "Compétence : Low-code",
+            "IT : Support ponctuel",
+        ]),
+        ("Large — Vertex AI", [
+            "Outils : Vertex AI, BigQuery",
+            "Sources : SFDC, SAP, DCS",
+            "Compétence : Dev",
+            "IT : Équipe projet dédiée",
+        ]),
+    ]
+    CARD_W_ARCH = Inches(3.0)
+    CARD_H_ARCH = Inches(3.4)
+    colors_arch = [PYL_NAVY, PYL_TEAL_BLUE, PYL_YELLOW]
+    for i, (ctitle, cbullets) in enumerate(arch_cards):
+        left = Inches(0.35) + i * (CARD_W_ARCH + Inches(0.1))
+        add_content_card(slide_arch, left, Inches(1.75), CARD_W_ARCH, CARD_H_ARCH,
+                         colors_arch[i], ctitle, cbullets, body_font_size=13)
 
 
-def build_it_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
-    """Slide Points d'attention IT."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    it_count = (df["IT_Flag"] != "").sum()
-    add_slide_header(
-        slide,
-        "07",
-        f"{it_count} points d'attention IT",
-        "Use cases nécessitant un accompagnement technique dédié",
-        page,
-    )
 
-    alert = add_rect(
-        slide,
-        Inches(0.5),
-        Inches(1.75),
-        Inches(12.3),
-        Inches(0.65),
-        fill=PYL_DANGER,
-    )
-    alert.line.fill.background()
-    at = alert.text_frame
-    at.word_wrap = True
-    p = at.paragraphs[0]
-    run = p.add_run()
-    run.text = (
-        "Ces use cases impliquent SFDC, SAP, DCS, SCADA, BigQuery, API d'entreprise ou profil Large. "
-        "Escalade IT obligatoire AVANT tout prototype."
-    )
-    run.font.name = "Poppins"
-    run.font.bold = True
-    run.font.size = Pt(12)
-    run.font.color.rgb = PYL_WHITE
-
+    # 10 - Points d'attention IT
     it_df = df[df["IT_Flag"] != ""]
-    it_by_fam = (
-        it_df.groupby("Family_Label")
-        .size()
-        .reset_index(name="count")
-        .sort_values("count", ascending=False)
-    )
-
-    rows = [[r["Family_Label"], str(r["count"])] for _, r in it_by_fam.iterrows()]
-
-    add_pptx_table(
-        slide,
-        Inches(0.5),
-        Inches(2.6),
-        Inches(6),
-        Inches(4.1),
-        ["Famille fonctionnelle", "Nb use cases IT"],
-        rows,
-    )
-
+    it_by_fam = it_df.groupby("Family_Label").size().reset_index(name="count").sort_values("count", ascending=False)
+    rows_it_l = [[r["Family_Label"], str(r["count"])] for _, r in it_by_fam.iterrows()]
+    
     top_it = it_df.nlargest(8, "Score_Total")
-    right_rows = []
+    rows_it_r = []
     for _, row in top_it.iterrows():
         desc = str(row["Use Case Description (Long)"])[:50]
-        if len(str(row["Use Case Description (Long)"])) > 50:
-            desc += "..."
-        right_rows.append(
-            [
-                str(row["UC_ID"]),
-                str(row["Cluster"]),
-                str(row["Complexity_Tier"]),
-                desc,
-            ]
-        )
+        if len(str(row["Use Case Description (Long)"])) > 50: desc += "..."
+        rows_it_r.append([str(row["UC_ID"]), str(row["Cluster"]), str(row["Complexity_Tier"]), desc])
+    
+    # 10a - Points d'attention IT — par famille
+    slide_it_a = deck.add_schema(chapter_num="03", chapter_label="Architecture et IT",
+                                 title="UC IT — par famille")
+    add_pptx_table(slide_it_a, Inches(0.3), Inches(1.75), Inches(9.4), Inches(3.6),
+                   ["Famille", "Nb UC IT"], rows_it_l)
 
-    add_pptx_table(
-        slide,
-        Inches(6.8),
-        Inches(2.6),
-        Inches(6.0),
-        Inches(4.1),
-        ["UC_ID", "Cluster", "Tier", "Description"],
-        right_rows,
-    )
+    # 10b - Points d'attention IT — top UC (2 slides de 4 lignes)
+    rows_it_r_a = rows_it_r[:4]
+    rows_it_r_b = rows_it_r[4:]
 
+    slide_it_b = deck.add_schema(chapter_num="03", chapter_label="Architecture et IT",
+                                 title="Top UC — accompagnement IT (1/2)")
+    add_pptx_table(slide_it_b, Inches(0.3), Inches(1.75), Inches(9.4), Inches(3.6),
+                   ["UC_ID", "Cluster", "Tier", "Description"], rows_it_r_a)
 
-def build_architecture_slide(prs: Presentation, page: int) -> None:
-    """Slide Architecture cible — 3 tiers."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "08",
-        "Architectures de référence",
-        "Stack cible Google-first par niveau de complexité",
-        page,
-    )
-
-    arch_data = [
-        (
-            PYL_SUCCESS,
-            "Small — Prompting & Automation",
-            [
-                "Outils : Gemini Gems, NotebookLM",
-                "Data : Google Drive / Sheets (statique)",
-                "Output : Docs / Gmail / Chat",
-                "Compétence : Prompt engineering",
-                "IT : Aucune intervention requise",
-            ],
-        ),
-        (
-            PYL_TEAL_BLUE,
-            "Medium — App & Orchestration",
-            [
-                "Outils : App Script, AppSheet, AI Studio",
-                "Data : Sheets, AppSheet (structurées)",
-                "Output : AppSheet App, Slides/Docs",
-                "Compétence : Low-code + API basiques",
-                "IT : Support ponctuel si SFDC/BI",
-            ],
-        ),
-        (
-            PYL_DANGER,
-            "Large — Platform & Agent",
-            [
-                "Sources : SFDC, AVEVA, DCS, SAP, Fabric",
-                "Ingestion : Python, BigQuery, DataStudio",
-                "AI : Vertex AI + RAG + Agents Gemini",
-                "Backend : Cloud Run, Advance Coding",
-                "IT : Équipe projet dédiée obligatoire",
-            ],
-        ),
-    ]
-
-    CARD_W = Inches(3.9)
-    CARD_H = Inches(4.5)
-
-    for i, (color, title, bullets) in enumerate(arch_data):
-        left = Inches(0.5) + i * (CARD_W + Inches(0.27))
-        add_content_card(
-            slide, left, Inches(1.8), CARD_W, CARD_H, color, title, bullets
-        )
+    if rows_it_r_b:
+        slide_it_c = deck.add_schema(chapter_num="03", chapter_label="Architecture et IT",
+                                     title="Top UC — accompagnement IT (2/2)")
+        add_pptx_table(slide_it_c, Inches(0.3), Inches(1.75), Inches(9.4), Inches(3.6),
+                       ["UC_ID", "Cluster", "Tier", "Description"], rows_it_r_b)
 
 
-def build_quickwins_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
-    """Slide Top Quick Wins."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "09",
-        "Top Quick Wins",
-        "Use cases Small (1 outil) à déployer en priorité",
-        page,
-    )
-
-    qw = df[(df["Complexity_Tier"] == "Small") & (df["Nb_Tools"] <= 1)].head(10)
-
-    rows = []
+    deck.add_chapter("violet", "04", "Recommandations et Roadmap")
+    
+    # 11 - Top Quick Wins (2 slides : 7 premières lignes + reste)
+    qw = df[(df["Complexity_Tier"] == "Small") & (df["Nb_Tools"] <= 1)].head(14)
+    rows_qw = []
     for _, row in qw.iterrows():
-        desc = str(row["Use Case Description (Long)"])[:60]
-        if len(str(row["Use Case Description (Long)"])) > 60:
-            desc += "..."
-        rows.append(
-            [
-                str(row["UC_ID"]),
-                str(row["Family_Label"]),
-                str(row["Cluster"]),
-                str(row["Tools"]),
-                str(int(row["Score_Total"])),
-                desc,
-            ]
-        )
+        rows_qw.append([str(row["UC_ID"]), str(row["Family_Label"]), str(row["Cluster"]),
+                        str(row["Tools"]), str(int(row["Score_Total"]))])
 
-    add_pptx_table(
-        slide,
-        Inches(0.5),
-        Inches(1.9),
-        Inches(12.3),
-        Inches(4.8),
-        ["UC_ID", "Famille", "Cluster", "Outil", "Score", "Description"],
-        rows,
-    )
+    rows_qw_a = rows_qw[:7]
+    rows_qw_b = rows_qw[7:]
+
+    slide_qw_a = deck.add_schema(chapter_num="04", chapter_label="Recommandations et Roadmap",
+                                 title="Top Quick Wins — 1/2")
+    add_pptx_table(slide_qw_a, Inches(0.3), Inches(1.75), Inches(9.4), Inches(3.6),
+                   ["UC_ID", "Famille", "Cluster", "Outil", "Score"], rows_qw_a)
+
+    if rows_qw_b:
+        slide_qw_b = deck.add_schema(chapter_num="04", chapter_label="Recommandations et Roadmap",
+                                     title="Top Quick Wins — 2/2")
+        add_pptx_table(slide_qw_b, Inches(0.3), Inches(1.75), Inches(9.4), Inches(3.6),
+                       ["UC_ID", "Famille", "Cluster", "Outil", "Score"], rows_qw_b)
 
 
-def build_recommendations_slide(
-    prs: Presentation, df: pd.DataFrame, page: int
-) -> None:
-    """Slide Recommandations — 4 cards + roadmap."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "10",
-        "Recommandations et Roadmap",
-        "5 axes prioritaires pour industrialiser les use cases",
-        page,
-    )
 
-    tiers = df["Complexity_Tier"].value_counts().to_dict()
-    it_count = (df["IT_Flag"] != "").sum()
-
-    recs = [
-        (
-            PYL_SUCCESS,
-            "Industrialiser les Quick Wins",
-            [
-                f"{tiers.get('Small', 0)} UC déployables immédiatement",
-                "Bibliothèque de Gems par famille",
-                "Cible : 10 pratiques en 3 mois",
-            ],
-        ),
-        (
-            PYL_TEAL_BLUE,
-            "Accompagner les Medium",
-            [
-                f"{tiers.get('Medium', 0)} UC — sprints de 4 semaines",
-                "Champion référent par cluster",
-                "NotebookLM et App Script comme vecteurs",
-            ],
-        ),
-        (
-            PYL_DANGER,
-            f"Escalader {it_count} cas IT",
-            [
-                "Registre de dépendances systèmes",
-                "Atelier de priorisation IT",
-                "Zero prototype SFDC/SAP sans validation",
-            ],
-        ),
-        (
-            PYL_NAVY,
-            "Créer un track Data Champion",
-            [
-                "F7 — famille la plus dense et complexe",
-                "Profil Python/BigQuery requis",
-                "Certification Data Champion à créer",
-            ],
-        ),
+    # 12 - Recommandations
+    slide_reco = deck.add_schema(chapter_num="04", chapter_label="Recommandations et Roadmap",
+                                 title="5 axes d'industrialisation")
+    
+    recos = [
+        ("Quick Wins — Déploiement", [
+            f"{tiers.get('Small', 0)} UC déployables immédiatement",
+            "Bibliothèque de Gems par famille",
+            "Cible : 10 pratiques en 3 mois"
+        ]),
+        ("Accompagner les Medium", [
+            f"{tiers.get('Medium', 0)} UC — sprints de 4 semaines",
+            "Champion référent par cluster",
+            "NotebookLM et App Script comme vecteurs"
+        ]),
+        (f"Escalader {it_count} cas IT", [
+            "Registre de dépendances systèmes",
+            "Atelier de priorisation IT",
+            "Zero prototype SFDC/SAP sans validation"
+        ]),
+        ("Track Data Champion", [
+            "La manipulation de données complexes nécessite un profil dédié",
+            "Créer un parcours de formation spécifique (SQL, Python, BigQuery)",
+            "Ce rôle fera le pont entre les AI builders métiers et les data engineers IT"
+        ]),
     ]
 
-    CARD_W = Inches(3.0)
-    CARD_H = Inches(3.8)
+    # 2 cols × 2 rows pleine largeur : 4.6" + 0.15" gap → 0.3+4.6+0.15+4.6 = 9.65" ✅
+    # hauteur: 1.75 + 1.85 + 0.1 + 1.85 = 5.55" ≤ 5.62" ✅
+    CARD_W_RECO = Inches(4.6)
+    CARD_H_RECO = Inches(1.85)
+    for i, (title_card, bullets) in enumerate(recos):
+        col = i % 2; row_idx = i // 2
+        left = Inches(0.3) + col * (CARD_W_RECO + Inches(0.15))
+        top  = Inches(1.75) + row_idx * (CARD_H_RECO + Inches(0.1))
+        colors = [PYL_NAVY, PYL_TEAL_BLUE, PYL_DANGER, PYL_YELLOW]
+        add_content_card(slide_reco, left, top, CARD_W_RECO, CARD_H_RECO, colors[i], title_card, bullets)
 
-    for i, (color, title, bullets) in enumerate(recs):
+
+
+
+    # 13 - Bonnes pratiques
+    slide_bp = deck.add_schema(chapter_num="04", chapter_label="Recommandations et Roadmap",
+                               title="Bonnes pratiques pour pérenniser")
+    
+    bps = [
+        ("Gestion des Prompts", [
+            "Stocker dans un Google Doc dédié",
+            "Versionner : Prompt_V1.0_AAAA-MM-JJ",
+            "Documenter contexte et exemples",
+            "Centraliser : Drive AI builders"
+        ]),
+        ("Discipline App Script", [
+            "1 script = 1 fichier nommé",
+            "Commenter les blocs principaux",
+            "Pas de secrets en clair dans le code",
+            "README + tests sur données fictives"
+        ]),
+        ("Kit builder", [
+            "README.md : description + how-to",
+            "Prompts_Vx.x.md : historique",
+            "Script_Vx.x.gs : copie du code",
+            "Tests.md + Changelog.md"
+        ]),
+        ("Quand escalader vers l'IT ?", [
+            "Connexion système enterprise",
+            "Données sensibles (RH, finance)",
+            "Script instable / 10+ utilisateurs",
+            "Besoin de fiabilité 24/7"
+        ]),
+    ]
+    
+    # 2x2 grid : 1.75 + 1.9 + 0.1 + 1.9 = 5.75" ≤ 5.62" → use 1.85"
+    # card_h=1.85" → 1.75+1.85+0.1+1.85 = 5.55" ✅
+    CARD_W_BP = Inches(4.5)
+    CARD_H_BP = Inches(1.85)
+    for i, (title_card, bullets) in enumerate(bps):
         col = i % 2
         row_idx = i // 2
-        left = Inches(0.5) + col * (CARD_W + Inches(0.25))
-        top = Inches(1.85) + row_idx * (CARD_H + Inches(0.2))
-        add_content_card(slide, left, top, CARD_W, CARD_H, color, title, bullets)
+        left = Inches(0.3) + col * (CARD_W_BP + Inches(0.1))
+        top = Inches(1.75) + row_idx * (CARD_H_BP + Inches(0.1))
+        add_content_card(slide_bp, left, top, CARD_W_BP, CARD_H_BP, PYL_NAVY, title_card, bullets)
 
-    # Roadmap droite
-    roadmap_items = [
-        ("M+1", "Atelier de priorisation Quick Wins par cluster"),
-        ("M+3", "Bibliothèque Gems V1 disponible"),
-        ("M+6", "50% des Medium en production"),
-        ("M+12", "Projets Large lancés avec sponsors IT"),
-    ]
-    for j, (month, action) in enumerate(roadmap_items):
-        top_r = Inches(1.85) + j * Inches(0.95)
-        badge = add_rect(
-            slide,
-            Inches(6.9),
-            top_r,
-            Inches(0.8),
-            Inches(0.4),
-            fill=PYL_YELLOW,
-        )
-        bt = badge.text_frame
-        bp = bt.paragraphs[0]
-        bp.alignment = PP_ALIGN.CENTER
-        br = bp.add_run()
-        br.text = month
-        br.font.name = "Poppins"
-        br.font.bold = True
-        br.font.size = Pt(10)
-        br.font.color.rgb = PYL_NAVY_DARK
-
-        add_textbox(
-            slide,
-            Inches(7.8),
-            top_r,
-            Inches(4.9),
-            Inches(0.5),
-            action,
-            font_size=11,
-            color=PYL_BODY_GREY,
-        )
-
-
-def build_best_practices_slide(prs: Presentation, page: int) -> None:
-    """Slide Bonnes pratiques AI Champions."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_slide_header(
-        slide,
-        "11",
-        "Bonnes pratiques AI Champions",
-        "Recommandations méthodologiques pour pérenniser les réalisations",
-        page,
+    # 14 - Closing
+    deck.add_thanks(
+        title="Merci de votre attention",
+        subtitle="Air Liquide — AI Builders",
     )
-
-    practices = [
-        (
-            PYL_NAVY,
-            "Gestion des Prompts",
-            [
-                "Stocker dans un Google Doc dédié",
-                "Versionner : Prompt_V1.0_AAAA-MM-JJ",
-                "Documenter contexte et exemples",
-                "Centraliser : Drive AI Champions",
-            ],
-        ),
-        (
-            PYL_TEAL_BLUE,
-            "Discipline App Script",
-            [
-                "1 script = 1 fichier nommé",
-                "Commenter les blocs principaux",
-                "Pas de secrets en clair dans le code",
-                "README + tests sur données fictives",
-            ],
-        ),
-        (
-            PYL_TEAL,
-            "Kit Champion",
-            [
-                "README.md : description + how-to",
-                "Prompts_Vx.x.md : historique",
-                "Script_Vx.x.gs : copie du code",
-                "Tests.md + Changelog.md",
-            ],
-        ),
-        (
-            PYL_DANGER,
-            "Quand escalader vers l'IT ?",
-            [
-                "Connexion système enterprise",
-                "Données sensibles (RH, finance)",
-                "Script instable / 10+ utilisateurs",
-                "Besoin de fiabilité 24/7",
-            ],
-        ),
-    ]
-
-    CARD_W = Inches(3.0)
-    CARD_H = Inches(4.2)
-
-    for i, (color, title, bullets) in enumerate(practices):
-        left = Inches(0.5) + i * (CARD_W + Inches(0.15))
-        add_content_card(
-            slide, left, Inches(1.8), CARD_W, CARD_H, color, title, bullets
-        )
-
-
-def build_closing_slide(prs: Presentation) -> None:
-    """Slide de cloture."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-
-    add_rect(slide, 0, 0, SLIDE_W, SLIDE_H, fill=PYL_NAVY_DARK)
-
-    add_textbox(
-        slide,
-        Inches(0.5),
-        Inches(0.3),
-        Inches(2),
-        Inches(0.45),
-        "Pyl.Tech",
-        font_size=16,
-        bold=True,
-        color=PYL_YELLOW,
-    )
-
-    add_textbox(
-        slide,
-        Inches(1.5),
-        Inches(2.5),
-        Inches(10.3),
-        Inches(1.2),
-        "Transformez avec Pyl.Tech.",
-        font_size=40,
-        bold=True,
-        color=PYL_WHITE,
-        align=PP_ALIGN.CENTER,
-    )
-
-    add_textbox(
-        slide,
-        Inches(1.5),
-        Inches(4.0),
-        Inches(10.3),
-        Inches(0.5),
-        "Google Cloud Partner  |  IA  |  Data  |  Workspace",
-        font_size=16,
-        color=PYL_YELLOW,
-        align=PP_ALIGN.CENTER,
-    )
-
-    add_textbox(
-        slide,
-        Inches(0.3),
-        Inches(7.1),
-        Inches(7),
-        Inches(0.25),
-        f"(c) Copyright {YEAR} Pyl.Tech",
-        font_size=9,
-        color=PYL_TEAL_BLUE,
-    )
-
-
-# ── Point d'entree ────────────────────────────────────────────────────────────
-
-
-def main() -> None:
-    print(f"Lecture du catalogue : {CATALOG_FILE}")  # noqa
-    if not CATALOG_FILE.exists():
-        print(f"Catalogue introuvable : {CATALOG_FILE}")  # noqa
-        print("   Lancez d'abord : python3 src/generate_catalog.py")  # noqa
-        sys.exit(1)
-
-    df = pd.read_excel(CATALOG_FILE, sheet_name="Catalogue", header=0)
-    print(f"   {len(df)} use cases charges")  # noqa
-
-    prs = Presentation()
-    prs.slide_width = SLIDE_W
-    prs.slide_height = SLIDE_H
-
-    page = 1
-    build_cover(prs)
-    page += 1
-    build_sommaire(prs, page)
-    page += 1
-    build_context_slide(prs, df, page)
-    page += 1
-    build_methodology_slide(prs, page)
-    page += 1
-    build_framework_slide(prs, page)
-    page += 1
-    build_kpi_slide(prs, df, page)
-    page += 1
-    build_complexity_slide(prs, df, page)
-    page += 1
-    build_families_slide(prs, df, page)
-    page += 1
-    build_clusters_slide(prs, df, page)
-    page += 1
-    build_it_slide(prs, df, page)
-    page += 1
-    build_architecture_slide(prs, page)
-    page += 1
-    build_quickwins_slide(prs, df, page)
-    page += 1
-    build_recommendations_slide(prs, df, page)
-    page += 1
-    build_best_practices_slide(prs, page)
-    page += 1
-    build_closing_slide(prs)
 
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    prs.save(OUTPUT_FILE)
-    print(f"\nPresentation PowerPoint generee : {OUTPUT_FILE}")  # noqa
-    print(f"   {len(prs.slides)} slides  |  {OUTPUT_FILE.stat().st_size // 1024} KB")  # noqa
-    print(f"\n   Slides :")  # noqa
-    slides_info = [
-        "01 — Couverture",
-        "02 — Sommaire",
-        "03 — Contexte de la mission",
-        "04 — Méthodologie (6 phases)",
-        "05 — Cadre d'analyse (framework scoring)",
-        "06 — Chiffres clés (6 KPI cards)",
-        "07 — Répartition par complexité (3 cards)",
-        "08 — Familles fonctionnelles",
-        "09 — Répartition par cluster",
-        "10 — Points d'attention IT",
-        "11 — Architectures de référence (3 tiers)",
-        "12 — Top Quick Wins",
-        "13 — Recommandations & Roadmap",
-        "14 — Bonnes pratiques AI Champions",
-        "15 — Closing",
-    ]
-    for info in slides_info:
-        print(f"   . {info}")  # noqa
-
+    deck.save(str(OUTPUT_FILE))
+    print(f"\nPresentation PowerPoint générée avec PyltechDeck : {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()
