@@ -14,8 +14,9 @@ __pycache__/
 # Fichiers générés
 output/
 
-# Agents (installation locale)
+# Agents (installation locale — sauf learnings)
 .agents/
+!.agents/learnings.md
 GEMINI.md
 .sentrux/rules.toml
 .gitignore
