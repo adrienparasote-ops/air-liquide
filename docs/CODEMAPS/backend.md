@@ -3,7 +3,7 @@
 # Backend Pipeline Map
 
 ## Data Pipeline
-Raw Excel (`assets/`) → `generate_catalog.py` → Cleaned Excel (`docs/`) → `generate_docx.py` & `generate_pptx.py` → DOCX Report & PPTX Presentation (`docs/`)
+Raw Excel (`assets/`) → `generate_catalog.py` → Cleaned Excel (`output/`) → `generate_docx.py` & `generate_pptx.py` → DOCX Report & PPTX Presentation (`output/`)
 
 ## Module Index
 
