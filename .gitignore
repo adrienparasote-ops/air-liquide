@@ -1,0 +1,21 @@
+.sentrux/baseline.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.coverage
+.pytest_cache/
+*.egg-info/
+
+# OS
+.DS_Store
+
+# Fichiers générés (ne pas versionner les outputs binaires volumineux)
+docs/use_cases_catalog.xlsx
+docs/rapport_ai_champions.docx
+docs/presentation_ai_champions.pptx
+
+# Agents (installation locale)
+.agents/
+GEMINI.md

@@ -1,0 +1,107 @@
+{
+  "name": "Pyl.Tech Brand",
+  "version": "1.1.0",
+  "description": "Charte graphique officielle Pyl.Tech",
+  "source": "Document officiel charte interne Pyl.Tech",
+  "colors": {
+    "base": {
+      "titlesAndDarkBackground": "#0b132b",
+      "slidesBackground": "#ffffff",
+      "bodyTextColor": "#4f4f4f",
+      "shapeAndGreySlideBackground": "#eeeeee"
+    },
+    "accents": {
+      "primary": "#F4BF46",
+      "accent2": "#0d2149",
+      "accent3": "#208AAE",
+      "accent4": "#5BC0BE"
+    },
+    "semantic": {
+      "success": "#138636",
+      "danger": "#C91432"
+    },
+    "partner": {
+      "intelciaPink": "#E91E63"
+    }
+  },
+  "namedColors": {
+    "PYL_NAVY_DARK": "#0b132b",
+    "PYL_WHITE": "#ffffff",
+    "PYL_BODY_GREY": "#4f4f4f",
+    "PYL_GREY_BG": "#eeeeee",
+    "PYL_YELLOW": "#F4BF46",
+    "PYL_NAVY": "#0d2149",
+    "PYL_BLUE_TEAL": "#208AAE",
+    "PYL_TEAL": "#5BC0BE",
+    "PYL_SUCCESS": "#138636",
+    "PYL_DANGER": "#C91432"
+  },
+  "typography": {
+    "primary": "Poppins",
+    "fallbacks": ["Inter", "Montserrat", "DejaVu Sans", "Arial"],
+    "officialSizes": {
+      "plainText": "12pt",
+      "tables": "10pt"
+    },
+    "sizes": {
+      "h1": 28,
+      "h2": 20,
+      "h3": 18,
+      "body": 12,
+      "tables": 10,
+      "subtitle": 14,
+      "footer": 9,
+      "kpiLarge": 56,
+      "kpiMedium": 32
+    },
+    "weights": {
+      "regular": 400,
+      "semibold": 600,
+      "bold": 700
+    },
+    "textColors": {
+      "titles": "#0b132b",
+      "body": "#4f4f4f",
+      "onYellow": "#0b132b",
+      "onDark": "#ffffff",
+      "footerAndPagination": "#208AAE"
+    }
+  },
+  "spacing": {
+    "borderRadiusSm": 2,
+    "borderRadiusMd": 4,
+    "borderRadiusLg": 8,
+    "cardPadding": 24,
+    "sectionBadgeSize": 56
+  },
+  "patterns": {
+    "sectionBadge": {
+      "background": "#F4BF46",
+      "textColor": "#ffffff",
+      "size": 56,
+      "fontSize": 18,
+      "fontWeight": 700,
+      "borderRadius": 2
+    },
+    "titleBlock": {
+      "topBorderColor": "#0b132b",
+      "bottomBorderColor": "#0b132b",
+      "borderWidth": 1
+    },
+    "footerColor": "#208AAE",
+    "cornerBadge": {
+      "shape": "triangle",
+      "background": "#0b132b",
+      "textColor": "#ffffff",
+      "rotation": -45
+    },
+    "highlighter": {
+      "background": "#F4BF46",
+      "textColor": "#0b132b"
+    },
+    "bulletStyle": "square",
+    "bulletColor": "#F4BF46",
+    "bulletSize": 8
+  },
+  "footerTemplate": "© Copyright {year} Pyl.Tech"
+}
