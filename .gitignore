@@ -15,6 +15,7 @@ __pycache__/
 docs/use_cases_catalog.xlsx
 docs/rapport_ai_champions.docx
 docs/presentation_ai_champions.pptx
+output/
 
 # Agents (installation locale)
 .agents/

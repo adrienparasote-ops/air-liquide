@@ -13,7 +13,7 @@ import pandas as pd
 _SRC_DIR    = Path(__file__).parent
 PROJECT_DIR = _SRC_DIR.parent
 SOURCE_FILE = PROJECT_DIR / "assets" / "Advanced AI Champions - Action Monitoring.xlsx"
-OUTPUT_FILE = PROJECT_DIR / "docs" / "use_cases_catalog.xlsx"
+OUTPUT_FILE = PROJECT_DIR / "output" / "use_cases_catalog.xlsx"
 SOURCE_SHEET = "Use cases"
 
 TOOL_MAP: dict[str, str] = {
@@ -389,6 +389,7 @@ def main(source: Path = SOURCE_FILE, output: Path = OUTPUT_FILE) -> None:
     df_raw = pd.read_excel(source, sheet_name=SOURCE_SHEET, header=0)
     df_out = process_dataframe(df_raw)
 
+    output.parent.mkdir(parents=True, exist_ok=True)
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df_out.to_excel(writer, sheet_name="Catalogue", index=False)
 

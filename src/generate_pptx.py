@@ -6,7 +6,7 @@ Génère la présentation PowerPoint (.pptx) Air Liquide — AI Champions
 avec la charte graphique officielle Pyl.Tech.
 
 Usage : python3 src/generate_pptx.py
-Output: docs/presentation_ai_champions.pptx
+Output: output/presentation_ai_champions.pptx
 """
 import sys
 from pathlib import Path
@@ -24,8 +24,8 @@ except ImportError as e:  # pragma: no cover
 
 # ── Chemins ───────────────────────────────────────────────────────────────────
 PROJECT_DIR  = Path(__file__).parent.parent
-CATALOG_FILE = PROJECT_DIR / "docs" / "use_cases_catalog.xlsx"
-OUTPUT_FILE  = PROJECT_DIR / "docs" / "presentation_ai_champions.pptx"
+CATALOG_FILE = PROJECT_DIR / "output" / "use_cases_catalog.xlsx"
+OUTPUT_FILE  = PROJECT_DIR / "output" / "presentation_ai_champions.pptx"
 
 # ── Palette Pyl.Tech officielle ───────────────────────────────────────────────
 PYL_NAVY_DARK  = RGBColor(0x0B, 0x13, 0x2B)
@@ -672,6 +672,7 @@ def main() -> None:
     build_recommendations_slide(prs, df, page=8)
     build_closing_slide(prs)
 
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     prs.save(OUTPUT_FILE)
     print(f"\n✅ Présentation PowerPoint générée : {OUTPUT_FILE}")  # noqa
     print(f"   {len(prs.slides)} slides  •  {OUTPUT_FILE.stat().st_size // 1024} KB")  # noqa
