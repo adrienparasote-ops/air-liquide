@@ -278,6 +278,9 @@ Chaque colonne représente le score (1, 2 ou 3) d'une dimension du scoring. **La
 
 **Comment l'utiliser :** Filtrer sur `⚠️ IT` pour identifier les use cases qui nécessitent un accompagnement IT. Ces use cases ne peuvent pas être menés à bien par un champion seul.
 
+> [!WARNING]
+> **Implementation Note:** External systems (like Google Apps Script) reading this column must use substring matching (e.g., `.indexOf("IT") !== -1` or `.includes("IT")`) instead of exact string matching. Unicode variation selectors on the warning emoji (`\ufe0f`) are often dropped or normalized differently when importing Excel files into Google Sheets, causing strict equality checks (`=== "⚠️ IT"`) to fail silently.
+
 ---
 
 ### `IT_Attention`
