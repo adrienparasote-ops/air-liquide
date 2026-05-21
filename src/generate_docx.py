@@ -436,7 +436,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_section_header(
         doc,
         "02",
-        "Methodologie d'analyse",
+        "Méthodologie d'analyse",
         "Approche en 6 phases pour qualifier le portefeuille AI Champions",
     )
 
@@ -448,7 +448,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     )
 
     # Phase 1 — Audit
-    add_sub_heading(doc, "Phase 1 — Audit et nettoyage des donnees")
+    add_sub_heading(doc, "Phase 1 — Audit et nettoyage des données")
     add_body_text(
         doc,
         "Le fichier source (Advanced AI Champions - Action Monitoring.xlsx) a fait l'objet "
@@ -460,14 +460,14 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
 
     add_pivot_table(
         doc,
-        "Anomalies identifiees et traitement",
+        "Anomalies identifiées et traitement",
         ["Anomalie", "Volume", "Decision"],
         [
-            ["Valeurs #REF! (Cluster, Job Family)", "7 lignes", "Remplace par N/A"],
-            ["Stage non renseigne", "141 lignes", "Valeur : Non renseigne"],
-            ["Impact economique absent", "193 lignes", "Valeur : Non evalue"],
+            ["Valeurs #REF! (Cluster, Job Family)", "7 lignes", "Remplacé par N/A"],
+            ["Stage non renseigné", "141 lignes", "Valeur : Non renseigné"],
+            ["Impact économique absent", "193 lignes", "Valeur : Non évalué"],
             ["Outils multi-valeurs", "Toutes lignes", "Normalisation en tags"],
-            ["Descriptions identiques, clusters differents", "Variable", "UC_ID partage"],
+            ["Descriptions identiques, clusters différents", "Variable", "UC_ID partage"],
         ],
     )
 
@@ -486,18 +486,18 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         "Les 7 familles fonctionnelles",
         ["Code", "Famille", "Description"],
         [
-            ["F1", "Automatisation documentaire", "Generation, traduction, resume, redaction de documents"],
-            ["F2", "Assistant BI et decisionnel", "Dashboards, analyses predictives, alertes KPI"],
+            ["F1", "Automatisation documentaire", "Génération, traduction, resume, rédaction de documents"],
+            ["F2", "Assistant BI et décisionnel", "Dashboards, analyses prédictives, alertes KPI"],
             ["F3", "Customer & Sales Intelligence", "Analyse clients, optimisation visites, scoring CRM"],
             ["F4", "Monitoring & Maintenance", "Prediction de pannes, analyse capteurs, surveillance process"],
             ["F5", "Knowledge Management", "FAQ, onboarding, bases de connaissances, chatbots formation"],
             ["F6", "Automatisation de workflows", "Scripts, flows, integrations Google/Office"],
-            ["F7", "Data Engineering & Reporting", "Pipelines de donnees, ETL, visualisation, Power BI"],
+            ["F7", "Data Engineering & Reporting", "Pipelines de données, ETL, visualisation, Power BI"],
         ],
     )
 
     # Phase 3 — Scoring
-    add_sub_heading(doc, "Phase 3 — Scoring de complexite multi-dimensionnel")
+    add_sub_heading(doc, "Phase 3 — Scoring de complexité multi-dimensionnel")
     add_body_text(
         doc,
         "Chaque use case a été scoré sur 5 dimensions indépendantes, chacune notée de 1 à 3 points "
@@ -508,7 +508,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_pivot_table(
         doc,
         "Grille de scoring (5 dimensions x 3 niveaux)",
-        ["Dimension", "1 pt (Faible)", "2 pts (Moyen)", "3 pts (Eleve)"],
+        ["Dimension", "1 pt (Faible)", "2 pts (Moyen)", "3 pts (Élevé)"],
         [
             [
                 "D1 — Integration technique",
@@ -517,10 +517,10 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
                 "4+ outils, code custom (L4)",
             ],
             [
-                "D2 — Perimetre organisationnel",
+                "D2 — Périmètre organisationnel",
                 "Equipe locale",
                 "Country / Cluster",
-                "Group (deploiement global)",
+                "Group (déploiement global)",
             ],
             [
                 "D3 — Complexite data",
@@ -535,8 +535,8 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
                 "Agent multi-etapes / ML",
             ],
             [
-                "D5 — Impact economique declare",
-                "Non evalue / Productivite",
+                "D5 — Impact économique declare",
+                "Non évalué / Productivite",
                 "Cost Reduction",
                 "Revenue Growth / Sustainability",
             ],
@@ -545,7 +545,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
 
     add_body_text(
         doc,
-        "Le score total determine le tier de complexite :"
+        "Le score total determine le tier de complexité :"
     )
 
     add_pivot_table(
@@ -555,16 +555,16 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         [
             ["Small", "5-7", "Quick Win", "< 2 semaines", "Champion seul, no-code"],
             ["Medium", "8-11", "Use Case Structurant", "4-8 semaines", "Champion + IT local"],
-            ["Large", "12-15", "Projet Strategique", "3-12 mois", "Equipe IT + Champion"],
+            ["Large", "12-15", "Projet Stratégique", "3-12 mois", "Equipe IT + Champion"],
         ],
     )
 
     add_callout(
         doc,
-        "Regle DONE-marker : lorsqu'une description contient un marqueur de maturite explicite "
+        "Règle DONE-marker : lorsqu'une description contient un marqueur de maturité explicite "
         "(\"DONE SO FAR\", \"Already built\"), le scoring prospectif porte uniquement sur le scope "
-        "futur restant a realiser. Cela evite de sur-scorer des use cases dont la partie complexe "
-        "est deja implementee.",
+        "futur restant a realiser. Cela évite de sur-scorer des use cases dont la partie complexe "
+        "est déjà implémentée.",
         style="info",
     )
 
@@ -605,37 +605,37 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_section_header(
         doc,
         "03",
-        "Synthese du portefeuille",
+        "Synthèse du portefeuille",
         "Vue d'ensemble des resultats de l'analyse",
     )
 
     add_body_text(
         doc,
         f"L'analyse du portefeuille AI Champions porte sur {total} use cases valides, "
-        f"repartis sur {clusters} clusters et {job_families} familles metier. "
-        f"La majorite des initiatives ({tiers.get('Small', 0) + tiers.get('Medium', 0)} use cases, "
+        f"répartis sur {clusters} clusters et {job_families} familles metier. "
+        f"La majorité des initiatives ({tiers.get('Small', 0) + tiers.get('Medium', 0)} use cases, "
         f"soit {(tiers.get('Small', 0) + tiers.get('Medium', 0)) * 100 // total}%) "
-        f"presente un profil accessible (Small ou Medium), confirmant une maturite collective "
+        f"présente un profil accessible (Small ou Medium), confirmant une maturité collective "
         f"significative dans l'adoption des outils IA Google Workspace."
     )
 
     add_body_text(
         doc,
-        f"{it_count} use cases ({it_count * 100 // total}%) necessitent un accompagnement IT "
-        f"dedie en raison de dependances systemes (SFDC, SAP, DCS, SCADA, API d'entreprise). "
+        f"{it_count} use cases ({it_count * 100 // total}%) nécessitent un accompagnement IT "
+        f"dédié en raison de dependances systèmes (SFDC, SAP, DCS, SCADA, API d'entreprise). "
         f"Seuls {tiers.get('Large', 0)} projets ({tiers.get('Large', 0) * 100 // total}%) "
-        f"sont classes Large, confirmant que les champions IA restent dans un perimetre "
+        f"sont classes Large, confirmant que les champions IA restent dans un perimêtre "
         f"d'autonomie maitrise."
     )
 
     kpis = [
         ("Use cases analyses", str(total), "Portefeuille complet"),
-        ("Clusters couverts", str(clusters), "Perimetre geographique/organisationnel"),
+        ("Clusters couverts", str(clusters), "Périmètre géographique/organisationnel"),
         ("Familles metier", str(job_families), "Diversite des profils champions"),
         (
             "Quick Wins (Small)",
             str(tiers.get("Small", 0)),
-            f"{tiers.get('Small', 0) * 100 // total}% — Deployables en < 2 semaines",
+            f"{tiers.get('Small', 0) * 100 // total}% — Déployables en < 2 semaines",
         ),
         (
             "Use cases structurants (Medium)",
@@ -643,20 +643,20 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
             f"{tiers.get('Medium', 0) * 100 // total}% — 4 a 8 semaines de delivery",
         ),
         (
-            "Projets strategiques (Large)",
+            "Projets stratégiques (Large)",
             str(tiers.get("Large", 0)),
             f"{tiers.get('Large', 0) * 100 // total}% — 3 a 12 mois, IT implique",
         ),
         ("Points d'attention IT", str(it_count), "Escalade IT obligatoire"),
-        ("Nb moyen d'outils par UC", f"{nb_tools:.1f}", "Proxy de complexite d'integration"),
+        ("Nb moyen d'outils par UC", f"{nb_tools:.1f}", "Proxy de complexité d'integration"),
     ]
     add_kpi_block(doc, kpis)
 
     add_callout(
         doc,
         "La population de champions AI n'est pas une population IT. Les use cases Large ou "
-        "impliquant des systemes d'entreprise (SFDC, SAP, DCS, SCADA) ne peuvent etre conduits "
-        "sans accompagnement technique dedie. Ce constat structure l'ensemble de nos recommandations.",
+        "impliquant des systèmes d'entreprise (SFDC, SAP, DCS, SCADA) ne peuvent être conduits "
+        "sans accompagnement technique dédié. Ce constat structure l'ensemble de nos recommandations.",
         style="warning",
     )
 
@@ -668,20 +668,20 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_section_header(
         doc,
         "04",
-        "Repartition par complexite",
+        "Répartition par complexité",
         "Classification Small / Medium / Large selon 5 dimensions de scoring",
     )
 
     add_body_text(
         doc,
         "Le scoring multi-dimensionnel (5 dimensions, score 5-15) segmente le portefeuille "
-        "en trois tiers de complexite, chacun avec un profil d'accompagnement et un time-to-value "
+        "en trois tiers de complexité, chacun avec un profil d'accompagnement et un time-to-value "
         "distincts."
     )
 
     add_pivot_table(
         doc,
-        "Repartition globale par tier",
+        "Répartition globale par tier",
         ["Tier", "Score", "Label", "Time-to-value", "Nb Use Cases", "Part"],
         [
             [
@@ -695,7 +695,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
                 f"{tiers.get('Medium', 0) * 100 // total}%",
             ],
             [
-                "Large", "12-15", "Projet Strategique", "3-12 mois",
+                "Large", "12-15", "Projet Stratégique", "3-12 mois",
                 str(tiers.get("Large", 0)),
                 f"{tiers.get('Large', 0) * 100 // total}%",
             ],
@@ -739,9 +739,9 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
 
     add_body_text(
         doc,
-        "Observation cle : les familles F3 (Customer & Sales Intelligence) et F7 "
-        "(Data Engineering & Reporting) concentrent la majorite des use cases Medium et Large, "
-        "ce qui reflete la complexite intrinseque des integrations CRM et des pipelines de donnees."
+        "Observation clé : les familles F3 (Customer & Sales Intelligence) et F7 "
+        "(Data Engineering & Reporting) concentrent la majorité des use cases Medium et Large, "
+        "ce qui reflete la complexité intrinsèque des integrations CRM et des pipelines de données."
     )
 
     doc.add_page_break()
@@ -753,7 +753,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         doc,
         "05",
         "Analyse par Cluster",
-        "Repartition geographique et organisationnelle des use cases",
+        "Répartition géographique et organisationnelle des use cases",
     )
 
     add_body_text(
@@ -805,14 +805,14 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         "Automatisation documentaire": (
             "F1",
             "Cette famille regroupe les use cases lies a la generation, "
-            "la traduction, le resume et la redaction automatisee de documents. "
+            "la traduction, le resume et la rédaction automatisee de documents. "
             "Les outils dominants sont Gemini (Prompts/Gems) et NotebookLM, "
             "positionnes sur du no-code/low-code accessibles aux champions.",
         ),
-        "Assistant BI & decisionnel": (
+        "Assistant BI & décisionnel": (
             "F2",
             "Ces use cases exploitent l'IA pour augmenter les capacites d'analyse "
-            "et de decision : tableaux de bord intelligents, analyses predictives, "
+            "et de decision : tableaux de bord intelligents, analyses prédictives, "
             "alertes automatiques sur KPI. Power BI, App Script et Gemini sont les "
             "outils les plus utilises.",
         ),
@@ -821,7 +821,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
             "Famille dense et complexe couvrant l'analyse clients SFDC, "
             "l'optimisation des tournees commerciales, le scoring client et le CRM augmente. "
             "C'est la famille avec le plus grand nombre de use cases Large, "
-            "en raison des integrations systemes requises.",
+            "en raison des integrations systèmes requises.",
         ),
         "Monitoring & Maintenance industrielle": (
             "F4",
@@ -840,15 +840,15 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
             "F6",
             "Automatisation de processus administratifs et operationnels via "
             "App Script, Workspace Studio (ex-Flows) et AppSheet. "
-            "Cette famille presente le meilleur ratio Small/Medium, "
+            "Cette famille présente le meilleur ratio Small/Medium, "
             "confirmant son accessibilite aux champions non-IT.",
         ),
         "Data Engineering & Reporting": (
             "F7",
-            "Famille la plus technique : pipelines de donnees, extraction/transformation, "
+            "Famille la plus technique : pipelines de données, extraction/transformation, "
             "reporting avance via Power BI et Python (Fabric, DataStudio). "
             "Les competences requises depassent souvent le profil champion standard, "
-            "necessitant un track 'Data Champion' dedie.",
+            "necessitant un track 'Data Champion' dédié.",
         ),
     }
 
@@ -880,7 +880,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         add_bullet(
             doc,
             f"{tier_s.get('Small', 0)} Small / {tier_s.get('Medium', 0)} Medium / {tier_s.get('Large', 0)} Large",
-            "Repartition",
+            "Répartition",
         )
         it_sub = (subset["IT_Flag"] != "").sum()
         if it_sub > 0:
@@ -916,7 +916,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         doc,
         "07",
         "Architectures de reference",
-        "Stack cible Google-first par niveau de complexite",
+        "Stack cible Google-first par niveau de complexité",
     )
 
     add_body_text(
@@ -952,9 +952,9 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_sub_heading(doc, "Medium — App & Orchestration")
     add_body_text(
         doc,
-        "Les use cases Medium necessitent des outils low-code/semi-code et des appels API. "
+        "Les use cases Medium nécessitent des outils low-code/semi-code et des appels API. "
         "Le champion travaille avec un support IT local ponctuel, notamment pour les "
-        "connexions à des systemes d'entreprise."
+        "connexions à des systèmes d'entreprise."
     )
     add_pivot_table(
         doc,
@@ -962,7 +962,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         ["Composant", "Detail"],
         [
             ["Outils", "App Script, AppSheet, AI Studio, Workspace Studio"],
-            ["Donnees", "Google Sheets, AppSheet (donnees structurees)"],
+            ["Donnees", "Google Sheets, AppSheet (données structurees)"],
             ["Sortie", "AppSheet App, Google Slides/Docs"],
             ["Competence", "Low-code + appels API basiques"],
             ["Gouvernance", "Champion + support IT local ponctuel"],
@@ -974,9 +974,9 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_sub_heading(doc, "Large — Platform & Agent")
     add_body_text(
         doc,
-        "Les use cases Large impliquent des architectures multi-systemes, du code custom, "
-        "et souvent des donnees temps reel ou industrielles. Ce sont des projets IT formels "
-        "avec budget et gouvernance dedies."
+        "Les use cases Large impliquent des architectures multi-systèmes, du code custom, "
+        "et souvent des données temps reel ou industrielles. Ce sont des projets IT formels "
+        "avec budget et gouvernance dédiés."
     )
     add_pivot_table(
         doc,
@@ -989,7 +989,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
             ["Orchestration", "Advance Coding (backend API / Cloud Run)"],
             ["Frontend", "Web App (AppSheet Pro), Power BI Embedded"],
             ["Competence", "Full-stack + ML engineering"],
-            ["Gouvernance", "Projet IT formel + Champion metier + budget dedie"],
+            ["Gouvernance", "Projet IT formel + Champion metier + budget dédié"],
         ],
     )
 
@@ -1002,14 +1002,14 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         doc,
         "08",
         "Points d'attention IT",
-        f"{it_count} use cases necessitant un accompagnement technique dedie",
+        f"{it_count} use cases necessitant un accompagnement technique dédié",
     )
 
     add_callout(
         doc,
-        "Ces use cases impliquent des dependances systemes (SFDC, SAP, DCS, SCADA, BigQuery, API) "
+        "Ces use cases impliquent des dependances systèmes (SFDC, SAP, DCS, SCADA, BigQuery, API) "
         "ou ont un profil Large qui depasse les capacites d'un champion seul. "
-        "Une coordination avec les equipes IT locales est obligatoire avant tout deploiement.",
+        "Une coordination avec les equipes IT locales est obligatoire avant tout déploiement.",
         style="warning",
     )
 
@@ -1035,7 +1035,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_bullet(doc, "Connexion a un systeme d'entreprise (ERP, CRM, SCADA, BI enterprise)", "Systeme")
     add_bullet(doc, "Authentification / gestion des droits (SSO, API keys, OAuth)", "Securite")
     add_bullet(doc, "Hebergement hors Google Workspace (Cloud Run, Vertex AI, BDD)", "Infra")
-    add_bullet(doc, "Volume de donnees > ce qu'un Google Sheet peut supporter (>100K lignes)", "Donnees")
+    add_bullet(doc, "Volume de données > ce qu'un Google Sheet peut supporter (>100K lignes)", "Donnees")
     add_bullet(doc, "Outil utilise par plus de 10 personnes", "Echelle")
 
     # Top 15 use cases IT
@@ -1076,7 +1076,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_section_header(
         doc,
         "09",
-        "Recommandations strategiques",
+        "Recommandations stratégiques",
         "5 axes prioritaires pour industrialiser le portefeuille AI Champions",
     )
 
@@ -1097,7 +1097,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         ),
         (
             "Structurer l'accompagnement des Medium",
-            f"{tiers.get('Medium', 0)} use cases Medium necessitent un encadrement leger "
+            f"{tiers.get('Medium', 0)} use cases Medium nécessitent un encadrement leger "
             "(champion + support IT local). "
             "Action : mettre en place des sprints de 4 semaines avec un champion referent par cluster. "
             "NotebookLM et App Script sont les vecteurs principaux pour ces cas. "
@@ -1105,14 +1105,14 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         ),
         (
             "Creer une filiere IT pour les Large",
-            f"{tiers.get('Large', 0)} projets strategiques necessitent une equipe projet dediee. "
+            f"{tiers.get('Large', 0)} projets stratégiques nécessitent une equipe projet dédiée. "
             "Action : identifier les sponsors metier et les correspondants IT pour chaque projet. "
             "Investissements 3-12 mois avec governance de programme. "
             "Indicateur : nombre de projets Large lances avec sponsor identifie.",
         ),
         (
             "Adresser les points d'attention IT",
-            f"{it_count} use cases presentent des dependances systemes critiques. "
+            f"{it_count} use cases présentent des dependances systèmes critiques. "
             "Action : organiser un atelier de priorisation avec les equipes IT avant tout engagement. "
             "Creer un registre de dependances partage entre les champions et l'IT. "
             "Indicateur : taux de resolution des blocages IT en 30 jours.",
@@ -1171,14 +1171,14 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_body_text(
         doc,
         "Les prompts Gemini sont des actifs metier au meme titre qu'une procedure operationnelle. "
-        "Ils doivent etre stockes, versionnes et documentes."
+        "Ils doivent être stockes, versionnes et documentes."
     )
     add_pivot_table(
         doc,
         "",
         ["Pratique", "Comment faire (sans IT)"],
         [
-            ["Stocker les prompts", "Google Doc dedie par use case, pas dans le chat Gemini"],
+            ["Stocker les prompts", "Google Doc dédié par use case, pas dans le chat Gemini"],
             ["Versionner", "Naming : Prompt_V1.0_AAAA-MM-JJ dans le titre du Doc"],
             ["Documenter le contexte", "En-tete : objectif, audience, exemples input/output"],
             ["Centraliser", "Google Drive partage AI Champions / Prompts Library"],
@@ -1203,7 +1203,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
             ["Pas de secrets en clair", "Utiliser PropertiesService.getScriptProperties()"],
             ["Creer un README", "Expliquer ce que fait le script, comment le lancer"],
             ["Sauvegarder avant modification", "Copier dans un Doc Archive avec la date"],
-            ["Tester sur donnees fictives", "Jamais directement sur la production"],
+            ["Tester sur données fictives", "Jamais directement sur la production"],
         ],
     )
 
@@ -1216,7 +1216,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         [
             ["Documenter les sources et leur date", "NotebookLM n'est pas a jour automatiquement"],
             ["Sources structurees (PDF, Doc)", "Ameliore la qualite des reponses"],
-            ["1 Notebook par perimetre", "Eviter les notebooks fourre-tout"],
+            ["1 Notebook par perimêtre", "Eviter les notebooks fourre-tout"],
             ["Rafraichir les sources trimestriellement", "Sources obsoletes = reponses incorrectes"],
         ],
     )
@@ -1245,7 +1245,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
             ["Donnees sensibles (RH, financieres, clients)", "Verifier avec le DPO / Legal"],
             ["Le script plante regulierement", "Qualifier en Large, escalader"],
             ["Utilise par plus de 10 personnes", "Passer en Medium/Large, documenter formellement"],
-            ["Besoin de fiabilite 24/7", "Hors perimetre champion -> projet IT"],
+            ["Besoin de fiabilite 24/7", "Hors perimêtre champion -> projet IT"],
         ],
     )
 
@@ -1266,7 +1266,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         "La feuille de route ci-dessous propose un cadencement progressif, "
         "en commencant par les Quick Wins a fort impact et faible effort, "
         "puis en structurant l'accompagnement des use cases Medium, "
-        "avant de lancer les projets strategiques Large."
+        "avant de lancer les projets stratégiques Large."
     )
 
     add_pivot_table(
@@ -1304,7 +1304,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
 
     add_callout(
         doc,
-        "Cette feuille de route est indicative et devra etre adaptee en fonction "
+        "Cette feuille de route est indicative et devra être adaptee en fonction "
         "des priorites de chaque cluster et des ressources IT disponibles. "
         "Un point d'avancement trimestriel est recommande.",
         style="info",

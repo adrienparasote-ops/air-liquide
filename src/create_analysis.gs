@@ -28,7 +28,7 @@ function onOpen() {
     .createMenu("🤖 AI Champions")
     .addItem("▶ Analyse complète (Synthèse + Graphiques)", "runFullAnalysis")
     .addSeparator()
-    .addItem("📊 Créer les tableaux de synthèse", "runSyntheseOnly")
+    .addItem("📊 Créer les tableaux de synthèse", "runSynthèseOnly")
     .addItem("📈 Créer les graphiques", "runGraphiquesOnly")
     .addSeparator()
     .addItem("🗑️ Réinitialiser (supprimer les onglets)", "resetSheets")
@@ -41,7 +41,7 @@ function runFullAnalysis() {
 }
 
 /** Crée uniquement l'onglet Synthèse. */
-function runSyntheseOnly() {
+function runSynthèseOnly() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const existing = ss.getSheetByName("Synthèse");
   if (existing) ss.deleteSheet(existing);
@@ -50,7 +50,7 @@ function runSyntheseOnly() {
   if (!rows) return;
 
   const synthSheet = ss.insertSheet("Synthèse");
-  buildSynthese(synthSheet, rows, col);
+  buildSynthèse(synthSheet, rows, col);
   ss.setActiveSheet(synthSheet);
   SpreadsheetApp.getUi().alert("✅ Onglet 'Synthèse' créé avec les tableaux croisés.");
 }
@@ -160,7 +160,7 @@ function createAnalysis() {
   const synthSheet  = ss.insertSheet("Synthèse");
   const chartSheet  = ss.insertSheet("Graphiques");
 
-  buildSynthese(synthSheet, rows, col);
+  buildSynthèse(synthSheet, rows, col);
   buildGraphiques(ss, chartSheet, rows, col);
 
   ss.setActiveSheet(synthSheet);
@@ -172,7 +172,7 @@ function createAnalysis() {
 // ONGLET SYNTHÈSE
 // ════════════════════════════════════════════════════════════════════════════
 
-function buildSynthese(sheet, rows, col) {
+function buildSynthèse(sheet, rows, col) {
   sheet.setTabColor(COLORS.blue_dark);
   sheet.setColumnWidth(1, 280);
   for (let c = 2; c <= 6; c++) sheet.setColumnWidth(c, 100);
