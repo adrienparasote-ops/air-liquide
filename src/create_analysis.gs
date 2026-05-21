@@ -498,8 +498,15 @@ function buildGraphiques(ss, sheet, rows, col) {
   dataRow += 2;
 
   // ─ D6 : IT par famille ────────────────────────────────────────────────────
+  let itFlagCol = "IT_Flag";
+  if (col[itFlagCol] === undefined) {
+    Object.keys(col).forEach(k => {
+      if (k.trim().toLowerCase().replace(" ", "_") === "it_flag") itFlagCol = k;
+    });
+  }
+
   const itRows = rows.filter(r => {
-    const val = col["IT_Flag"] !== undefined ? String(r[col["IT_Flag"]] || "") : "";
+    const val = col[itFlagCol] !== undefined ? String(r[col[itFlagCol]] || "") : "";
     return val.indexOf("IT") !== -1;
   });
   const itFamCounts = countBy(itRows, col["Family_Label"]);
@@ -508,11 +515,21 @@ function buildGraphiques(ss, sheet, rows, col) {
   sheet.getRange(dataRow, DATA_START_COL).setValue("Famille");
   sheet.getRange(dataRow, DATA_START_COL+1).setValue("Nb IT");
   dataRow++;
-  sortedIT.forEach(([fam, cnt]) => {
-    sheet.getRange(dataRow, DATA_START_COL).setValue(fam);
-    sheet.getRange(dataRow, DATA_START_COL+1).setValue(cnt);
+  
+  if (sortedIT.length === 0) {
+    sheet.getRange(dataRow, DATA_START_COL).setValue("Aucune donnée IT");
+    sheet.getRange(dataRow, DATA_START_COL+1).setValue(0);
     dataRow++;
-  });
+    if (col[itFlagCol] === undefined) {
+      SpreadsheetApp.getUi().alert("⚠️ La colonne 'IT_Flag' est introuvable dans l'onglet Catalogue.\n\nAvez-vous bien collé les données du dernier fichier Excel généré ?\nLe graphique 6 sera vide en attendant.");
+    }
+  } else {
+    sortedIT.forEach(([fam, cnt]) => {
+      sheet.getRange(dataRow, DATA_START_COL).setValue(fam);
+      sheet.getRange(dataRow, DATA_START_COL+1).setValue(cnt);
+      dataRow++;
+    });
+  }
   const D6_END = dataRow - 1;
 
   // ── Créer les 6 graphiques ─────────────────────────────────────────────────
