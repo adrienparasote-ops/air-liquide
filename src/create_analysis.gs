@@ -498,7 +498,10 @@ function buildGraphiques(ss, sheet, rows, col) {
   dataRow += 2;
 
   // ─ D6 : IT par famille ────────────────────────────────────────────────────
-  const itRows = rows.filter(r => String(r[col["IT_Flag"]]) === "⚠️ IT");
+  const itRows = rows.filter(r => {
+    const val = col["IT_Flag"] !== undefined ? String(r[col["IT_Flag"]] || "") : "";
+    return val.indexOf("IT") !== -1;
+  });
   const itFamCounts = countBy(itRows, col["Family_Label"]);
   const sortedIT = Object.entries(itFamCounts).sort((a,b) => b[1]-a[1]);
   const D6_ROW = dataRow;
