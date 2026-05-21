@@ -19,3 +19,17 @@
 - **Source:** Air Liquide — generate_docx.py / generate_pptx.py
 - **Evidence:** French f-strings with accented characters (e.g., `f"…à réaliser…"`) can introduce syntax errors if quotes or escape sequences are misaligned during a multi-replace. Compile check catches this in <1s before running the full generation (which takes 30s+).
 - **Fix:** Always run `python3 -m py_compile <file>` immediately after any string correction pass, before executing the script.
+
+### L085: PyltechDeck template methods block font-size control — rebuild manually
+- **Date:** 2026-05-22
+- **Source:** Air Liquide — generate_pptx.py layout corrections (slides 05, 12)
+- **Evidence:** `add_content_3_blocs` and `add_content_4_blocs_horiz` use fixed font sizes baked into the PPTX master — 2 rework iterations on slide 12 (first attempt used template, second rebuilt manually). Manual rebuild with `add_content_card(body_font_size=13)` resolved in 1 pass.
+- **Anti-pattern:** Using `deck.add_content_N_blocs(...)` when the spec requires a specific body font size. The template method locks all text to the master's default size.
+- **Fix:** When `body_font_size` matters (>11pt or explicit spec requirement), use `deck.add_schema()` + `add_content_card(..., body_font_size=N)` instead of template shortcuts. Check font control requirement BEFORE choosing the layout method.
+
+### L086: PPTX card line_h must account for word-wrap on narrow cards
+- **Date:** 2026-05-22
+- **Source:** Air Liquide — generate_pptx.py (slides 05, 08, 21)
+- **Evidence:** With `body_font_size=13` and card width ≤ 3.0", bullet text wraps to 2 lines. `line_h=0.6"` caused the next bullet to overlap the wrapped line. Increasing to `line_h=0.78"` eliminated all overlap in 1 pass.
+- **Pattern:** For `body_font_size > 11`, set `line_h = Inches(0.78)` (not 0.42"). For card widths < 3.0" at any font size, pre-verify: (card_width - 0.3") / (font_size_pt × 0.014) ≈ chars per line. If a bullet exceeds this → it wraps → increase line_h.
+- **Fix:** Add font-size/card-width → line_h mapping to `add_content_card` as a lookup table instead of a binary `if body_font_size <= 11`.
