@@ -6,7 +6,7 @@ Genere la presentation PowerPoint (.pptx) Air Liquide — AI Champions
 avec la charte graphique officielle Pyl.Tech.
 
 Style : Presentation de consulting — cabinet Tier-1 (contexte mission,
-        methodologie, framework d'analyse, architecture, recommandations).
+        méthodologie, framework d'analyse, architecture, recommandations).
 
 Usage : python3 src/generate_pptx.py
 Output: docs/presentation_ai_champions.pptx
@@ -477,7 +477,7 @@ def build_sommaire(prs: Presentation, page: int) -> None:
         ("05", "Familles fonctionnelles"),
         ("06", "Répartition par Cluster"),
         ("07", "Points d'attention IT"),
-        ("08", "Architectures de reference"),
+        ("08", "Architectures de référence"),
         ("09", "Top Quick Wins"),
         ("10", "Recommandations et Roadmap"),
         ("11", "Bonnes pratiques AI Champions"),
@@ -676,7 +676,7 @@ def build_framework_slide(prs: Presentation, page: int) -> None:
         ["Dimension", "1 pt (Faible)", "2 pts (Moyen)", "3 pts (Élevé)"],
         [
             [
-                "D1 Integration technique",
+                "D1 Intégration technique",
                 "1 outil, no-code (L1/L2)",
                 "2-3 outils, semi-code (L3)",
                 "4+ outils, code custom (L4)",
@@ -1050,7 +1050,7 @@ def build_architecture_slide(prs: Presentation, page: int) -> None:
     add_slide_header(
         slide,
         "08",
-        "Architectures de reference",
+        "Architectures de référence",
         "Stack cible Google-first par niveau de complexité",
         page,
     )
@@ -1108,7 +1108,7 @@ def build_quickwins_slide(prs: Presentation, df: pd.DataFrame, page: int) -> Non
         slide,
         "09",
         "Top Quick Wins",
-        "Use cases Small (1 outil) a deployer en priorite",
+        "Use cases Small (1 outil) a déployer en priorite",
         page,
     )
 
@@ -1428,7 +1428,7 @@ def main() -> None:
         "08 — Familles fonctionnelles",
         "09 — Répartition par cluster",
         "10 — Points d'attention IT",
-        "11 — Architectures de reference (3 tiers)",
+        "11 — Architectures de référence (3 tiers)",
         "12 — Top Quick Wins",
         "13 — Recommandations & Roadmap",
         "14 — Bonnes pratiques AI Champions",

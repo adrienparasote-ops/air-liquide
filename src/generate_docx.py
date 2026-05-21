@@ -486,10 +486,10 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         "Les 7 familles fonctionnelles",
         ["Code", "Famille", "Description"],
         [
-            ["F1", "Automatisation documentaire", "Génération, traduction, resume, rédaction de documents"],
+            ["F1", "Automatisation documentaire", "Génération, traduction, résumé, rédaction de documents"],
             ["F2", "Assistant BI et décisionnel", "Dashboards, analyses prédictives, alertes KPI"],
             ["F3", "Customer & Sales Intelligence", "Analyse clients, optimisation visites, scoring CRM"],
-            ["F4", "Monitoring & Maintenance", "Prediction de pannes, analyse capteurs, surveillance process"],
+            ["F4", "Monitoring & Maintenance", "Prédiction de pannes, analyse capteurs, surveillance process"],
             ["F5", "Knowledge Management", "FAQ, onboarding, bases de connaissances, chatbots formation"],
             ["F6", "Automatisation de workflows", "Scripts, flows, integrations Google/Office"],
             ["F7", "Data Engineering & Reporting", "Pipelines de données, ETL, visualisation, Power BI"],
@@ -511,7 +511,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         ["Dimension", "1 pt (Faible)", "2 pts (Moyen)", "3 pts (Élevé)"],
         [
             [
-                "D1 — Integration technique",
+                "D1 — Intégration technique",
                 "1 outil, no-code (L1/L2)",
                 "2-3 outils, semi-code (L3)",
                 "4+ outils, code custom (L4)",
@@ -532,7 +532,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
                 "D4 — Maturite IA requise",
                 "Prompting / Gem / NotebookLM",
                 "API Gemini + RAG basique",
-                "Agent multi-etapes / ML",
+                "Agent multi-étapes / ML",
             ],
             [
                 "D5 — Impact économique declare",
@@ -545,7 +545,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
 
     add_body_text(
         doc,
-        "Le score total determine le tier de complexité :"
+        "Le score total détermine le tier de complexité :"
     )
 
     add_pivot_table(
@@ -606,7 +606,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         doc,
         "03",
         "Synthèse du portefeuille",
-        "Vue d'ensemble des resultats de l'analyse",
+        "Vue d'ensemble des résultats de l'analyse",
     )
 
     add_body_text(
@@ -648,7 +648,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
             f"{tiers.get('Large', 0) * 100 // total}% — 3 a 12 mois, IT implique",
         ),
         ("Points d'attention IT", str(it_count), "Escalade IT obligatoire"),
-        ("Nb moyen d'outils par UC", f"{nb_tools:.1f}", "Proxy de complexité d'integration"),
+        ("Nb moyen d'outils par UC", f"{nb_tools:.1f}", "Proxy de complexité d'intégration"),
     ]
     add_kpi_block(doc, kpis)
 
@@ -805,7 +805,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         "Automatisation documentaire": (
             "F1",
             "Cette famille regroupe les use cases lies a la generation, "
-            "la traduction, le resume et la rédaction automatisee de documents. "
+            "la traduction, le résumé et la rédaction automatisee de documents. "
             "Les outils dominants sont Gemini (Prompts/Gems) et NotebookLM, "
             "positionnes sur du no-code/low-code accessibles aux champions.",
         ),
@@ -826,14 +826,14 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         "Monitoring & Maintenance industrielle": (
             "F4",
             "Use cases lies a la surveillance des equipements industriels, "
-            "la prediction de pannes, l'analyse de capteurs (DCS, SCADA, AVEVA). "
+            "la prédiction de pannes, l'analyse de capteurs (DCS, SCADA, AVEVA). "
             "Cette famille concentre les cas les plus techniquement complexes "
             "et les plus dependants de l'IT.",
         ),
         "Knowledge Management & Formation": (
             "F5",
             "Bases de connaissances intelligentes, FAQ automatisees, chatbots de formation, "
-            "onboarding assiste par IA. NotebookLM est l'outil de reference pour ces use cases, "
+            "onboarding assiste par IA. NotebookLM est l'outil de référence pour ces use cases, "
             "offrant un acces no-code aux champions.",
         ),
         "Automatisation de workflows internes": (
@@ -915,7 +915,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_section_header(
         doc,
         "07",
-        "Architectures de reference",
+        "Architectures de référence",
         "Stack cible Google-first par niveau de complexité",
     )
 
@@ -1036,7 +1036,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_bullet(doc, "Authentification / gestion des droits (SSO, API keys, OAuth)", "Securite")
     add_bullet(doc, "Hebergement hors Google Workspace (Cloud Run, Vertex AI, BDD)", "Infra")
     add_bullet(doc, "Volume de données > ce qu'un Google Sheet peut supporter (>100K lignes)", "Donnees")
-    add_bullet(doc, "Outil utilise par plus de 10 personnes", "Echelle")
+    add_bullet(doc, "Outil utilise par plus de 10 personnes", "Échelle")
 
     # Top 15 use cases IT
     p_h = doc.add_paragraph(
@@ -1182,7 +1182,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
             ["Versionner", "Naming : Prompt_V1.0_AAAA-MM-JJ dans le titre du Doc"],
             ["Documenter le contexte", "En-tete : objectif, audience, exemples input/output"],
             ["Centraliser", "Google Drive partage AI Champions / Prompts Library"],
-            ["Tester avant de deployer", "3 exemples reels avant de partager un Gem"],
+            ["Tester avant de déployer", "3 exemples reels avant de partager un Gem"],
         ],
     )
 
