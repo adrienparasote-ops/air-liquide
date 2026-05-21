@@ -11,10 +11,7 @@ __pycache__/
 # OS
 .DS_Store
 
-# Fichiers générés (ne pas versionner les outputs binaires volumineux)
-docs/use_cases_catalog.xlsx
-docs/rapport_ai_champions.docx
-docs/presentation_ai_champions.pptx
+# Fichiers générés
 output/
 
 # Agents (installation locale)
@@ -27,8 +24,6 @@ assets/Advanced AI Champions - Action Monitoring.xlsx
 brain/
 .sc-verify-passed
 .tdd_lock
-.sc-doc-updated
-.sc-refactor-clean
-.sc-learn-eval
+.sc-*
 .specconformance
 

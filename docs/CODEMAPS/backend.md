@@ -18,13 +18,13 @@ Raw Excel (`assets/`) → `generate_catalog.py` → Cleaned Excel (`output/`) �
   - `it_attention(desc, tags, tier)`: Scans for enterprise security triggers (ssbi, db, cloud, sap).
 
 ### Document Generator
-* **File**: `src/generate_docx.py` (~720 lines)
-* **Responsibility**: Reads the cleaned Excel catalog and generates the corporate DOCX report with styled tables, statistics, and domain recommendations.
+* **File**: `src/generate_docx.py` (~1352 lines)
+* **Responsibility**: Reads the cleaned Excel catalog and generates the corporate DOCX report with styled tables, statistics, and domain recommendations. All French text strings are fully accented (corrected 2026-05-21).
 * **Key Libraries**: `python-docx`
 
 ### Presentation Generator
-* **File**: `src/generate_pptx.py` (~690 lines)
-* **Responsibility**: Reads the cleaned Excel catalog and creates a styled slideshow based on custom layout coordinates and the corporate theme.
+* **File**: `src/generate_pptx.py` (~1442 lines)
+* **Responsibility**: Reads the cleaned Excel catalog and creates a styled slideshow based on custom layout coordinates and the corporate theme. All French text strings are fully accented (corrected 2026-05-21).
 * **Key Libraries**: `python-pptx`
 
 ## Test Suite
