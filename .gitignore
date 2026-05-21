@@ -19,3 +19,6 @@ docs/presentation_ai_champions.pptx
 # Agents (installation locale)
 .agents/
 GEMINI.md
+.sentrux/rules.toml
+.gitignore
+assets/Advanced AI Champions - Action Monitoring.xlsx
