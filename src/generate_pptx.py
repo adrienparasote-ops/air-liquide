@@ -466,7 +466,7 @@ def build_sommaire(prs: Presentation, page: int) -> None:
     """Slide Sommaire — plan du document."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_slide_header(
-        slide, "", "Sommaire", "Plan de la presentation", page
+        slide, "", "Sommaire", "Plan de la présentation", page
     )
 
     sections = [
@@ -531,16 +531,16 @@ def build_context_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
         Inches(1.8),
         Inches(6.0),
         Inches(1.2),
-        f"Air Liquide a mobilise ses AI Champions — profils metiers, non-IT — "
-        f"pour explorer l'IA dans leurs activites. {total} use cases "
-        f"ont ete collectes sur l'ensemble des clusters du groupe.",
+        f"Air Liquide a mobilisé ses AI Champions — profils métiers, non-IT — "
+        f"pour explorer l'IA dans leurs activités. {total} use cases "
+        f"ont été collectés sur l'ensemble des clusters du groupe.",
         font_size=13,
         color=PYL_BODY_GREY,
     )
 
     # 4 objectifs en cards
     objectives = [
-        ("Comprendre", "Regroupement thematique en familles fonctionnelles transverses"),
+        ("Comprendre", "Regroupement thématique en familles fonctionnelles transverses"),
         ("Qualifier", "Scoring multi-dimensionnel : Small / Medium / Large"),
         ("Projeter", "Architecture cible Google-first par niveau de complexité"),
         ("Guider", "Recommandations et bonnes pratiques pour les champions"),
@@ -581,10 +581,10 @@ def build_context_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
     )
 
     perim_items = [
-        f"{total} use cases analyses",
+        f"{total} use cases analysés",
         f"{df['Cluster'].nunique()} clusters géographiques/organisationnels",
-        f"{df['Job Family'].nunique()} familles metier",
-        "11 outils distincts identifies",
+        f"{df['Job Family'].nunique()} familles métier",
+        "11 outils distincts identifiés",
         "Source : Advanced AI Champions - Action Monitoring.xlsx",
     ]
     for j, item in enumerate(perim_items):
@@ -607,16 +607,16 @@ def build_methodology_slide(prs: Presentation, page: int) -> None:
         slide,
         "02",
         "Méthodologie d'analyse",
-        "Approche en 6 phases pour qualifier le portefeuille AI Champions",
+        "Approche en 6 phases pour qualifier le portefeuille des AI Champions",
         page,
     )
 
     phases = [
         ("Phase 1", "Audit & Nettoyage", "Traitement des anomalies, normalisation, UC_ID", PYL_NAVY),
-        ("Phase 2", "Classification", "Analyse semantique en 7 familles fonctionnelles", PYL_TEAL_BLUE),
+        ("Phase 2", "Classification", "Analyse sémantique en 7 familles fonctionnelles", PYL_TEAL_BLUE),
         ("Phase 3", "Scoring", "5 dimensions x 3 niveaux = score 5-15", PYL_TEAL),
-        ("Phase 4", "Detection IT", "Identification des dependances systèmes", PYL_DANGER),
-        ("Phase 5", "Architecture", "Stack Google-first par tier de complexité", PYL_YELLOW),
+        ("Phase 4", "Détection IT", "Identification des dépendances systèmes", PYL_DANGER),
+        ("Phase 5", "Architecture", "Stack Google-first par niveau de complexité", PYL_YELLOW),
         ("Phase 6", "Recommandations", "Bonnes pratiques et feuille de route", PYL_SUCCESS),
     ]
 
@@ -648,7 +648,7 @@ def build_methodology_slide(prs: Presentation, page: int) -> None:
         Inches(6.6),
         Inches(12.3),
         Inches(0.4),
-        "Audit  ->  Classification  ->  Scoring  ->  Detection IT  ->  Architecture  ->  Recommandations",
+        "Audit  →  Classification  →  Scoring  →  Détection IT  →  Architecture  →  Recommandations",
         font_size=12,
         bold=True,
         color=PYL_TEAL_BLUE,
@@ -663,7 +663,7 @@ def build_framework_slide(prs: Presentation, page: int) -> None:
         slide,
         "02",
         "Cadre d'analyse : scoring multi-dimensionnel",
-        "5 dimensions x 3 niveaux = score 5 a 15 points",
+        "5 dimensions x 3 niveaux = score 5 à 15 points",
         page,
     )
 
@@ -683,25 +683,25 @@ def build_framework_slide(prs: Presentation, page: int) -> None:
             ],
             [
                 "D2 Périmètre organisationnel",
-                "Equipe locale",
+                "Équipe locale",
                 "Country / Cluster",
                 "Group (global)",
             ],
             [
-                "D3 Complexite data",
-                "Donnees statiques",
-                "Donnees connectees (SFDC, BI)",
-                "Temps reel / industrielles",
+                "D3 Complexité données",
+                "Données statiques",
+                "Données connectées (SFDC, BI)",
+                "Temps réel / industrielles",
             ],
             [
-                "D4 Maturite IA",
+                "D4 Maturité IA",
                 "Prompting / Gem",
                 "API Gemini + RAG",
                 "Agent / ML / fine-tuning",
             ],
             [
                 "D5 Impact économique",
-                "Non évalué / Productivite",
+                "Non évalué / Productivité",
                 "Cost Reduction",
                 "Revenue Growth",
             ],
@@ -712,7 +712,7 @@ def build_framework_slide(prs: Presentation, page: int) -> None:
     tiers_info = [
         ("Small (5-7)", "Quick Win", "< 2 sem.", "Champion seul", PYL_SUCCESS),
         ("Medium (8-11)", "Structurant", "4-8 sem.", "Champion + IT", PYL_TEAL_BLUE),
-        ("Large (12-15)", "Stratégique", "3-12 mois", "Equipe IT", PYL_DANGER),
+        ("Large (12-15)", "Stratégique", "3-12 mois", "Équipe IT", PYL_DANGER),
     ]
 
     CARD_W = Inches(3.9)
@@ -740,7 +740,7 @@ def build_kpi_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
         slide,
         "03",
         "Chiffres clés du portefeuille",
-        f"{len(df)} use cases analyses sur l'ensemble des clusters Air Liquide",
+        f"{len(df)} use cases analysés sur l'ensemble des clusters Air Liquide",
         page,
     )
 
@@ -755,8 +755,8 @@ def build_kpi_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
     GAP = Inches(0.1)
 
     cards = [
-        ("Use Cases analyses", str(total), "Portefeuille complet", PYL_NAVY, PYL_YELLOW),
-        ("Clusters couverts", str(clusters), "Périmètre organisationnel", PYL_NAVY, PYL_TEAL_BLUE),
+        ("Use Cases analysés", str(total), "Portefeuille complet", PYL_NAVY, PYL_YELLOW),
+        ("Clusters couverts", str(clusters), "Périmètre géographique", PYL_NAVY, PYL_TEAL_BLUE),
         ("Quick Wins (Small)", str(tiers.get("Small", 0)), "< 2 semaines", PYL_SUCCESS, PYL_SUCCESS),
         ("Structurants (Medium)", str(tiers.get("Medium", 0)), "4-8 semaines", PYL_TEAL, PYL_TEAL),
         ("Stratégiques (Large)", str(tiers.get("Large", 0)), "3-12 mois", PYL_DANGER, PYL_DANGER),
@@ -785,7 +785,7 @@ def build_kpi_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
         Inches(4.1),
         Inches(12.3),
         Inches(0.4),
-        f"{pct_accessible}% des use cases sont deployables sans ressources IT lourdes (Small ou Medium)",
+        f"{pct_accessible}% des use cases sont déployables sans ressources IT lourdes (Small ou Medium)",
         font_size=13,
         bold=True,
         color=PYL_NAVY_DARK,
@@ -808,7 +808,7 @@ def build_kpi_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
         f"Constat clé : la majorité du portefeuille ({tiers.get('Small', 0) + tiers.get('Medium', 0)} UC) "
         f"représente des opportunités de déploiement rapide avec Google Workspace. "
         f"Seuls {tiers.get('Large', 0)} projets nécessitent un engagement long terme avec l'IT. "
-        f"{it_count} UC ont des dependances systèmes qui requièrent une escalade obligatoire."
+        f"{it_count} UC ont des dépendances systèmes qui requièrent une escalade obligatoire."
     )
     run.font.name = "Poppins"
     run.font.size = Pt(12)
@@ -832,7 +832,7 @@ def build_complexity_slide(prs: Presentation, df: pd.DataFrame, page: int) -> No
     tier_data = [
         ("Small", tiers.get("Small", 0), "Quick Win", "< 2 sem.", "1 champion, no-code", PYL_SUCCESS),
         ("Medium", tiers.get("Medium", 0), "Use Case Structurant", "4-8 sem.", "Champion + IT local", PYL_TEAL_BLUE),
-        ("Large", tiers.get("Large", 0), "Projet Stratégique", "3-12 mois", "Equipe IT + Champion", PYL_DANGER),
+        ("Large", tiers.get("Large", 0), "Projet Stratégique", "3-12 mois", "Équipe IT + Champion", PYL_DANGER),
     ]
 
     CARD_W = Inches(3.9)
@@ -972,7 +972,7 @@ def build_it_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None:
         slide,
         "07",
         f"{it_count} points d'attention IT",
-        "Use cases necessitant un accompagnement technique dédié",
+        "Use cases nécessitant un accompagnement technique dédié",
         page,
     )
 
@@ -1063,7 +1063,7 @@ def build_architecture_slide(prs: Presentation, page: int) -> None:
                 "Outils : Gemini Gems, NotebookLM",
                 "Data : Google Drive / Sheets (statique)",
                 "Output : Docs / Gmail / Chat",
-                "Competence : Prompt engineering",
+                "Compétence : Prompt engineering",
                 "IT : Aucune intervention requise",
             ],
         ),
@@ -1072,9 +1072,9 @@ def build_architecture_slide(prs: Presentation, page: int) -> None:
             "Medium — App & Orchestration",
             [
                 "Outils : App Script, AppSheet, AI Studio",
-                "Data : Sheets, AppSheet (structurees)",
+                "Data : Sheets, AppSheet (structurées)",
                 "Output : AppSheet App, Slides/Docs",
-                "Competence : Low-code + API basiques",
+                "Compétence : Low-code + API basiques",
                 "IT : Support ponctuel si SFDC/BI",
             ],
         ),
@@ -1086,7 +1086,7 @@ def build_architecture_slide(prs: Presentation, page: int) -> None:
                 "Ingestion : Python, BigQuery, DataStudio",
                 "AI : Vertex AI + RAG + Agents Gemini",
                 "Backend : Cloud Run, Advance Coding",
-                "IT : Equipe projet dédiée obligatoire",
+                "IT : Équipe projet dédiée obligatoire",
             ],
         ),
     ]
@@ -1108,7 +1108,7 @@ def build_quickwins_slide(prs: Presentation, df: pd.DataFrame, page: int) -> Non
         slide,
         "09",
         "Top Quick Wins",
-        "Use cases Small (1 outil) a déployer en priorite",
+        "Use cases Small (1 outil) à déployer en priorité",
         page,
     )
 
@@ -1162,8 +1162,8 @@ def build_recommendations_slide(
             PYL_SUCCESS,
             "Industrialiser les Quick Wins",
             [
-                f"{tiers.get('Small', 0)} UC deployables immediatement",
-                "Bibliotheque de Gems par famille",
+                f"{tiers.get('Small', 0)} UC déployables immédiatement",
+                "Bibliothèque de Gems par famille",
                 "Cible : 10 pratiques en 3 mois",
             ],
         ),
@@ -1172,7 +1172,7 @@ def build_recommendations_slide(
             "Accompagner les Medium",
             [
                 f"{tiers.get('Medium', 0)} UC — sprints de 4 semaines",
-                "Champion referent par cluster",
+                "Champion référent par cluster",
                 "NotebookLM et App Script comme vecteurs",
             ],
         ),
@@ -1180,18 +1180,18 @@ def build_recommendations_slide(
             PYL_DANGER,
             f"Escalader {it_count} cas IT",
             [
-                "Registre de dependances systèmes",
+                "Registre de dépendances systèmes",
                 "Atelier de priorisation IT",
                 "Zero prototype SFDC/SAP sans validation",
             ],
         ),
         (
             PYL_NAVY,
-            "Creer un track Data Champion",
+            "Créer un track Data Champion",
             [
                 "F7 — famille la plus dense et complexe",
                 "Profil Python/BigQuery requis",
-                "Certification Data Champion a creer",
+                "Certification Data Champion à créer",
             ],
         ),
     ]
@@ -1208,10 +1208,10 @@ def build_recommendations_slide(
 
     # Roadmap droite
     roadmap_items = [
-        ("M+1", "Atelier priorisation Quick Wins par cluster"),
-        ("M+3", "Bibliotheque Gems V1 disponible"),
+        ("M+1", "Atelier de priorisation Quick Wins par cluster"),
+        ("M+3", "Bibliothèque Gems V1 disponible"),
         ("M+6", "50% des Medium en production"),
-        ("M+12", "Projets Large lances avec sponsors IT"),
+        ("M+12", "Projets Large lancés avec sponsors IT"),
     ]
     for j, (month, action) in enumerate(roadmap_items):
         top_r = Inches(1.85) + j * Inches(0.95)
@@ -1252,7 +1252,7 @@ def build_best_practices_slide(prs: Presentation, page: int) -> None:
         slide,
         "11",
         "Bonnes pratiques AI Champions",
-        "Recommandations methodologiques pour perenniser les realisations",
+        "Recommandations méthodologiques pour pérenniser les réalisations",
         page,
     )
 
@@ -1271,7 +1271,7 @@ def build_best_practices_slide(prs: Presentation, page: int) -> None:
             PYL_TEAL_BLUE,
             "Discipline App Script",
             [
-                "1 script = 1 fichier nomme",
+                "1 script = 1 fichier nommé",
                 "Commenter les blocs principaux",
                 "Pas de secrets en clair dans le code",
                 "README + tests sur données fictives",
@@ -1291,10 +1291,10 @@ def build_best_practices_slide(prs: Presentation, page: int) -> None:
             PYL_DANGER,
             "Quand escalader vers l'IT ?",
             [
-                "Connexion systeme enterprise",
-                "Donnees sensibles (RH, finance)",
+                "Connexion système enterprise",
+                "Données sensibles (RH, finance)",
                 "Script instable / 10+ utilisateurs",
-                "Besoin de fiabilite 24/7",
+                "Besoin de fiabilité 24/7",
             ],
         ),
     ]
