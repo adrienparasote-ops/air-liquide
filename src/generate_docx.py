@@ -14,13 +14,13 @@ from datetime import date
 
 try:
     from docx import Document
-    from docx.shared import Pt, Cm, RGBColor, Inches
+    from docx.shared import Pt, Cm, RGBColor
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.oxml.ns import qn
     from docx.oxml import OxmlElement
     import pandas as pd
 except ImportError as e:  # pragma: no cover
-    print(f"❌ Dépendance manquante : {e}\n   pip install python-docx pandas openpyxl")
+    print(f"❌ Dépendance manquante : {e}\n   pip install python-docx pandas openpyxl")  # noqa
     sys.exit(1)
 
 # ── Chemins ───────────────────────────────────────────────────────────────────
@@ -177,7 +177,7 @@ def add_section_header(doc: Document, number: str, title: str, subtitle: str = "
     badge.font.color.rgb = PYL_NAVY_DARK
     highlight_run(badge)
 
-    spacer = p.add_run("  ")
+    p.add_run("  ")
 
     title_run = p.add_run(title)
     title_run.font.name  = "Poppins"
@@ -327,7 +327,6 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     # ── Métriques globales ────────────────────────────────────────────────────
     total = len(df)
     tiers = df["Complexity_Tier"].value_counts().to_dict()
-    families = df["Family_Label"].value_counts().to_dict()
     it_count = (df["IT_Flag"] != "").sum()
     clusters = df["Cluster"].nunique()
     job_families = df["Job Family"].nunique()
@@ -488,9 +487,6 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         it_sub = (subset["IT_Flag"] != "").sum()
         if it_sub > 0:
             add_bullet(doc, f"{it_sub} use cases avec point d'attention IT", "Alerte IT")
-
-        # Top 5 use cases de la famille
-        top5 = subset.nsmallest(5, "Score_Total") if len(subset) >= 5 else subset
         quick_wins_uc = subset[subset["Complexity_Tier"] == "Small"].head(3)
         if not quick_wins_uc.empty:
             p_h = doc.add_paragraph("Top Quick Wins de la famille")
@@ -640,14 +636,14 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
 # ── Point d'entrée ────────────────────────────────────────────────────────────
 
 def main() -> None:
-    print(f"📂 Lecture du catalogue : {CATALOG_FILE}")
+    print(f"📂 Lecture du catalogue : {CATALOG_FILE}")  # noqa
     if not CATALOG_FILE.exists():
-        print(f"❌ Catalogue introuvable : {CATALOG_FILE}")
-        print("   Lancez d'abord : python3 src/generate_catalog.py")
+        print(f"❌ Catalogue introuvable : {CATALOG_FILE}")  # noqa
+        print("   Lancez d'abord : python3 src/generate_catalog.py")  # noqa
         sys.exit(1)
 
     df = pd.read_excel(CATALOG_FILE, sheet_name="Catalogue", header=0)
-    print(f"   {len(df)} use cases chargés")
+    print(f"   {len(df)} use cases chargés")  # noqa
 
     doc = Document()
     apply_base_styles(doc)
@@ -655,8 +651,8 @@ def main() -> None:
     build_document(doc, df)
 
     doc.save(OUTPUT_FILE)
-    print(f"\n✅ Rapport Word généré : {OUTPUT_FILE}")
-    print(f"   Taille : {OUTPUT_FILE.stat().st_size // 1024} KB")
+    print(f"\n✅ Rapport Word généré : {OUTPUT_FILE}")  # noqa
+    print(f"   Taille : {OUTPUT_FILE.stat().st_size // 1024} KB")  # noqa
 
 
 if __name__ == "__main__":

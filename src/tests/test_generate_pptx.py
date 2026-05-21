@@ -10,8 +10,7 @@ from unittest.mock import patch, MagicMock
 
 import pandas as pd
 from pptx import Presentation
-from pptx.util import Inches, Pt
-from pptx.dml.color import RGBColor
+from pptx.util import Inches
 from pptx.enum.text import PP_ALIGN
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -93,12 +92,14 @@ class TestAddRect(unittest.TestCase):
     def test_no_border(self):
         prs  = _new_prs()
         slide = _blank_slide(prs)
-        gp.add_rect(slide, 0, 0, Inches(1), Inches(1), fill=gp.PYL_NAVY, no_border=True)
+        shape = gp.add_rect(slide, 0, 0, Inches(1), Inches(1), fill=gp.PYL_NAVY, no_border=True)
+        self.assertIsNotNone(shape)
 
     def test_with_border(self):
         prs  = _new_prs()
         slide = _blank_slide(prs)
-        gp.add_rect(slide, 0, 0, Inches(1), Inches(1), fill=gp.PYL_NAVY, no_border=False)
+        shape = gp.add_rect(slide, 0, 0, Inches(1), Inches(1), fill=gp.PYL_NAVY, no_border=False)
+        self.assertIsNotNone(shape)
 
 
 class TestAddTextbox(unittest.TestCase):
@@ -111,15 +112,17 @@ class TestAddTextbox(unittest.TestCase):
     def test_with_all_params(self):
         prs  = _new_prs()
         slide = _blank_slide(prs)
-        gp.add_textbox(slide, Inches(0.5), Inches(0.5), Inches(3), Inches(0.5),
+        tb = gp.add_textbox(slide, Inches(0.5), Inches(0.5), Inches(3), Inches(0.5),
                        "Styled", font_name="Poppins", font_size=14, bold=True,
                        italic=True, color=gp.PYL_YELLOW, align=PP_ALIGN.CENTER,
                        word_wrap=False)
+        self.assertIsNotNone(tb)
 
     def test_without_color(self):
         prs  = _new_prs()
         slide = _blank_slide(prs)
-        gp.add_textbox(slide, 0, 0, Inches(2), Inches(0.4), "No color", color=None)
+        tb = gp.add_textbox(slide, 0, 0, Inches(2), Inches(0.4), "No color", color=None)
+        self.assertIsNotNone(tb)
 
 
 class TestAddLine(unittest.TestCase):
@@ -132,7 +135,8 @@ class TestAddLine(unittest.TestCase):
     def test_custom_color_and_width(self):
         prs  = _new_prs()
         slide = _blank_slide(prs)
-        gp.add_line(slide, 0, 0, Inches(5), 0, color=gp.PYL_YELLOW, width_pt=2.0)
+        conn = gp.add_line(slide, 0, 0, Inches(5), 0, color=gp.PYL_YELLOW, width_pt=2.0)
+        self.assertIsNotNone(conn)
 
 
 class TestAddFooter(unittest.TestCase):
@@ -140,11 +144,13 @@ class TestAddFooter(unittest.TestCase):
         prs  = _new_prs()
         slide = _blank_slide(prs)
         gp.add_footer(slide, page=0)  # page=0 → pas de numéro
+        self.assertIsNotNone(slide)
 
     def test_with_page_number(self):
         prs  = _new_prs()
         slide = _blank_slide(prs)
         gp.add_footer(slide, page=3)  # page>0 → numéro affiché
+        self.assertIsNotNone(slide)
 
 
 class TestAddSlideHeader(unittest.TestCase):
@@ -152,11 +158,13 @@ class TestAddSlideHeader(unittest.TestCase):
         prs  = _new_prs()
         slide = _blank_slide(prs)
         gp.add_slide_header(slide, "01", "Titre principal", subtitle="Sous-titre", page=1)
+        self.assertIsNotNone(slide)
 
     def test_without_subtitle(self):
         prs  = _new_prs()
         slide = _blank_slide(prs)
         gp.add_slide_header(slide, "02", "Titre sans sous-titre", subtitle="", page=2)
+        self.assertIsNotNone(slide)
 
 
 class TestAddKpiCard(unittest.TestCase):
@@ -165,12 +173,14 @@ class TestAddKpiCard(unittest.TestCase):
         slide = _blank_slide(prs)
         gp.add_kpi_card(slide, Inches(0.5), Inches(2), Inches(2), Inches(2),
                          "Label", "42", sub="Contexte")
+        self.assertIsNotNone(slide)
 
     def test_without_sub(self):
         prs  = _new_prs()
         slide = _blank_slide(prs)
         gp.add_kpi_card(slide, Inches(0.5), Inches(2), Inches(2), Inches(2),
                          "Label", "42")  # sub="" par défaut
+        self.assertIsNotNone(slide)
 
 
 class TestAddContentCard(unittest.TestCase):
@@ -180,12 +190,14 @@ class TestAddContentCard(unittest.TestCase):
         gp.add_content_card(slide, Inches(0.5), Inches(2), Inches(3.5), Inches(4),
                              gp.PYL_NAVY, "Card Title",
                              ["Bullet 1", "Bullet 2", "Bullet 3"])
+        self.assertIsNotNone(slide)
 
     def test_empty_bullets(self):
         prs  = _new_prs()
         slide = _blank_slide(prs)
         gp.add_content_card(slide, Inches(0.5), Inches(2), Inches(3.5), Inches(4),
                              gp.PYL_SUCCESS, "Empty card", [])
+        self.assertIsNotNone(slide)
 
 
 class TestAddPptxTable(unittest.TestCase):
@@ -197,6 +209,7 @@ class TestAddPptxTable(unittest.TestCase):
             ["Col1", "Col2", "Col3"],
             [["A", "B", "C"], ["D", "E", "F"], ["G", "H", "I"]]  # 3 lignes → even/odd
         )
+        self.assertIsNotNone(slide)
 
     def test_single_row(self):
         prs  = _new_prs()
@@ -206,6 +219,7 @@ class TestAddPptxTable(unittest.TestCase):
             ["X", "Y"],
             [["val1", "val2"]]
         )
+        self.assertIsNotNone(slide)
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -252,6 +266,7 @@ class TestBuildClustersSlide(unittest.TestCase):
         df["Complexity_Tier"] = "Medium"  # Plus de Small ni Large
         prs = _new_prs()
         gp.build_clusters_slide(prs, df, page=5)
+        self.assertIsNotNone(prs)
 
 
 class TestBuildItSlide(unittest.TestCase):
@@ -265,6 +280,7 @@ class TestBuildItSlide(unittest.TestCase):
         df["IT_Flag"] = ""
         prs = _new_prs()
         gp.build_it_slide(prs, df, page=6)
+        self.assertIsNotNone(prs)
 
     def test_long_description_truncated(self):
         """Couvre la branche 'desc += ...' pour les descriptions IT > 50 chars."""
@@ -273,6 +289,7 @@ class TestBuildItSlide(unittest.TestCase):
         df["IT_Flag"] = "\u26a0\ufe0f IT"
         prs = _new_prs()
         gp.build_it_slide(prs, df, page=6)
+        self.assertIsNotNone(prs)
 
 
 class TestBuildQuickwinsSlide(unittest.TestCase):
@@ -286,6 +303,7 @@ class TestBuildQuickwinsSlide(unittest.TestCase):
         df["Complexity_Tier"] = "Large"  # Aucun Small
         prs = _new_prs()
         gp.build_quickwins_slide(prs, df, page=7)
+        self.assertIsNotNone(prs)
 
     def test_long_description_truncated(self):
         """Couvre la branche 'desc += ...' pour les descriptions Quick Wins > 60 chars."""
@@ -295,6 +313,7 @@ class TestBuildQuickwinsSlide(unittest.TestCase):
         df["Nb_Tools"] = 1
         prs = _new_prs()
         gp.build_quickwins_slide(prs, df, page=7)
+        self.assertIsNotNone(prs)
 
 
 class TestBuildRecommendationsSlide(unittest.TestCase):

@@ -1,7 +1,7 @@
 # Méthodologie d'analyse — Use Cases AI Champions
 **Fichier source :** `Advanced AI Champions - Action Monitoring.xlsx` — onglet `Use cases`  
 **Volume :** 248 use cases · 14 clusters · 13 Job Families · 11 outils distincts  
-**Date :** 2026-05-21 · **Statut :** Décisions clients intégrées ✅
+**Date :** 2026-05-21 · **Statut :** Analyse sémantique v2 ✅ — marqueurs DONE intégrés
 
 ---
 
@@ -98,6 +98,9 @@ F7 Data Engineering               ████          ~6%
 
 > Scorer chaque use case sur 5 dimensions (poids égaux) pour le classer en Small / Medium / Large.
 
+> [!IMPORTANT]
+> **Règle DONE-marker (v2)** : L'analyse lit la description complète pour détecter les marqueurs de maturité explicites (`--DONE SO FAR`, `Already built`, `Already deployed`, etc.). La description est alors splitée en **partie faite** / **scope futur**. Le scoring porte sur le **scope futur uniquement**. Si aucun scope futur n'est identifié après le marqueur DONE, le use case est marqué `✅ Complet` et ses dimensions IA et Data sont réduites d'un niveau (l'effort est déjà consommé).
+
 ### 3.1 Grille de scoring (5 pts × 3 niveaux = score 5–15)
 
 | Dimension | 🟢 Small (1 pt) | 🟡 Medium (2 pts) | 🔴 Large (3 pts) |
@@ -108,6 +111,15 @@ F7 Data Engineering               ████          ~6%
 | **Maturité IA requise** | Prompting / Gem / NotebookLM | API Gemini + RAG basique | Agent multi-étapes / ML / fine-tuning |
 | **Impact économique déclaré** | Non évalué / Productivity | Cost Reduction | Revenue Growth / Sustainability |
 
+**Règles d'application complémentaires :**
+
+| Règle | Détail |
+|-------|--------|
+| **Outil L4 data → D3 ≥ 2** | Si `Python on Power BI (Fabric)`, `Python on DataStudio`, ou `BigQuery` dans les outils → D3 minimum = 2 (données connectées enterprise), même si la description ne le mentionne pas explicitement |
+| **DONE + scope futur simple** | Si partie faite = systèmes enterprise (SFDC, SAP) et scope futur = slides/summary/corrective actions → D3 réduit à 1 (le futur est plus simple) |
+| **DONE + pas de scope futur** | Use case complet → D4 (IA) et D3 (Data) réduits de 1 niveau (l'effort IA/Data est déjà investi) |
+| **Stage Production/Scale-up + Small tier** | NON incohérent : des scripts App Script simples ou des Gems NotebookLM peuvent être en production tout en restant Small. Le tier reflète la complexité de l'effort, pas la valeur produite. |
+
 ### 3.2 Table de classification
 
 | Tier | Score | Label | Time-to-value | Profil champion |
@@ -115,6 +127,17 @@ F7 Data Engineering               ████          ~6%
 | 🟢 **Small** | 5–7 | **Quick Win** | < 2 semaines | Champion seul, no-code |
 | 🟡 **Medium** | 8–11 | **Use Case Structurant** | 4–8 semaines | Champion + support IT local |
 | 🔴 **Large** | 12–15 | **Projet Stratégique** | 3–12 mois | Équipe projet IT + Champion métier |
+
+### 3.2bis Résultats après analyse sémantique complète (248 UCs)
+
+| Tier | Count | % | Observation |
+|------|------:|--:|-------------|
+| 🟢 Small | 110 | 44% | Quick Wins immédiatement mobilisables |
+| 🟡 Medium | 130 | 52% | Cœur de portefeuille — championnat accompagné |
+| 🔴 Large | 8 | 3% | Projets IT formels — budget et gouvernance dédiés |
+
+> [!NOTE]
+> La proportion de Large (3%) est volontairement faible : les champions IA sont des profils métiers, pas IT. Les use cases véritablement Large impliquent des architectures agents autonomes, du ML/fine-tuning, ou des intégrations enterprise multi-systèmes (SFDC + Power BI + Python).
 
 ### 3.3 Signal d'alerte — Dépendance IT
 
@@ -345,3 +368,6 @@ Les champions doivent savoir identifier les **signaux d'alerte** qui indiquent q
 | D8 | Format livrable | DOCX |
 | D9 | Confidentialité | UC_ID uniquement dans le livrable (pas de noms) |
 | D10 | Nouvel axe | Section recommandations & bonnes pratiques ajoutée |
+| **D11** | **Analyse sémantique DONE-marker** | **Les descriptions sont parsées pour détecter les marqueurs `--DONE SO FAR`, `Already built/deployed`, etc. Le scoring prospectif porte uniquement sur le scope futur. Implémenté en Python sur le corpus complet (248 UCs).** |
+| **D12** | **Correction D3 — outils L4 data** | **Si `Python on Power BI (Fabric)` ou `Python on DataStudio` dans les outils → D3 ≥ 2 automatiquement (données enterprise connectées).** |
+| **D13** | **Incohérence Stage/Tier** | **Production/Scale-up + Small tier = non incohérent. Le tier reflète l'effort de construction, pas le niveau de déploiement atteint.** |

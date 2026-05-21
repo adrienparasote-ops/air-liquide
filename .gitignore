@@ -22,3 +22,12 @@ GEMINI.md
 .sentrux/rules.toml
 .gitignore
 assets/Advanced AI Champions - Action Monitoring.xlsx
+.sc-spec-gate-passed
+brain/
+.sc-verify-passed
+.tdd_lock
+.sc-doc-updated
+.sc-refactor-clean
+.sc-learn-eval
+.specconformance
+

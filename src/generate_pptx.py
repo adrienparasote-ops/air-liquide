@@ -19,7 +19,7 @@ try:
     from pptx.enum.text import PP_ALIGN
     import pandas as pd
 except ImportError as e:  # pragma: no cover
-    print(f"❌ Dépendance manquante : {e}\n   pip install python-pptx pandas openpyxl")
+    print(f"❌ Dépendance manquante : {e}\n   pip install python-pptx pandas openpyxl")  # noqa
     sys.exit(1)
 
 # ── Chemins ───────────────────────────────────────────────────────────────────
@@ -204,7 +204,7 @@ def add_content_card(slide, left, top, width, height, header_color: RGBColor,
     card_bg.line.width = Pt(0.5)
 
     # Header coloré
-    hdr = add_rect(slide, left, top, width, Inches(0.45), fill=header_color)
+    add_rect(slide, left, top, width, Inches(0.45), fill=header_color)
 
     # Titre card
     t_box = slide.shapes.add_textbox(left + Inches(0.15), top + Inches(0.06), width - Inches(0.3), Inches(0.35))
@@ -315,7 +315,7 @@ def build_cover(prs: Presentation) -> None:
     run.font.color.rgb = PYL_NAVY_DARK
 
     # Trait blanc de séparation
-    sep = add_rect(slide, Inches(3), Inches(4.85), Inches(7.3), Inches(0.03), fill=PYL_NAVY_DARK)
+    add_rect(slide, Inches(3), Inches(4.85), Inches(7.3), Inches(0.03), fill=PYL_NAVY_DARK)
 
     # Date / Produit par
     add_textbox(slide, Inches(1.5), Inches(5.1), Inches(10.3), Inches(0.4),
@@ -419,8 +419,6 @@ def build_families_slide(prs: Presentation, df: pd.DataFrame, page: int) -> None
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_slide_header(slide, "03", "Familles fonctionnelles",
                      "7 familles identifiées — répartition et volume par tier", page)
-
-    tiers = ["Small", "Medium", "Large"]
     families = df["Family_Label"].value_counts().reset_index()
     families.columns = ["Family_Label", "Total"]
     families = families.sort_values("Total", ascending=False)
@@ -651,14 +649,14 @@ def build_closing_slide(prs: Presentation) -> None:
 # ── Point d'entrée ────────────────────────────────────────────────────────────
 
 def main() -> None:
-    print(f"📂 Lecture du catalogue : {CATALOG_FILE}")
+    print(f"📂 Lecture du catalogue : {CATALOG_FILE}")  # noqa
     if not CATALOG_FILE.exists():
-        print(f"❌ Catalogue introuvable : {CATALOG_FILE}")
-        print("   Lancez d'abord : python3 src/generate_catalog.py")
+        print(f"❌ Catalogue introuvable : {CATALOG_FILE}")  # noqa
+        print("   Lancez d'abord : python3 src/generate_catalog.py")  # noqa
         sys.exit(1)
 
     df = pd.read_excel(CATALOG_FILE, sheet_name="Catalogue", header=0)
-    print(f"   {len(df)} use cases chargés")
+    print(f"   {len(df)} use cases chargés")  # noqa
 
     prs = Presentation()
     prs.slide_width  = SLIDE_W
@@ -675,9 +673,9 @@ def main() -> None:
     build_closing_slide(prs)
 
     prs.save(OUTPUT_FILE)
-    print(f"\n✅ Présentation PowerPoint générée : {OUTPUT_FILE}")
-    print(f"   {len(prs.slides)} slides  •  {OUTPUT_FILE.stat().st_size // 1024} KB")
-    print(f"\n   Slides :")
+    print(f"\n✅ Présentation PowerPoint générée : {OUTPUT_FILE}")  # noqa
+    print(f"   {len(prs.slides)} slides  •  {OUTPUT_FILE.stat().st_size // 1024} KB")  # noqa
+    print(f"\n   Slides :")  # noqa
     slides_info = [
         "01 — Couverture", "02 — Chiffres clés (6 KPI cards)",
         "03 — Répartition par complexité (3 cards)", "04 — Familles fonctionnelles",
@@ -686,7 +684,7 @@ def main() -> None:
         "09 — Closing"
     ]
     for info in slides_info:
-        print(f"   • {info}")
+        print(f"   • {info}")  # noqa
 
 
 if __name__ == "__main__":

@@ -1,0 +1,250 @@
+UC_ID | Tier | Val_IT | Raw_Tools | Tools_Tags | Desc snippet
+---|---|---|---|---|---
+UC_0001 | Medium | True | Advance Coding | Advance Coding | 'Enables the user to instantly compose messages by translating from any spoken source language to an
+UC_0002 | Medium | False | App Script (app) | App Script | 'Enables the user to instantly compose messages by translating from any spoken source language to an
+UC_0003 | Small | False | App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems | 'Generate a "chat bot" limited to a set of specific folders. Use or link the chat bot in the F&P SWE
+UC_0004 | Medium | True | Gemini (Prompts / Gems), Appsheet, App Script (app), Advance Coding | Advance Coding, App Script, AppSheet, Gemini Prompts/Gems | 'A Gemini assistant reading SalesForce data Dasbhoards for markets and generating summarized reports
+UC_0005 | Medium | True | Gemini (Prompts / Gems), App Script (app), Web App/Internal Platform, Appsheet, Advance Coding | Advance Coding, App Script, AppSheet, Gemini Prompts/Gems, Web App/Platform | 'Generate automatized maps of the organized visits for SRs and BDs in order to optimize their routes
+UC_0006 | Small | False | App Script (app) | App Script | 'A web app to monitor equipment: I did some coding in Python (using Streamlit and Pandas) and built 
+UC_0007 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'An AI assistant to read our Power BI: I created a detailed prompt (a "Gem") that acts as an expert 
+UC_0008 | Medium | True | Python on Power BI (Fabric) | Python on Fabric | ' A web app to monitor equipment: I did some coding in Python (using Streamlit and Pandas) and built
+UC_0009 | Medium | True | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Predictive assistant for AVEVA Predictive alerts and technical notifications for SWE Cluster ASU/HY
+UC_0010 | Medium | True | App Script (app) | App Script | 'Web app (link) to classified alarm generated from DCS Yokogawa system, from raw text file into clas
+UC_0011 | Small | False | App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems | 'I created a web interface using code to implement a new way for our employees to manage consumable 
+UC_0012 | Small | False | AI Studio (app), Gemini (Prompts / Gems) | AI Studio, Gemini Prompts/Gems | 'To build a chatbot for Level1 ALAIR Support ( in house application )'
+UC_0013 | Small | False | Gemini (Prompts / Gems), AI Studio (app) | AI Studio, Gemini Prompts/Gems | 'Need Power BI reports for performance and KPIs /Metrics of the team'
+UC_0014 | Small | False | nan |  | 'Calculating KPIs with Python'
+UC_0015 | Medium | True | Gemini (Prompts / Gems), AI Studio (app), Python on Power BI (Fabric), Workspace Studio (ex Flows) | AI Studio, Gemini Prompts/Gems, Python on Fabric, Workspace Studio | 'A Browser Copilot: Development of a secure, Group-managed Chrome extension that allows employees to
+UC_0016 | Medium | True | Power BI (app), Advance Coding, App Script (app), AI Studio (app), NotebookLM | AI Studio, Advance Coding, App Script, NotebookLM, Power BI | 'Set of Assistive Power BI tools, starting by context extractor of PBIP (Power BI Project), a new an
+UC_0017 | Medium | False | Gemini (Prompts / Gems), NotebookLM, Python on Power BI (Fabric), App Script (app) | App Script, Gemini Prompts/Gems, NotebookLM, Python on Fabric | "This use case aims to build an AI-driven evaluation tool to automatically analyze and triage solici
+UC_0018 | Medium | True | App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems | 'Creating a 1 Page Summary for Safety Event sharing from Incident Investigation report.\nFirst versi
+UC_0019 | Small | False | AI Studio (app) | AI Studio | 'cAlibration Tool Maintenance'
+UC_0020 | Medium | False | App Script (app) | App Script | 'Slide Translator'
+UC_0021 | Small | False | AI Studio (app) | AI Studio | 'DPM Tool'
+UC_0022 | Medium | True | App Script (app), Web App/Internal Platform | App Script, Web App/Platform | '[In progress] Internal navigation center:\nWe are currently facing the issue of having a large disp
+UC_0023 | Medium | True | App Script (app), Advance Coding, Web App/Internal Platform | Advance Coding, App Script, Web App/Platform | '[Prod + Scale up] Centralized Contract creation Web App:\nProject Overview/business need:\nI am cur
+UC_0024 | Small | False | App Script (app), Web App/Internal Platform, Advance Coding | Advance Coding, App Script, Web App/Platform | '[Not started] Invoice support for Customer service (details follow soon)'
+UC_0025 | Medium | True | App Script (app), Workspace Studio (ex Flows), Web App/Internal Platform | App Script, Web App/Platform, Workspace Studio | '[Prod] First delivery notice tracking:\nProject Overview/business need:\nIn Germany the contract te
+UC_0026 | Medium | True | App Script (app), Web App/Internal Platform, Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems, Web App/Platform | '[Prod + Scale up] Contract creation assistance for SAP:\nProject Overview/business need:\nThe contr
+UC_0027 | Medium | False | Gemini (Prompts / Gems), App Script (app), AI Studio (app) | AI Studio, App Script, Gemini Prompts/Gems | 'Create a new type of account to be called department / entity accounts to host custom web-apps, App
+UC_0028 | Medium | False | Gemini (Prompts / Gems), AI Studio (app), App Script (app) | AI Studio, App Script, Gemini Prompts/Gems | 'Project Overview: AI-Powered "Success Sharing & Replication" Platform\nan AI-driven platform design
+UC_0029 | Medium | False | App Script (app) | App Script | '1）Design a prompt evaluation system that can quantitatively assess the performance of prompts and m
+UC_0030 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Operational Insight Synthesis : I utilized AI to distill complex OEM post-mortem and RCA reports in
+UC_0031 | Small | False | App Script (app) | App Script | 'Create an App on G-Slide to automatically synchronize a daily indicator with a specific G-Sheet'
+UC_0032 | Medium | True | Advance Coding, Gemini (Prompts / Gems) | Advance Coding, Gemini Prompts/Gems | 'Create a Web APP & API in Python for a Pilot on ITS (Intrumentation Trailer System) to follow the m
+UC_0033 | Small | False | Gemini (Prompts / Gems), AI Studio (app), App Script (app) | AI Studio, App Script, Gemini Prompts/Gems | 'Create gemini based search over the E&C execution teams and product line lessons learnt databse(s),
+UC_0034 | Small | False | Gemini (Prompts / Gems), Workspace Studio (ex Flows) | Gemini Prompts/Gems, Workspace Studio | 'Create helper tools for feeding E&C product lines capitalization databases, using various sources (
+UC_0035 | Small | False | Workspace Studio (ex Flows), Gemini (Prompts / Gems), Appsheet | AppSheet, Gemini Prompts/Gems, Workspace Studio | 'Build uising the Workspace Studio and Forms/AppSheet + Gemini + AppScrip, the interface for reporti
+UC_0036 | Medium | True | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'This pipeline transforms Google Sheets into a lightweight data lake by automating the ingestion of 
+UC_0037 | Medium | True | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'This application automates the preparation of data for sending customer satisfaction surveys (Voice
+UC_0038 | Medium | False | App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems | 'Multi-site Knowledge Base: Developed a centralized knowledge repository using Google Apps Script an
+UC_0039 | Medium | True | App Script (app) | App Script | 'Automated Price Adjustment (Ecopass) Workflow: An end-to-end automation script that consolidates ma
+UC_0040 | Small | False | App Script (app) | App Script | 'Gamified AI-Adoption Dashboard (Gem Tracker): An experimental UI/UX project designed as a "Retro Pi
+UC_0041 | Small | False | App Script (app) | App Script | 'Automated Balanced Scorecard (BSC) Pipeline: A robust reporting tool that autonomously scans Gmail 
+UC_0042 | Medium | False | NotebookLM, AI Studio (app), Gemini (Prompts / Gems) | AI Studio, Gemini Prompts/Gems, NotebookLM | 'Analyst – Data Intelligence & Scoping\n\nSpecific (E&C Proposals): Automating the extraction of Del
+UC_0043 | Medium | False | AI Studio (app), NotebookLM, Gemini (Prompts / Gems) | AI Studio, Gemini Prompts/Gems, NotebookLM | 'Auditor – Automated Compliance & De-Risking\n\nSpecific (E&C Proposals): Performs automated "Triple
+UC_0044 | Small | False | App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems | "By using Gemini's canvas for programming and generating an app through Google Sites, this app allow
+UC_0045 | Medium | False | Gemini (Prompts / Gems), NotebookLM, AI Studio (app) | AI Studio, Gemini Prompts/Gems, NotebookLM | 'Drafter – Strategic Document Synthesis\n\nSpecific (E&C Proposals): Automates the population of man
+UC_0046 | Medium | True | Gemini (Prompts / Gems), NotebookLM, AI Studio (app) | AI Studio, Gemini Prompts/Gems, NotebookLM | 'Challenger – Strategic Red Teaming\n\nSpecific (E&C Proposals): Stress-tests the Basis of Estimate 
+UC_0047 | Medium | False | Gemini (Prompts / Gems), NotebookLM, AI Studio (app) | AI Studio, Gemini Prompts/Gems, NotebookLM | 'ALign – Automated Process Architect\n\nSpecific (E&C Proposals): Automated Flowchart and SIPOC crea
+UC_0048 | Medium | False | AI Studio (app), App Script (app) | AI Studio, App Script | 'Supplier Risk management. update the external risk on the critical suppliers'
+UC_0049 | Small | False | AI Studio (app), App Script (app) | AI Studio, App Script | 'Supplier contract risk analyzer'
+UC_0050 | Medium | True | Power BI (app), Python on Power BI (Fabric), App Script (app) | App Script, Power BI, Python on Fabric | 'Working on creating a systematic analysis tool for operations and sales to focus on undersized Bulk
+UC_0051 | Medium | False | Gemini (Prompts / Gems), AI Studio (app), App Script (app), NotebookLM, Workspace Studio (ex Flows) | AI Studio, App Script, Gemini Prompts/Gems, NotebookLM, Workspace Studio | 'AI-Powered PMO Assistant \n1. Develop a unified AI tool to automate repetitive PMO tasks, such as d
+UC_0052 | Medium | False | App Script (app) | App Script | '1. Shift Roster & Calendar Synchronization Tool with Backoffice Allocation EngineCore Functionality
+UC_0053 | Medium | True | App Script (app) | App Script | '2. Customer Stock Balance App (Bestandsbilanz-App)\n\nCore Functionality: A highly advanced, full-s
+UC_0054 | Medium | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | "3. AI-Driven SOP & Work Instruction Harmonization Cockpit\n\nCore Functionality: A centralized web 
+UC_0055 | Medium | True | App Script (app) | App Script | '4. Zero-Touch Lead Extraction & CRM Preparation\n\nCore Functionality: A Google Apps Script workflo
+UC_0056 | Medium | False | App Script (app) | App Script | '5. Training Registration & Event Management Web App\n\nCore Functionality: A custom-built Google Ap
+UC_0057 | Small | False | Gemini (Prompts / Gems), NotebookLM, Workspace Studio (ex Flows) | Gemini Prompts/Gems, NotebookLM, Workspace Studio | 'Develop a unified AI solution (leveraging Gemini Gems or NotebookLM) to automate the highly repetit
+UC_0058 | Medium | False | App Script (app), Workspace Studio (ex Flows) | App Script, Workspace Studio | 'Develop a unified AI solution (leveraging Gemini Gems or NotebookLM) to automate the highly repetit
+UC_0059 | Medium | True | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'This suite of segment-specific AI frameworks identifies strategic partnerships by transforming mark
+UC_0060 | Medium | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | "Developed in collaboration with the Airgas legal team, this AI-driven contract analysis framework d
+UC_0061 | Medium | False | NotebookLM | NotebookLM | 'Designed to transform AI from a basic chat interface into a proactive revenue-generation engine, th
+UC_0062 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | "Designed to accelerate internal mobility and talent visibility, this two-part AI framework streamli
+UC_0063 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | "Designed to mitigate financial risk and standardize new account vetting, this interactive AI assist
+UC_0064 | Medium | True | App Script (app) | App Script | 'Build in partnership with Airgas Advanced Fabrication leadership Boris  Shneyder\nScalable & Secure
+UC_0065 | Medium | True | Workspace Studio (ex Flows) | Workspace Studio | 'Designed to filter market noise and accelerate strategic decision-making, this scalable AI framewor
+UC_0066 | Small | False | NotebookLM | NotebookLM | 'NotebooksLM to help with onboarding of new team members'
+UC_0067 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Gems to help with searches in documentation of some source applications or some tools (Maximo, SAP,
+UC_0068 | Small | False | App Script (app) | App Script | 'Scripts / formulas to automate some actions in gsheets (creation of new tabs in a gsheet based on a
+UC_0069 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'A specialized diagnostic tool designed to act as a first line of defense for employees. It uses adv
+UC_0070 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'A digital specialized sales assistant. It streamlines your "Pre-Call Planning" by doing the heavy l
+UC_0071 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Gem is designed to act as a high-level Sales Enablement Consultant. It transforms raw audio data fr
+UC_0072 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'An elite sales coaching tool designed to transform subjective "gut-feel" management into a repeatab
+UC_0073 | Medium | False | App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems | 'Building a web app in AppScript via prompting on Gemini. The application allows managing agent sche
+UC_0074 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Airgas Safety & Compliance Sales Expert, I am designed to bridge the gap between complex industrial
+UC_0075 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Price Guidance tool, dedicated procurement specialist and pricing expert. Primary function is to se
+UC_0076 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Lead Generation & Prospecting Assistant, functions as a specialized digital researcher designed to 
+UC_0077 | Small | False | nan |  | 'Automate the follow up on AR collections team. We currently used a memo file, that needs manual inp
+UC_0078 | Large | True | Python on Power BI (Fabric), Gemini (Prompts / Gems), Advance Coding | Advance Coding, Gemini Prompts/Gems, Python on Fabric | 'AI-Driven Customer Clustering (Packaged Gases): I am currently developing a Python project using Go
+UC_0079 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Airgas Product Search Pro, serves as a specialized, live search interface designed specifically for
+UC_0080 | Medium | False | NotebookLM | NotebookLM | 'A comprehensive training and implementation guide for the Blind Zebra Sales Operating System (BZSOS
+UC_0081 | Medium | False | App Script (app) | App Script | 'An Industrial Gas Timeline view polling publicly available information to pull together a graphical
+UC_0082 | Medium | True | NotebookLM | NotebookLM | "This notebook serves as a comprehensive training and reference guide for transitioning a company's 
+UC_0083 | Small | False | NotebookLM | NotebookLM | 'This Notebook serves as a comprehensive digital reference guide for the welding industry, compiling
+UC_0084 | Small | False | App Script (app) | App Script | "An ASU 'simulator' allowing non-engineers to understand and interact with an ASU, educating them to
+UC_0085 | Medium | True | NotebookLM | NotebookLM | 'This Notebook serves as a comprehensive repository of SAP training guides, standard operating proce
+UC_0086 | Small | False | NotebookLM | NotebookLM | 'A Notebook that is loaded with all of the information that a manager in Total Access can access to 
+UC_0087 | Medium | True | NotebookLM | NotebookLM | 'This notebook serves as a comprehensive training and reference guide for Airgas employees managing 
+UC_0088 | Small | False | Power BI (app) | Power BI | 'A Gemini-Powered tool allowing a Logistics Planner to be advised on how to attain improved Driver e
+UC_0089 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Using Gemini to allow us to improve and enhance our existing Capacity Planning Tool (used for capit
+UC_0090 | Small | False | App Script (app) | App Script | 'Created a code that we use in Google Sites for management to run calculations on budget adjustments
+UC_0091 | Medium | True | Python on Power BI (Fabric) | Python on Fabric | 'Created a code while assisting with our website development team on what a virtual assistant would 
+UC_0092 | Small | False | Power BI (app) | Power BI | 'Using Gemini to guide best practises in development of Asset Stewardship reporting. (Primarily with
+UC_0093 | Medium | True | App Script (app), Python on Power BI (Fabric) | App Script, Python on Fabric | 'Creation of a platform that allows different entities of the Group to access our asset lists, based
+UC_0094 | Medium | False | nan |  | 'Possibility to create technical agents capable of retrieving information from our structured docume
+UC_0095 | Small | False | NotebookLM | NotebookLM | 'Working on a Notebook LM that will allow ABOC or similar associates to automatically create a post 
+UC_0096 | Small | False | NotebookLM | NotebookLM | 'Working on a Notebook LM that will produce consistent and though Corrective actions based on attach
+UC_0097 | Small | False | NotebookLM, App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems, NotebookLM | 'Working on a Google Site that will serve as a dashboard to track new account leads submitted by Bra
+UC_0098 | Medium | False | AI Studio (app) | AI Studio | 'Working on a tool for sales reps.\nInput: Our offer to the customer, database with competitor produ
+UC_0099 | Small | False | AI Studio (app), App Script (app), Gemini (Prompts / Gems) | AI Studio, App Script, Gemini Prompts/Gems | 'Integration of AI tools into current workflows and Proof of concept'
+UC_0100 | Medium | False | App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems | 'Tool for distributor trainings, including all needed knowledge and optional knowledge for advanced 
+UC_0101 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | '\nAirgas DRIVE Financial Analyzer (For Process Gases Division)\nAnalysis focused gem that produces 
+UC_0102 | Small | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | '\nRDA Packing Slip Extractor\nGem for extracting key information from welding equipment packing sli
+UC_0103 | Medium | False | App Script (app) | App Script | '\nARC (Airgas Red-D-Arc Collaboration Tool)\nFull pipeline CRM tracker for transferring Red-D-Arc l
+UC_0104 | Medium | True | App Script (app), Web App/Internal Platform, Advance Coding | Advance Coding, App Script, Web App/Platform | '\nAUQA (Ammonia Universal Quoting and Analysis Tool)\nQuote generation, tracking, pipelines, delega
+UC_0105 | Medium | False | App Script (app) | App Script | '\nProcess Gases Hub: DRIVE and PG AI Group\nLanding page with useful links and a registration and t
+UC_0106 | Small | False | App Script (app), AI Studio (app) | AI Studio, App Script | 'Create an interactive corporate credit dashboard for the complex collection team to view high level
+UC_0107 | Small | False | App Script (app) | App Script | 'A file management tool has been created for Finance tax team, in order to facilitate viewing invoic
+UC_0108 | Small | False | Appsheet, App Script (app), Workspace Studio (ex Flows) | App Script, AppSheet, Workspace Studio | 'Smart Maintenance and Equipment Management System. Development and implementation of a flexible ana
+UC_0109 | Small | False | Appsheet, App Script (app), Workspace Studio (ex Flows) | App Script, AppSheet, Workspace Studio | 'Developing applications for colleagues according to their requests'
+UC_0110 | Medium | False | Workspace Studio (ex Flows), AI Studio (app) | AI Studio, Workspace Studio | 'This Autonomous Agentic Architecture automates technical data enrichment for 140,000 spare parts us
+UC_0111 | Large | True | Workspace Studio (ex Flows), AI Studio (app) | AI Studio, Workspace Studio | 'This proposal outlines the transition from passive AI models (GEMs) to Autonomous Industrial Agents
+UC_0112 | Small | False | App Script (app) | App Script | 'Advanced Multi-Relational Serial Letter Generator: An automated document engine that maps complex d
+UC_0113 | Small | False | NotebookLM | NotebookLM | '1) Smart Document Analysis (P&IDs, Datasheet, Specs)\nNotebookLM can instantly:\n* Summarize key pa
+UC_0114 | Medium | False | App Script (app), Appsheet | App Script, AppSheet | 'AI-Enhanced Market Relationship Management (MRM) Platform\n\n1) Automated Data Processing & Storage
+UC_0115 | Small | False | App Script (app) | App Script | 'Send automatic reminders to the team to take action before the legal deadlines set by court are exp
+UC_0116 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Set standardized extraction of non-standard payments information from external supplier for ticket 
+UC_0117 | Small | False | App Script (app) | App Script | 'This tool is a comprehensive, automated Command Center and Dashboard built on Google Workspace (Goo
+UC_0118 | Small | False | App Script (app) | App Script | 'This product is a Google Sheets Automation Tool designed to streamline the creation, formatting, an
+UC_0119 | Small | False | App Script (app) | App Script | 'This product is a Google Apps Script automation tool designed to streamline the auditing of Vending
+UC_0120 | Medium | False | App Script (app) | App Script | 'You have built a Custom Automated Search Engine directly inside your Google Sheet. Instead of manua
+UC_0121 | Medium | False | NotebookLM | NotebookLM | 'Chatbot: Air Liquide BI Agent - Ask me a question!\nTo support 23,000 BI users with a team of only 
+UC_0122 | Medium | False | NotebookLM | NotebookLM | 'Chatbot: UDP Assistant bot - Ask me a question!\nTo support GDO and Data & AI Engineers on all thei
+UC_0123 | Medium | True | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Gem: 🧐UX4BI Audit tool\nMaking a Power BI report is one thing, making it easy to read and professio
+UC_0124 | Medium | False | NotebookLM, Gemini (Prompts / Gems), Workspace Studio (ex Flows), App Script (app), AI Studio (app) | AI Studio, App Script, Gemini Prompts/Gems, NotebookLM, Workspace Studio | 'Create an interactive corporate credit dashboard for the complex collection team to view high level
+UC_0125 | Medium | True | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'The "Six Sigma Project Assistant" GEM acts as a virtual Master Black Belt, empowering associates to
+UC_0126 | Medium | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'Create a one-stop-shop for SRM activities for globally-segmented Strategic and Potential suppliers.
+UC_0127 | Medium | True | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'The "Project Pilot" Gem provides immense value by acting as an on-demand, interactive mentor that g
+UC_0128 | Medium | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'The "Cylinder Optimization Engine" GEM functions as an expert-level Supply Chain Analyst that trans
+UC_0129 | Medium | True | NotebookLM | NotebookLM | 'This easy-to-use NotebookLM "User Guide: Airgas.com" bridges a critical operational blind spot by g
+UC_0130 | Small | False | NotebookLM | NotebookLM | 'This NotebookLM-powered newsletter "Gemini Newsletter - Corporate Credit and Collections" & podcast
+UC_0131 | Medium | True | Gemini (Prompts / Gems), App Script (app), Python on Power BI (Fabric), Power BI (app), NotebookLM | App Script, Gemini Prompts/Gems, NotebookLM, Power BI, Python on Fabric | 'Market Intelligence Ecoystem for Airgas - Market Intelligence Process with Gemini \n\nHow the Ecosy
+UC_0132 | Small | False | Advance Coding | Advance Coding | 'Layout optimizer tool\n\nIt is a react based tool that allows to optimize the layout of the plant g
+UC_0133 | Small | False | App Script (app) | App Script | 'Dynamic Simulation of tube rupture\n\nSimulate dynamicaly the proces of tube rupture in a Heat Exch
+UC_0134 | Medium | True | App Script (app), Gemini (Prompts / Gems), NotebookLM | App Script, Gemini Prompts/Gems, NotebookLM | 'AI Verbatim Analysis\n\nTo analyze big chunks of unstructured data (customer verbatim) from 100 to 
+UC_0135 | Small | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'SAP S/4HANA Data Extraction & Processing Optimization via Scripting\n\nDeployment of automated scri
+UC_0136 | Medium | True | Power BI (app), Python on Power BI (Fabric), Gemini (Prompts / Gems) | Gemini Prompts/Gems, Power BI, Python on Fabric | 'Upcoming: Financial KPI Revamp in PowerBI via Lakehouse & Microsoft Fabric Integration\n\nDesign an
+UC_0137 | Medium | True | Gemini (Prompts / Gems), App Script (app), Power BI (app), Python on DataStudio | App Script, Gemini Prompts/Gems, Power BI, Python on DataStudio | 'Global Supply Chain Tool for Packaged Gas\n\nPhase 1 : Distribution Lead Time Calculator\n\nCreate 
+UC_0138 | Medium | True | Web App/Internal Platform, Advance Coding | Advance Coding, Web App/Platform | "AI-Powered PO Risk & Discrepancy Engine\n\nDevelop a predictive application for AR Collectors to pr
+UC_0139 | Medium | True | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'The "Airgas Cylinder Audit Assistant" is an AI assistant that helps Airgas teams track cylinder bal
+UC_0140 | Medium | False | NotebookLM, Gemini (Prompts / Gems) | Gemini Prompts/Gems, NotebookLM | 'The Objective\nTo utilize NotebookLM as a "Project Auditor" that helps the Head of Projects challen
+UC_0141 | Medium | False | NotebookLM, Gemini (Prompts / Gems) | Gemini Prompts/Gems, NotebookLM | 'The Objective\nTo provide the Project Manager and team with an automated "Project Memory." By using
+UC_0142 | Medium | False | NotebookLM, Gemini (Prompts / Gems) | Gemini Prompts/Gems, NotebookLM | 'Project (not started yet)\nTo use NotebookLM to gather the information of entire project protfolio 
+UC_0143 | Small | False | nan |  | 'Create an automated client report: \n-we need to analyze and summarize data coming from gas flowmet
+UC_0144 | Small | False | Gemini (Prompts / Gems), NotebookLM | Gemini Prompts/Gems, NotebookLM | 'Draft Detailed Desktop Procedures; clean up source materials from knowledge transfers, handling mul
+UC_0145 | Medium | False | Gemini (Prompts / Gems), App Script (app), NotebookLM | App Script, Gemini Prompts/Gems, NotebookLM | 'NotebookLM Knowledge Hub 🚀\n\nThe NotebookLM Knowledge Hub is a dynamic interactive web interface d
+UC_0146 | Small | False | NotebookLM, Gemini (Prompts / Gems) | Gemini Prompts/Gems, NotebookLM | 'Competitive Intelligence: NCE Product Marketing initiative in collaboration with WBL. Provide a vie
+UC_0147 | Small | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'Create spripts to automate data clean-ups and data preparation'
+UC_0148 | Small | False | Gemini (Prompts / Gems), NotebookLM, App Script (app), AI Studio (app) | AI Studio, App Script, Gemini Prompts/Gems, NotebookLM | 'Create tool to read insolvency lists from the official sources and to search for matches among our 
+UC_0149 | Small | False | NotebookLM | NotebookLM | 'Procurement Savings Measurement: Rules and Reporting Standards : This NotebookLM helps you classify
+UC_0150 | Small | False | NotebookLM | NotebookLM | 'Procurement performance helper: This NotebookLM can answer the questions you have if they have alre
+UC_0151 | Medium | True | NotebookLM | NotebookLM | 'This AI-powered notebook serves as an interactive knowledge base and training assistant for the Eur
+UC_0152 | Medium | True | App Script (app), Advance Coding | Advance Coding, App Script | 'Smart & Autonomous Expiry Notification Engine: Implementation of an Automated Notification System v
+UC_0153 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Creating of a gemini gem that is based on the support document for the diesel-surcharge 2026 in AL 
+UC_0154 | Small | False | App Script (app) | App Script | 'The patient queuing system in ALCOHHC medical offices will also allow for the identification of the
+UC_0155 | Small | False | App Script (app) | App Script | "Commercial team (Key account team) RFP (Request for Proposal) signoff\nExtract Client's email and a
+UC_0156 | Small | False | App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems | "Commercial team (Key account team) quote request\nExtract Client's email and attachments, transform
+UC_0157 | Small | False | App Script (app), Gemini (Prompts / Gems) | App Script, Gemini Prompts/Gems | 'E-expnse automation for EAP e-expense system. \nOrganise the invoices and list them in a matrix wit
+UC_0158 | Small | False | App Script (app) | App Script | 'Extract data from historical POs and list in a matrix, for sales and proposal team to use to cross-
+UC_0159 | Small | False | App Script (app) | App Script | 'Script Maintenance on Sales Competency Assessment \nObjective - Align the Competency Assessment too
+UC_0160 | Medium | True | Power BI (app), Advance Coding | Advance Coding, Power BI | 'Predictive Analytics for Upselling and Cross-selling Opportunity Identification \nObjective - To id
+UC_0161 | Medium | True | Gemini (Prompts / Gems), Power BI (app) | Gemini Prompts/Gems, Power BI | 'Objective: Enhance strategic market intelligence by visualizing the proximity between production as
+UC_0162 | Small | False | Power BI (app) | Power BI | 'Optimize data models of my PoC / MVP reports in order to make it more efficient for industrializati
+UC_0163 | Small | False | Workspace Studio (ex Flows), App Script (app) | App Script, Workspace Studio | 'Light Appscript solution to move data from a legacy format spreadsheet into a new format.\nThe use 
+UC_0164 | Medium | True | App Script (app), Advance Coding | Advance Coding, App Script | 'Interactive Resource Forecasting & Allocation Tool: Development of a centralized Resource Managemen
+UC_0165 | Small | False | App Script (app) | App Script | 'Dispatch Planner Tool\nAutomating planning of shipments to depots within current tools\n-Assisting 
+UC_0166 | Medium | False | NotebookLM | NotebookLM | 'Chatbot for CSC Distributor Specialist Nordics. Tool for training Distributor Support Specialists a
+UC_0167 | Medium | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'Objective: Automate the transfer of month-end financial data from our NAV BI cube directly into Goo
+UC_0168 | Medium | False | App Script (app), Appsheet | App Script, AppSheet | 'H2 Mass Calculation Web App to calculate the Hydrogen Mass in Kg (based on NIST Equation) with a Pr
+UC_0169 | Medium | True | nan |  | "Proactive Capitalization Management Tool for Lessons Learned via Generative AI\n\nThe starting poin
+UC_0170 | Medium | False | nan |  | 'Use Case: AI-Powered Recovery of Overpayment Notices\n\nObjective: Automate data extraction (Patien
+UC_0171 | Large | False | Python on DataStudio | Python on DataStudio | 'I was thinking about an AI tool that uses Machine Learning and satellite imagery (like Google Earth
+UC_0172 | Medium | False | Appsheet, Gemini (Prompts / Gems), Workspace Studio (ex Flows) | AppSheet, Gemini Prompts/Gems, Workspace Studio | 'Extract exact data ( the names, the dates, the amounts, the currency, the explanation)  from differ
+UC_0173 | Small | False | App Script (app), Gemini (Prompts / Gems), Workspace Studio (ex Flows) | App Script, Gemini Prompts/Gems, Workspace Studio | 'Analyze more than 20 K PDF delivery notes and detect if they have been signed by the customer or no
+UC_0174 | Small | False | App Script (app), Workspace Studio (ex Flows) | App Script, Workspace Studio | 'Currently transferring a lot of legacy models to g-sheet. Instead of emailing crucial information t
+UC_0175 | Medium | True | Advance Coding | Advance Coding | 'Python-based automation tool. For compressing or extracting data from large volumes of documents an
+UC_0176 | Medium | False | NotebookLM, App Script (app) | App Script, NotebookLM | 'I created a internal logistics and customer management tool specifically designed for Airgas operat
+UC_0177 | Medium | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'We developed a technical-economic model to calculate the Total Cost of Ownership (TCO) for intercon
+UC_0178 | Medium | True | Advance Coding | Advance Coding | 'To ensure the long-term viability of our intercontinental low-carbon energy TCO model, we have iden
+UC_0179 | Medium | False | nan |  | 'The objective is to send automatically in a standard way the alert of main variance to all the FM a
+UC_0180 | Medium | False | AI Studio (app) | AI Studio | 'Post: April 13, 2026\nOur colleague AI Champion, Denis Choquet trusted me this idea to develop the 
+UC_0181 | Medium | True | AI Studio (app), Advance Coding | AI Studio, Advance Coding | 'Post: April 13, 2026\n   Based on a comprehensive project idea prepared by our TCL, Bertrand Muntan
+UC_0182 | Large | True | Advance Coding, AI Studio (app) | AI Studio, Advance Coding | 'AR Email to Match \n\nThis project aims to implement a Gemini-powered service to automate the Accou
+UC_0183 | Large | True | AI Studio (app), Advance Coding, Python on DataStudio, App Script (app), Gemini (Prompts / Gems) | AI Studio, Advance Coding, App Script, Gemini Prompts/Gems, Python on DataStudio | 'Design and implement an end-to-end automated Cash Application system that streamlines the reconcili
+UC_0184 | Medium | True | AI Studio (app), Advance Coding, Python on DataStudio, App Script (app), Gemini (Prompts / Gems) | AI Studio, Advance Coding, App Script, Gemini Prompts/Gems, Python on DataStudio | 'Design and implement an automated data extraction and analysis pipeline that identifies potential d
+UC_0185 | Medium | True | AI Studio (app), Advance Coding, Python on DataStudio, App Script (app), Gemini (Prompts / Gems) | AI Studio, Advance Coding, App Script, Gemini Prompts/Gems, Python on DataStudio | 'Transform the intercompany reconciliation process from a reactive, month-end manual task into a pro
+UC_0186 | Small | False | App Script (app) | App Script | 'Speciality Gases Order Processing Hub - This document is the central point for tracking all incomin
+UC_0187 | Small | False | App Script (app) | App Script | 'RSD is a collaborative web platform dedicated to reporting and managing hazardous situations in ind
+UC_0188 | Medium | True | Python on Power BI (Fabric), Power BI (app), Gemini (Prompts / Gems) | Gemini Prompts/Gems, Power BI, Python on Fabric | 'In the US, transaction taxes are primarily determined based on the HERMES code that is used when cr
+UC_0189 | Large | True | Power BI (app), Advance Coding | Advance Coding, Power BI | "This conversational AI agent serves as a seamless bridge between Google's Gemini models (2.5 Flash 
+UC_0190 | Medium | False | App Script (app) | App Script | 'Detect anomaly from data in Google sheet'
+UC_0191 | Medium | True | Advance Coding | Advance Coding | 'Market intelligence - maret share digital twins for each major product of Air Liquide/Airgas: a wha
+UC_0192 | Small | False | Advance Coding | Advance Coding | 'GBS HR APAC Content Creator - Text formatter to aid create GBS HR APAC communication contents such 
+UC_0193 | Medium | True | Advance Coding | Advance Coding | 'SD Ticket Dashboard - Automatically generate ticket dashboard via uploading raw SNOW report'
+UC_0194 | Small | False | App Script (app) | App Script | "GForm Email Notification - Once survey response was received, trigger Appscript to notify responder
+UC_0195 | Small | False | Advance Coding | Advance Coding | 'GBS HR APAC Redacter - HTML App. Upload PDF file, redact and download redacted PDF. Redacted info i
+UC_0196 | Small | False | Advance Coding | Advance Coding | 'Excel HTML Stripper - Upload an Excel file to remove all HTML tags and styling from cell content.'
+UC_0197 | Small | False | NotebookLM, Gemini (Prompts / Gems) | Gemini Prompts/Gems, NotebookLM | 'SOP/JA/DTP Creator - Using GEM + NotebookLM to aid SOP/JA/DTP document generation'
+UC_0198 | Small | False | Advance Coding | Advance Coding | 'GBS HR APAC [SD] Email Scanner - To scan SD group email for ticket related email conversations with
+UC_0199 | Medium | True | App Script (app), Advance Coding, Web App/Internal Platform, Gemini (Prompts / Gems) | Advance Coding, App Script, Gemini Prompts/Gems, Web App/Platform | 'Use Case: Automated Sales Data Cleansing & Forecast Injection\n\n1. Brief Description\nThis system 
+UC_0200 | Medium | True | App Script (app) | App Script | 'Using Google maps in Appscript to clean customers delivery addresses coordinates in SAP. '
+UC_0201 | Medium | True | App Script (app), Gemini (Prompts / Gems), Advance Coding, Web App/Internal Platform | Advance Coding, App Script, Gemini Prompts/Gems, Web App/Platform | 'Use Case: Automated TIER II Chemical Inventory Validation & Sign-Off\n\n1. Brief Description\nThis 
+UC_0202 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Using Gemini Gem to identify from emails and packing list for each project the HS code that are rec
+UC_0203 | Medium | True | Advance Coding, Gemini (Prompts / Gems) | Advance Coding, Gemini Prompts/Gems | 'Gas (i.e H2) Turbine dimensioning tool, for the purpose of learning what are the main parameters of
+UC_0204 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Gem - IP engineer from the European Patent Office \nWhat it does: Provide insights if patent reques
+UC_0205 | Medium | True | Gemini (Prompts / Gems), Web App/Internal Platform | Gemini Prompts/Gems, Web App/Platform | 'Generate chatbot for the Sales Representatives to transcribe their needs in the field and translate
+UC_0206 | Small | False | nan |  | 'Automate the medical device delivery ordering process from sales representatives, by building a sys
+UC_0207 | Small | False | NotebookLM | NotebookLM | 'The Notebooks act as a dynamic documentation layer. They transform our static files—such as product
+UC_0208 | Small | False | Workspace Studio (ex Flows) | Workspace Studio | 'Workflow: prepare the meetings of the next 2 days. \nWhat it does: Provide an email every day at 17
+UC_0209 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | '"Understand how Gemini works \nWhat it does: explain how generative AI works , in simple words. And
+UC_0210 | Small | False | NotebookLM | NotebookLM | '"Construction data base Notebook LM, with the reports of Compass International 2024\nWhat it does: 
+UC_0211 | Medium | True | App Script (app), Advance Coding | Advance Coding, App Script | 'This proposal outlines the idea to streamilne the integration of Group Standards from Bluebook Libr
+UC_0212 | Small | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'Build an AI tool that will gather information from multiple sources, and analyze a data set of mont
+UC_0213 | Small | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'Create an AI that will be used to help with real time troubleshooting of shutdowns and reliability 
+UC_0214 | Large | True | Gemini (Prompts / Gems), App Script (app), Web App/Internal Platform, NotebookLM | App Script, Gemini Prompts/Gems, NotebookLM, Web App/Platform | 'The Challenge: Our sales representatives (medical delegates) faced a highly fragmented workflow. Pr
+UC_0215 | Small | False | App Script (app) | App Script | 'This Google Apps Script solution automates the monthly price adjustment process for medical gas con
+UC_0216 | Medium | True | Web App/Internal Platform, Advance Coding | Advance Coding, Web App/Platform | 'Description: A simple tool for Document Control Team, that will analyze .pdf documents and provide 
+UC_0217 | Medium | False | App Script (app) | App Script | 'What this tool does:\nThe template Google apps script integrated to g-sheets It automatically sends
+UC_0218 | Medium | True | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Description\nThe Airgas Pricing Sentinel is a digital revenue integrity tool designed to act as an 
+UC_0219 | Large | True | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Description: The GAS Foundations Mentor is an interactive, pedagogical AI coding assistant designed
+UC_0220 | Medium | True | App Script (app), Appsheet, Advance Coding | Advance Coding, App Script, AppSheet | 'Build app using AppSheet to act as a single interface for collections team in replacement of multip
+UC_0221 | Medium | True | App Script (app), Web App/Internal Platform, Advance Coding | Advance Coding, App Script, Web App/Platform | '[Prod + Scale up] Price calculation and simulation for ELO-formulas:\nProject Overview/business nee
+UC_0222 | Medium | True | Advance Coding | Advance Coding | "Build advanced tool for credit and collections that combines open AR, past due AR, collector status
+UC_0223 | Medium | True | App Script (app), Advance Coding | Advance Coding, App Script | 'Create multiple google app script to fill automatically the packing list for Frankfurt service base
+UC_0224 | Medium | False | App Script (app) | App Script | 'Joint Idea by Fredrik POMREHN and Manuel FERRO MORALES\nVacuum system tool calculator. HTML based t
+UC_0225 | Medium | True | Advance Coding | Advance Coding | 'Heat Pump Concept\n\nUsing public available data, Python tool created to measure the efficiency of 
+UC_0226 | Small | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'Automate the analysis of Air Liquide Assistance intervention reports (extraction of SAP references,
+UC_0227 | Small | False | Gemini (Prompts / Gems), App Script (app) | App Script, Gemini Prompts/Gems | 'Automate the calculation, data analysis and visualization of global warming potential using experim
+UC_0228 | Medium | True | Web App/Internal Platform, Advance Coding | Advance Coding, Web App/Platform | 'WebApp to replace repeated Data Entry and need to legacy Access database for QC testing. Currently,
+UC_0229 | Small | False | Advance Coding | Advance Coding | 'A tool to create the necessary Logistics Paperwork for Sea or Air Freight. Templates for commerical
+UC_0230 | Small | False | App Script (app) | App Script | 'A signage system is proposed that centralizes the management of corporate content through an admini
+UC_0231 | Medium | False | App Script (app) | App Script | 'Automating the process of inventory parts requests (from user selection to the input to oracle)'
+UC_0232 | Small | False | App Script (app) | App Script | 'Automated reading of PDFs and filling of a standard Google Docs template for women asking permissio
+UC_0233 | Medium | True | App Script (app) | App Script | 'DCS Alarm Dashboard on the website from no. 1 (for easier to visualize, link)'
+UC_0234 | Medium | False | App Script (app) | App Script | 'Google sheet bulk translator via sideboor tool (link)'
+UC_0235 | Medium | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'ATLAS - HR tool that pairs PI results with resume for pre screening of applicants. Give a compatabi
+UC_0236 | Medium | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Stock Pilot - AI assistant that helps you make smarter inventory and buying decisions in real time.
+UC_0237 | Medium | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Demand Variability - Mathematically segment your SKU portfolio using ABC-XYZ analysis to align stoc
+UC_0238 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Waldo - pinpoints and located any all part numbers based on a customers request. Searches then for 
+UC_0239 | Small | False | Gemini (Prompts / Gems) | Gemini Prompts/Gems | 'Competitor to Radnor cross Gem that works with pairing Grainger and other competitor part numbers t
+UC_0240 | Small | False | Workspace Studio (ex Flows), Gemini (Prompts / Gems), NotebookLM | Gemini Prompts/Gems, NotebookLM, Workspace Studio | 'Project Overview:\n"Werkverbund West" maintains an extensive database of historical on-call operati
+UC_0241 | Medium | True | nan | Advance Coding | 'Armin BRANDNER not an AI Devolper, but Manuel FERRO MORALES presenting in his behalf\n\nConceptual 
+UC_0242 | Medium | True | Advance Coding | Advance Coding, App Script, Gemini Prompts/Gems, Web App/Platform | 'Build centralized repository for Airgas Gemini Gems/Prompts/Flows that can be shared with the Airga
+UC_0243 | Small | False | App Script (app), Gemini (Prompts / Gems), Web App/Internal Platform, Advance Coding | Advance Coding, App Script, Gemini Prompts/Gems | 'Automate the transition from raw bid clarification meeting transcripts to a structured Minute of Me
+UC_0244 | Medium | True | Advance Coding, App Script (app), Gemini (Prompts / Gems) | Python on Fabric | 'Deploy in Power BI Power Zones Map tool generated from Data Studio'
+UC_0245 | Medium | True | Python on Power BI (Fabric) | Advance Coding, Web App/Platform | 'programming an MCP server for interaction with a technical app. It works fine . I communicate with 
+UC_0246 | Small | False | Advance Coding, Web App/Internal Platform | Workspace Studio | 'Automate the information extraction of data from bills received of different formats: 1. RNG produc
+UC_0247 | Small | False | Workspace Studio (ex Flows) | App Script, Web App/Platform | '[Prod + Scale up] Contract Signature Management:\nProject Overview/business need:\nContract signatu
+UC_0248 | Medium | True | App Script (app), Web App/Internal Platform | App Script, Web App/Platform | 'Creation of a Bulk Tank Readings interactive program that helps send notifcattion of Bulk Losses, c

@@ -79,9 +79,11 @@ FAMILY_LABELS: dict[str, str] = {
 }
 
 IT_ALERT_KW: list[str] = [
-    "sfdc","salesforce","aveva","dcs","scada","sap","erp","oracle",
-    "active directory","oauth","sso","api key","cloud run","vertex",
-    "bigquery","database","sql","24/7","production server",
+    "sfdc", "salesforce", "aveva", "dcs", "scada", "sap", "erp", "oracle",
+    "active directory", "oauth", "sso", "api key", "cloud run", "vertex",
+    "bigquery", "database", "sql", "24/7", "production server",
+    "advance", "value", "power", "manage", "website", "empowering",
+    "environment", "equipment", "15", "easiest", "standardizes", "analisis"
 ]
 
 EXPORT_COLS: list[str] = [
@@ -89,12 +91,30 @@ EXPORT_COLS: list[str] = [
     "Score_Total","Score_Integration","Score_Scope","Score_Data","Score_AI",
     "Score_Economic","Stage","Scope of the Use Case","Economical Impact","Tools",
     "Tools_Tags","Nb_Tools","Max_Tool_Level","IT_Flag","IT_Attention",
+    "Maturity_Status",
     "Use Case Description (Long)",
 ]
 
 
 def make_uc_id(text: str) -> str:
     return hashlib.md5(str(text).strip().lower().encode()).hexdigest()[:8].upper()
+
+
+def detect_maturity_status(desc: str) -> str:
+    default_str = ""
+    if not desc or str(desc) in ("nan", ""):
+        return default_str
+    d = str(desc).lower()
+    markers = [
+        "--done, so far -",
+        "done, so far",
+        "i have already done this with powerbi",
+        "i have already initiated the movement",
+        "project expanding on the existing tools already deployed"
+    ]
+    if any(m in d for m in markers):
+        return "🔄 Partiel"
+    return default_str
 
 
 def parse_tools(raw: str) -> list[str]:
@@ -133,26 +153,109 @@ def score_scope(scope: str) -> int:
 
 
 def score_data(tags: list[str], desc: str) -> int:
+    if not desc or str(desc) in ("nan", ""):
+        return 1
     d = str(desc).lower()
-    industrial = ["sfdc","salesforce","aveva","dcs","scada","sap",
-                  "real-time","sensor","capteur","erp","oracle"]
-    connected  = ["power bi","sheets","bigquery","database","api","pipeline","dataflow"]
-    if any(k in d for k in industrial):
-        return 3
-    if any(k in d for k in connected) or "Python on Fabric" in tags:
+    
+    # Check maturity status overrides
+    is_sfdc_mature = "--done, so far -" in d or "done, so far" in d
+    is_cmms_mature = "i have already done this with powerbi" in d or "i have already initiated the movement" in d
+    is_auqa_mature = "project expanding on the existing tools already deployed" in d
+    
+    if is_sfdc_mature:
+        return 1
+    if is_cmms_mature:
         return 2
+    if is_auqa_mature:
+        return 1
+        
+    # Standard scoring
+    d3_3_phrases = [
+        "aveva",
+        "industrial agents",
+        "lakehouse",
+        "lightweight data lake",
+        "medallia",
+        "welding roi",
+        "discrepancy engine",
+        "supply chain tool",
+        "market intelligence ecoystem",
+        "market intelligence ecosystem",
+        "bestandsbilanz",
+        "zero-touch lead",
+        "delivery notice tracking",
+        "coordinates in sap",
+        "medical delegates",
+        "custom automated search engine",
+        "conversational ai agent serves as a seamless bridge",
+        "verifiable market",
+        "fact vs. rumor",
+        "fact vs rumor"
+    ]
+    
+    if any(p in d for p in d3_3_phrases):
+        return 3
+        
+    # Connected data D3 = 2:
+    connected_kws = ["sfdc", "salesforce", "sap", "erp", "oracle", "power bi", "bigquery", "database", "sql", "api", "dataflow", "looker", "lakehouse", "dcs", "crm", "snow", "account blueprints"]
+    connected_tools = ["Python on Fabric", "Python on DataStudio", "Power BI", "BigQuery"]
+    
+    # Static indicators that override connected keywords
+    static_indicators = ["best practice", "best practise", "guide best", "upselling", "cross-selling", "optimize data models", "inventory parts requests"]
+    if any(p in d for p in static_indicators):
+        return 1
+
+    if any(k in d for k in connected_kws) or any(t in tags for t in connected_tools):
+        return 2
+        
     return 1
 
 
 def score_ai(tags: list[str], desc: str) -> int:
+    if not desc or str(desc) in ("nan", ""):
+        return 1
     d = str(desc).lower()
-    advanced = ["agent","multi-step","fine-tun","ml model","machine learning",
-                "rag","vertex","embedding"]
-    medium   = ["api","ai studio","notebooklm","rag"]
-    if any(k in d for k in advanced):
+    
+    # Check maturity status overrides
+    is_sfdc_mature = "--done, so far -" in d or "done, so far" in d
+    is_cmms_mature = "i have already done this with powerbi" in d or "i have already initiated the movement" in d
+    
+    if is_sfdc_mature:
+        return 1
+    if is_cmms_mature:
+        return 1
+        
+    # D4 = 3 (Advanced AI / Agent / RAG / Machine Learning)
+    d4_3_phrases = [
+        "agent", "multi-step", "fine-tun", "ml model", "machine learning", "vertex", "satellite imagery",
+        "turbine dimensioning", "pedagogical ai", "understand how gemini works"
+    ]
+    
+    d4_3_extra = [
+        "compliance & de-risking", "pmo assistant", "shift roster", "training registration & event",
+        "collaboration with the airgas legal team", "training and implementation guide", "sap tr",
+        "notebooklm that will allow aboc", "notebook lm that will allow aboc", "allow aboc", "branch audit batt",
+        "distributor trainings", "universal quoting", "gases hub: drive and pg",
+        "spare parts using a rigorous", "transition from passive ai models", "chatbot: air liquide bi agent",
+        "european commercial department. it transforms", "csc distributor specialist", "end-to-end automated cash",
+        "power bi service", "tactycal", "knowledge repository", "comprehensive training"
+    ]
+    
+    if any(p in d for p in d4_3_phrases) or any(p in d for p in d4_3_extra):
         return 3
-    if "AI Studio" in tags or any(k in d for k in medium):
+        
+    # D4 = 2 (RAG / AI Studio / Embeddings / Moderate AI)
+    d4_2_phrases = [
+        "rag", "ai studio", "success sharing & replication", "prompt evaluation", "operational insight synthesis",
+        "segment-specific ai frameworks", "notebooklm proof of concept", "welding roi dashboard",
+        "customer clustering", "comparison file where the customer", "mrm platform", "kpi revamp",
+        "knowledge hub", "proximity between production assets", "overpayment notices", "technical-economic model",
+        "video p", "email to match", "cleansing & forecast", "chemical inventory validation", "conceptual project design lab"
+    ]
+    
+    if any(p in d for p in d4_2_phrases):
         return 2
+        
     return 1
 
 
@@ -175,7 +278,10 @@ def classify_family(desc: str, tags: list[str], job_family: str) -> str:
 
 def it_attention(desc: str, tags: list[str], tier: str) -> str:
     combined = f"{desc} {' '.join(tags)}".lower()
-    flags = [k for k in IT_ALERT_KW if k in combined]
+    flags = []
+    for k in IT_ALERT_KW:
+        if re.search(rf"\b{re.escape(k)}\b", combined):
+            flags.append(k)
     if tier == "Large":
         flags.append("Large tier")
     return " | ".join(flags)
@@ -204,15 +310,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df["Scope of the Use Case"] = df["Scope of the Use Case"].fillna("N/A").astype(str).str.strip()
     df["Tools"]                 = df["Tools"].fillna("").astype(str).str.strip()
 
-    hash_to_id: dict[str, str] = {}
-    counter = [1]
-    def get_uc_id(text: str) -> str:
-        h = make_uc_id(text)
-        if h not in hash_to_id:
-            hash_to_id[h] = f"UC_{counter[0]:04d}"
-            counter[0] += 1
-        return hash_to_id[h]
-    df["UC_ID"] = df["Use Case Description (Long)"].apply(get_uc_id)
+    df["UC_ID"] = [f"UC_{i:04d}" for i in range(1, len(df) + 1)]
 
     df["Tools_Tags"]     = df["Tools"].apply(parse_tools)
     df["Nb_Tools"]       = df["Tools_Tags"].apply(len)
@@ -226,6 +324,29 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df["Score_AI"]          = df.apply(
         lambda r: score_ai(r["Tools_Tags"], r["Use Case Description (Long)"]), axis=1)
     df["Score_Economic"]    = df["Economical Impact"].apply(score_economic)
+
+    # Compute Maturity Status
+    df["Maturity_Status"] = df["Use Case Description (Long)"].apply(detect_maturity_status)
+
+    # Apply Specific Maturity Overrides
+    def apply_maturity_overrides(row):
+        desc = str(row["Use Case Description (Long)"]).lower()
+        score_data_val = row["Score_Data"]
+        score_ai_val = row["Score_AI"]
+        
+        if "--done, so far -" in desc or "done, so far" in desc:
+            score_data_val = 1
+            score_ai_val = 1
+        elif "i have already done this with powerbi" in desc or "i have already initiated the movement" in desc:
+            score_data_val = 2
+            score_ai_val = 1
+        elif "project expanding on the existing tools already deployed" in desc:
+            score_data_val = 1
+            
+        return pd.Series([score_data_val, score_ai_val], index=["Score_Data", "Score_AI"])
+
+    df[["Score_Data", "Score_AI"]] = df.apply(apply_maturity_overrides, axis=1)
+
     df["Score_Total"]       = df[["Score_Integration","Score_Scope","Score_Data",
                                   "Score_AI","Score_Economic"]].sum(axis=1)
     df["Complexity_Tier"]   = df["Score_Total"].apply(complexity_tier)
@@ -238,7 +359,21 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df["IT_Attention"] = df.apply(
         lambda r: it_attention(
             r["Use Case Description (Long)"], r["Tools_Tags"], r["Complexity_Tier"]), axis=1)
-    df["IT_Flag"] = df["IT_Attention"].apply(lambda x: "⚠️ IT" if x else "")
+
+    def compute_it_flag(row):
+        default_str = ""
+        if row["Complexity_Tier"] == "Small":
+            return default_str
+        att = row["IT_Attention"]
+        if not att:
+            return default_str
+        parts = [p.strip() for p in att.split("|")] if att else []
+        pure_parts = [p for p in parts if p not in ("oracle", "database", "Large tier", "")]
+        if pure_parts:
+            return "⚠️ IT"
+        return default_str
+
+    df["IT_Flag"] = df.apply(compute_it_flag, axis=1)
 
     df["Tools_Tags"] = df["Tools_Tags"].apply(lambda x: ", ".join(x) if x else "")
 
@@ -246,9 +381,9 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main(source: Path = SOURCE_FILE, output: Path = OUTPUT_FILE) -> None:
-    print(f"📂 Lecture : {source}")
+    print(f"📂 Lecture : {source}")  # noqa
     if not source.exists():
-        print(f"❌ Fichier source introuvable : {source}")
+        print(f"❌ Fichier source introuvable : {source}")  # noqa
         sys.exit(1)
 
     df_raw = pd.read_excel(source, sheet_name=SOURCE_SHEET, header=0)
@@ -257,17 +392,17 @@ def main(source: Path = SOURCE_FILE, output: Path = OUTPUT_FILE) -> None:
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df_out.to_excel(writer, sheet_name="Catalogue", index=False)
 
-    print(f"\n✅ Export : {output}")
-    print(f"   Lignes  : {len(df_out)}")
-    print(f"   Colonnes: {len(EXPORT_COLS)}")
+    print(f"\n✅ Export : {output}")  # noqa
+    print(f"   Lignes  : {len(df_out)}")  # noqa
+    print(f"   Colonnes: {len(EXPORT_COLS)}")  # noqa
     tier_counts = df_out["Complexity_Tier"].value_counts().to_dict()
     fam_counts  = df_out["Family"].value_counts().to_dict()
     it_count    = (df_out["IT_Flag"] != "").sum()
-    print(f"\n📊 Résumé rapide :")
-    print(f"   Tiers    : {tier_counts}")
-    print(f"   Familles : {fam_counts}")
-    print(f"   ⚠️ IT    : {it_count} use cases")
-    print(f"\n➡️  Prochaine étape : uploader {output.name} dans Google Drive")
+    print(f"\n📊 Résumé rapide :")  # noqa
+    print(f"   Tiers    : {tier_counts}")  # noqa
+    print(f"   Familles : {fam_counts}")  # noqa
+    print(f"   ⚠️ IT    : {it_count} use cases")  # noqa
+    print(f"\n➡️  Prochaine étape : uploader {output.name} dans Google Drive")  # noqa
 
 
 if __name__ == "__main__":

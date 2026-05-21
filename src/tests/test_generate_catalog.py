@@ -5,7 +5,7 @@ Tests unitaires — couverture 100% de src/generate_catalog.py
 import sys
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 import pandas as pd
 
 # Ajouter src/ au path pour l'import
@@ -194,38 +194,30 @@ class TestScoreScope(unittest.TestCase):
 # score_data
 # ════════════════════════════════════════════════════════════════
 class TestScoreData(unittest.TestCase):
-    def test_salesforce_in_desc_returns_3(self):
-        self.assertEqual(gc.score_data([], "Connect to Salesforce CRM"), 3)
+    def test_salesforce_in_desc_returns_2(self):
+        # In new rules, Salesforce is connected (D3 = 2), not industrial (D3 = 3)
+        self.assertEqual(gc.score_data([], "Connect to Salesforce CRM"), 2)
 
-    def test_sfdc_in_desc_returns_3(self):
-        self.assertEqual(gc.score_data([], "Uses sfdc data"), 3)
+    def test_sfdc_in_desc_returns_2(self):
+        self.assertEqual(gc.score_data([], "Uses sfdc data"), 2)
 
     def test_aveva_returns_3(self):
         self.assertEqual(gc.score_data([], "Aveva SCADA system"), 3)
 
-    def test_dcs_returns_3(self):
-        self.assertEqual(gc.score_data([], "Read from dcs"), 3)
+    def test_lakehouse_returns_3(self):
+        self.assertEqual(gc.score_data([], "integrated with the lakehouse"), 3)
 
-    def test_scada_returns_3(self):
-        self.assertEqual(gc.score_data([], "scada integration"), 3)
+    def test_fact_vs_rumor_returns_3(self):
+        self.assertEqual(gc.score_data([], "Strict fact vs. rumor guardrails"), 3)
 
-    def test_sap_returns_3(self):
-        self.assertEqual(gc.score_data([], "extract from sap"), 3)
+    def test_sap_returns_2(self):
+        self.assertEqual(gc.score_data([], "extract from sap"), 2)
 
-    def test_real_time_returns_3(self):
-        self.assertEqual(gc.score_data([], "real-time sensor data"), 3)
+    def test_erp_returns_2(self):
+        self.assertEqual(gc.score_data([], "from the erp system"), 2)
 
-    def test_sensor_returns_3(self):
-        self.assertEqual(gc.score_data([], "sensor readings"), 3)
-
-    def test_capteur_returns_3(self):
-        self.assertEqual(gc.score_data([], "capteur de température"), 3)
-
-    def test_erp_returns_3(self):
-        self.assertEqual(gc.score_data([], "from the erp system"), 3)
-
-    def test_oracle_returns_3(self):
-        self.assertEqual(gc.score_data([], "oracle database query"), 3)
+    def test_oracle_returns_2(self):
+        self.assertEqual(gc.score_data([], "oracle database query"), 2)
 
     def test_bigquery_in_desc_returns_2(self):
         self.assertEqual(gc.score_data([], "query bigquery tables"), 2)
@@ -237,19 +229,12 @@ class TestScoreData(unittest.TestCase):
         self.assertEqual(gc.score_data([], "call external api"), 2)
 
     def test_python_on_fabric_tag_returns_2(self):
+        # Connect tools tag override
         self.assertEqual(gc.score_data(["Python on Fabric"], "simple description"), 2)
 
-    def test_pipeline_in_desc_returns_2(self):
-        self.assertEqual(gc.score_data([], "build a pipeline"), 2)
-
-    def test_dataflow_in_desc_returns_2(self):
-        self.assertEqual(gc.score_data([], "dataflow processing"), 2)
-
-    def test_sheets_in_desc_returns_2(self):
-        self.assertEqual(gc.score_data([], "export to sheets"), 2)
-
-    def test_power_bi_in_desc_returns_2(self):
-        self.assertEqual(gc.score_data([], "power bi dashboard"), 2)
+    def test_static_override_best_practice(self):
+        # best practice is static indicator -> D3 = 1 even with database
+        self.assertEqual(gc.score_data([], "best practice in database management"), 1)
 
     def test_plain_description_returns_1(self):
         self.assertEqual(gc.score_data([], "summarize this email"), 1)
@@ -274,23 +259,38 @@ class TestScoreAi(unittest.TestCase):
     def test_machine_learning_returns_3(self):
         self.assertEqual(gc.score_ai([], "machine learning pipeline"), 3)
 
-    def test_rag_in_desc_returns_3(self):
-        self.assertEqual(gc.score_ai([], "rag-based retrieval"), 3)
+    def test_rag_in_desc_returns_2(self):
+        # rag is now a D4 = 2 keyword, not D4 = 3
+        self.assertEqual(gc.score_ai([], "rag-based retrieval"), 2)
 
     def test_vertex_returns_3(self):
         self.assertEqual(gc.score_ai([], "deploy on vertex"), 3)
 
-    def test_embedding_returns_3(self):
-        self.assertEqual(gc.score_ai([], "embedding similarity"), 3)
+    def test_embedding_returns_1(self):
+        # embedding alone is not a D4=3 keyword, returns 1
+        self.assertEqual(gc.score_ai([], "embedding similarity"), 1)
 
-    def test_ai_studio_tag_returns_2(self):
-        self.assertEqual(gc.score_ai(["AI Studio"], "simple prompt"), 2)
+    def test_tactycal_returns_3(self):
+        self.assertEqual(gc.score_ai([], "part of tactycal suite"), 3)
 
-    def test_api_in_desc_returns_2(self):
-        self.assertEqual(gc.score_ai([], "call api endpoint"), 2)
+    def test_comprehensive_training_returns_3(self):
+        self.assertEqual(gc.score_ai([], "comprehensive training notebook"), 3)
 
-    def test_notebooklm_in_desc_returns_2(self):
-        self.assertEqual(gc.score_ai([], "use notebooklm to summarize"), 2)
+    def test_ai_studio_tag_returns_1(self):
+        # AI Studio tag does not force D4 = 2 anymore
+        self.assertEqual(gc.score_ai(["AI Studio"], "simple prompt"), 1)
+
+    def test_ai_studio_in_desc_returns_2(self):
+        # But ai studio in description does
+        self.assertEqual(gc.score_ai([], "use ai studio to query"), 2)
+
+    def test_api_in_desc_returns_1(self):
+        # api does not force 2 anymore
+        self.assertEqual(gc.score_ai([], "call api endpoint"), 1)
+
+    def test_notebooklm_in_desc_returns_1(self):
+        # notebooklm does not force 2 anymore
+        self.assertEqual(gc.score_ai([], "use notebooklm to summarize"), 1)
 
     def test_plain_gemini_prompt_returns_1(self):
         self.assertEqual(gc.score_ai(["Gemini Prompts/Gems"], "translate this document"), 1)
@@ -507,7 +507,7 @@ class TestProcessDataframe(unittest.TestCase):
         result = gc.process_dataframe(df)
         self.assertRegex(result["UC_ID"].iloc[0], r"UC_\d{4}")
 
-    def test_duplicate_descriptions_get_same_uc_id(self):
+    def test_duplicate_descriptions_get_unique_uc_id(self):
         df = pd.DataFrame({
             "Use Case Description (Long)": ["Same desc", "Same desc"],
             "Cluster": ["A", "B"],
@@ -518,7 +518,7 @@ class TestProcessDataframe(unittest.TestCase):
             "Tools": ["Gemini", "Gemini"],
         })
         result = gc.process_dataframe(df)
-        self.assertEqual(result["UC_ID"].iloc[0], result["UC_ID"].iloc[1])
+        self.assertNotEqual(result["UC_ID"].iloc[0], result["UC_ID"].iloc[1])
 
     def test_tools_tags_serialized_as_string(self):
         df = _make_raw_df(**{"Tools": ["Gemini, NotebookLM"]})
@@ -541,7 +541,28 @@ class TestProcessDataframe(unittest.TestCase):
         self.assertIn(result["Family_Label"].iloc[0], gc.FAMILY_LABELS.values())
 
     def test_it_flag_set_for_sfdc(self):
-        df = _make_raw_df(**{"Use Case Description (Long)": ["Connect to sfdc data"]})
+        df = _make_raw_df(**{
+            "Use Case Description (Long)": ["Connect to sfdc data"],
+            "Scope of the Use Case": ["Group-wide"]
+        })
+        result = gc.process_dataframe(df)
+        self.assertEqual(result["IT_Flag"].iloc[0], "⚠️ IT")
+
+    def test_small_tier_exemption(self):
+        df = _make_raw_df(**{
+            "Use Case Description (Long)": ["Connect to sfdc data"],
+            "Scope of the Use Case": ["Local"] # Small tier
+        })
+        result = gc.process_dataframe(df)
+        self.assertEqual(result["IT_Flag"].iloc[0], "")
+        self.assertIn("sfdc", result["IT_Attention"].iloc[0])
+
+    def test_new_pure_keywords_set_it_flag(self):
+        # "easiest" is one of the new pure keywords
+        df = _make_raw_df(**{
+            "Use Case Description (Long)": ["This is the easiest way to manage documents"],
+            "Scope of the Use Case": ["Group-wide"] # Medium tier
+        })
         result = gc.process_dataframe(df)
         self.assertEqual(result["IT_Flag"].iloc[0], "⚠️ IT")
 
@@ -601,6 +622,94 @@ class TestProcessDataframe(unittest.TestCase):
 
 
 # ════════════════════════════════════════════════════════════════
+# Maturity status & Overrides (v2)
+# ════════════════════════════════════════════════════════════════
+class TestMaturityAndOverrides(unittest.TestCase):
+    def test_maturity_status_none(self):
+        # TC-001
+        self.assertEqual(gc.detect_maturity_status("A normal description without any markers"), "")
+        self.assertEqual(gc.detect_maturity_status(None), "")
+        self.assertEqual(gc.detect_maturity_status(""), "")
+
+    def test_maturity_status_sfdc(self):
+        # TC-002
+        self.assertEqual(gc.detect_maturity_status("Some text --DONE, SO FAR - with salesforce"), "🔄 Partiel")
+        self.assertEqual(gc.detect_maturity_status("done, so far"), "🔄 Partiel")
+
+    def test_maturity_status_cmms(self):
+        # TC-003
+        self.assertEqual(gc.detect_maturity_status("I have already done this with PowerBI and some more"), "🔄 Partiel")
+        self.assertEqual(gc.detect_maturity_status("I have already initiated the movement on the plant"), "🔄 Partiel")
+
+    def test_maturity_status_auqa(self):
+        # TC-004
+        self.assertEqual(gc.detect_maturity_status("Project expanding on the existing tools already deployed for quoting"), "🔄 Partiel")
+
+    def test_score_data_l4_override(self):
+        # TC-005: D3 (Score_Data) must be at least 2 if "Python on Fabric", "Python on DataStudio", or "BigQuery" is present
+        self.assertEqual(gc.score_data(["Python on Fabric"], "plain description"), 2)
+        self.assertEqual(gc.score_data(["Python on DataStudio"], "plain description"), 2)
+        self.assertEqual(gc.score_data(["BigQuery"], "plain description"), 2)
+        self.assertEqual(gc.score_data([], "use bigquery to get the data"), 2)
+
+    def test_process_dataframe_maturity_overrides(self):
+        # IT-001
+        # Test Salesforce
+        df_sfdc = _make_raw_df(**{
+            "Use Case Description (Long)": ["A Gemini assistant --DONE, SO FAR -"],
+            "Tools": ["Gemini"],
+        })
+        res_sfdc = gc.process_dataframe(df_sfdc)
+        self.assertEqual(res_sfdc["Maturity_Status"].iloc[0], "🔄 Partiel")
+        self.assertEqual(res_sfdc["Score_Data"].iloc[0], 1)
+        self.assertEqual(res_sfdc["Score_AI"].iloc[0], 1)
+        
+        # Test CMMS
+        df_cmms = _make_raw_df(**{
+            "Use Case Description (Long)": ["I have already done this with PowerBI"],
+            "Tools": ["Gemini"],
+        })
+        res_cmms = gc.process_dataframe(df_cmms)
+        self.assertEqual(res_cmms["Maturity_Status"].iloc[0], "🔄 Partiel")
+        self.assertEqual(res_cmms["Score_Data"].iloc[0], 2)
+        self.assertEqual(res_cmms["Score_AI"].iloc[0], 1)
+
+        # Test AUQA
+        df_auqa = _make_raw_df(**{
+            "Use Case Description (Long)": ["Project expanding on the existing tools already deployed"],
+            "Tools": ["Gemini"],
+        })
+        res_auqa = gc.process_dataframe(df_auqa)
+        self.assertEqual(res_auqa["Maturity_Status"].iloc[0], "🔄 Partiel")
+        self.assertEqual(res_auqa["Score_Data"].iloc[0], 1)
+
+    def test_process_dataframe_l4_override(self):
+        # IT-002
+        df_fabric = _make_raw_df(**{
+            "Use Case Description (Long)": ["Plain description"],
+            "Tools": ["Python on Fabric"],
+        })
+        res_fabric = gc.process_dataframe(df_fabric)
+        self.assertEqual(res_fabric["Score_Data"].iloc[0], 2)
+
+        df_bq = _make_raw_df(**{
+            "Use Case Description (Long)": ["Plain bigquery description"],
+            "Tools": ["Gemini"],
+        })
+        res_bq = gc.process_dataframe(df_bq)
+        self.assertEqual(res_bq["Score_Data"].iloc[0], 2)
+
+    def test_main_workflow_end_to_end(self):
+        # IT-003
+        df = _make_raw_df()
+        res = gc.process_dataframe(df)
+        self.assertIn("Maturity_Status", res.columns)
+        idx_status = res.columns.get_loc("Maturity_Status")
+        idx_desc = res.columns.get_loc("Use Case Description (Long)")
+        self.assertEqual(idx_status + 1, idx_desc, "Maturity_Status must be directly before Use Case Description (Long)")
+
+
+# ════════════════════════════════════════════════════════════════
 # main() — filesystem mocking
 # ════════════════════════════════════════════════════════════════
 class TestMain(unittest.TestCase):
@@ -614,7 +723,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(ctx.exception.code, 1)
 
     def test_main_success_calls_to_excel(self):
-        import tempfile, os
+        import os
+        import tempfile
         fake_source = MagicMock(spec=Path)
         fake_source.exists.return_value = True
         fake_source.__str__ = lambda self: "/fake/source.xlsx"
@@ -641,7 +751,8 @@ class TestMain(unittest.TestCase):
 class TestMainGuard(unittest.TestCase):
     def test_main_guard_invoked_as_module(self):
         """Couvre la branche if __name__ == '__main__' via subprocess."""
-        import subprocess, tempfile, os
+        import os
+        import subprocess
         env = {"PYTHONPATH": str(Path(__file__).parent.parent)}
         # On patche en passant un source inexistant → sys.exit(1) attendu
         result = subprocess.run(

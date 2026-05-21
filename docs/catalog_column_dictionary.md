@@ -291,6 +291,21 @@ Chaque colonne représente le score (1, 2 ou 3) d'une dimension du scoring. **La
 
 ---
 
+### `Maturity_Status`
+| | |
+|--|--|
+| **Source** | Calculé — analyse sémantique des marqueurs de maturité |
+| **Type** | Texte |
+| **Valeurs possibles** | `🔄 Partiel` ou vide |
+
+**Description :** Cette colonne indique si un use case a déjà été partiellement implémenté ou déployé (par exemple avec Power BI, App Script, ou s'il est noté `--DONE, SO FAR -` dans la description).
+
+**Comment l'utiliser :** Permet d'isoler les use cases qui ont déjà fait l'objet d'un premier développement partiel. Pour ces cas, l'analyse de complexité a été ajustée pour ne scorer que l'effort prospectif restant (le futur scope).
+
+**Exemple :** `UC_0004` (Salesforce Dashboards Assistant) contient la mention `--DONE, SO FAR -`. Son statut est donc `🔄 Partiel`, et ses scores D3 (Data) et D4 (IA) ont été réduits pour refléter uniquement la suite de la roadmap (génération de Slides automatique).
+
+---
+
 ## Groupe 5 — Description source
 
 ---
