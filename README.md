@@ -35,7 +35,7 @@ src/generate_pptx.py      →  docs/presentation_ai_champions.pptx  (9 slides Py
 │   └── tests/
 │       ├── test_generate_catalog.py  # 144 tests, 100% coverage
 │       ├── test_generate_docx.py     # 33 tests, 99% coverage
-│       └── test_generate_pptx.py     # 36 tests, 99% coverage
+│       └── test_generate_pptx.py     # 36 tests, 100% coverage
 ├── Skill-Theme/                        # Charte graphique Pyl.Tech
 └── assets/                             # Assets statiques
 ```
@@ -58,7 +58,7 @@ python3 src/generate_docx.py
 # 3. Générer la présentation PowerPoint
 python3 src/generate_pptx.py
 
-# 4. Lancer les tests (213 tests, 99% coverage)
+# 4. Lancer les tests (220 tests, 100% coverage)
 python3 -m pytest src/tests/ -v --cov=src
 ```
 
