@@ -774,8 +774,8 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   insertChart(sheet, Charts.ChartType.PIE, {
     title:    "Répartition Medium vs Large",
     dataRange: sheet.getRange(D9_ROW, DATA_START_COL, D9_END - D9_ROW + 1, 2),
-    anchorRow: 71, anchorCol: 2,
-    width: 400, height: 340,
+    anchorRow: 4, anchorCol: 2,
+    width: 440, height: 340,
     options: {
       "pieHole":         0.55,
       "colors":          [COLORS.gold, COLORS.red],
@@ -790,8 +790,8 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   insertChart(sheet, Charts.ChartType.COLUMN, {
     title:    "Volume Medium + Large par famille",
     dataRange: sheet.getRange(D10_ROW, DATA_START_COL, D10_END - D10_ROW + 1, 3),
-    anchorRow: 71, anchorCol: 16,
-    width: 520, height: 360,
+    anchorRow: 4, anchorCol: 15,
+    width: 500, height: 340,
     options: {
       "isStacked":       true,
       "colors":          [COLORS.gold, COLORS.red],
@@ -808,8 +808,8 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   insertChart(sheet, Charts.ChartType.COLUMN, {
     title:    "Maturité par famille (Medium + Large)",
     dataRange: sheet.getRange(D7_ROW, DATA_START_COL, D7_END - D7_ROW + 1, stageOrder.length + 1),
-    anchorRow: 92, anchorCol: 2,
-    width: 720, height: 420,
+    anchorRow: 22, anchorCol: 2,
+    width: 960, height: 380,
     options: {
       "isStacked":        true,
       "colors":           ["#BDC3C7", COLORS.blue_light, COLORS.teal, COLORS.blue_mid, COLORS.blue_dark, COLORS.green, COLORS.purple, "#F0F0F0"],
@@ -827,8 +827,8 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   insertChart(sheet, Charts.ChartType.BAR, {
     title:    "Top des sources de données (Medium + Large)",
     dataRange: sheet.getRange(D11_ROW, DATA_START_COL, D11_END - D11_ROW + 1, 2),
-    anchorRow: 115, anchorCol: 2,
-    width: 480, height: 380,
+    anchorRow: 42, anchorCol: 2,
+    width: 440, height: 380,
     options: {
       "colors":           [COLORS.blue_mid],
       "legend.position":  "none",
@@ -844,8 +844,8 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   insertChart(sheet, Charts.ChartType.COLUMN, {
     title:    "Complexité par source de données (Top 8)",
     dataRange: sheet.getRange(D12_ROW, DATA_START_COL, D12_END - D12_ROW + 1, 3),
-    anchorRow: 115, anchorCol: 18,
-    width: 520, height: 380,
+    anchorRow: 42, anchorCol: 15,
+    width: 500, height: 380,
     options: {
       "isStacked":        true,
       "colors":           [COLORS.gold, COLORS.red],
