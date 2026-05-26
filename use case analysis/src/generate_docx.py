@@ -30,6 +30,7 @@ except ImportError as e:  # pragma: no cover
 PROJECT_DIR = Path(__file__).parent.parent
 CATALOG_FILE = PROJECT_DIR / "output" / "use_cases_catalog.xlsx"
 OUTPUT_FILE = PROJECT_DIR / "output" / "[REPORT] AI builders.docx"
+TEMPLATE_FILE = PROJECT_DIR / "assets" / "template.docx"
 
 # ── Palette Pyl.Tech officielle ───────────────────────────────────────────────
 PYL_NAVY_DARK = RGBColor(0x0B, 0x13, 0x2B)
@@ -58,6 +59,22 @@ def set_cell_bg(cell, rgb: RGBColor) -> None:
     shd.set(qn("w:color"), "auto")
     shd.set(qn("w:val"), "clear")
     tcPr.append(shd)
+
+
+def set_table_style(tbl, style_name: str) -> None:
+    """Applique un style de tableau de manière robuste en gérant les styles manquants."""
+    try:
+        tbl.style = style_name
+    except KeyError:
+        try:
+            # Essaye d'ajouter le style s'il manque dans le document
+            tbl.part.document.styles.add_style(style_name, 3)  # 3 = TABLE
+            tbl.style = style_name
+        except Exception:
+            try:
+                tbl.style = "Normal Table"
+            except KeyError:
+                tbl.style = "TableNormal"
 
 
 def add_border_left(paragraph, hex_color: str, size_pt: int = 18) -> None:
@@ -131,7 +148,7 @@ def apply_base_styles(doc: Document) -> None:
 def add_cover_page(doc: Document) -> None:
     """Page de couverture style Pyl.Tech consulting."""
     tbl = doc.add_table(rows=1, cols=1)
-    tbl.style = "Table Grid"
+    set_table_style(tbl, "Table Grid")
     cell = tbl.cell(0, 0)
     set_cell_bg(cell, PYL_YELLOW)
     cell.width = Cm(16)
@@ -210,7 +227,7 @@ def add_section_header(
 def add_kpi_block(doc: Document, kpis: list[tuple[str, str, str]]) -> None:
     """Bloc KPIs en tableau style Pyl.Tech."""
     tbl = doc.add_table(rows=1 + len(kpis), cols=3)
-    tbl.style = "Table Grid"
+    set_table_style(tbl, "Table Grid")
 
     headers = ["Indicateur", "Valeur", "Contexte"]
     for i, h in enumerate(headers):
@@ -257,7 +274,7 @@ def add_pivot_table(
         set_paragraph_spacing(p_title, 12, 4)
 
     tbl = doc.add_table(rows=1 + len(rows), cols=len(headers))
-    tbl.style = "Table Grid"
+    set_table_style(tbl, "Table Grid")
 
     for i, h in enumerate(headers):
         cell = tbl.cell(0, i)
@@ -1368,8 +1385,14 @@ def main() -> None:
     df = pd.read_excel(CATALOG_FILE, sheet_name="Catalogue", header=0)
     print(f"   {len(df)} use cases charges")  # noqa
 
-    doc = Document()
-    apply_base_styles(doc)
+    if TEMPLATE_FILE.exists():
+        doc = Document(TEMPLATE_FILE)
+        # Supprime le paragraphe vide par defaut du template
+        for p in list(doc.paragraphs):
+            p._element.getparent().remove(p._element)
+    else:
+        doc = Document()
+        apply_base_styles(doc)
     add_cover_page(doc)
     build_document(doc, df)
 
