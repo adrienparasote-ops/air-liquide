@@ -730,7 +730,9 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
     const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
     const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
     individualSources.forEach(src => {
-      mlSourceCounts[src] = (mlSourceCounts[src] || 0) + 1;
+      if (src !== "A revoir avec le builder") {
+        mlSourceCounts[src] = (mlSourceCounts[src] || 0) + 1;
+      }
     });
   });
   const sortedMlSources = Object.entries(mlSourceCounts).sort((a, b) => b[1] - a[1]);
