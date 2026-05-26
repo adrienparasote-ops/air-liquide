@@ -1140,38 +1140,44 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         (
             "Industrialiser les Quick Wins (Small) : Self-Service & Enablement",
             f"{tiers.get('Small', 0)} use cases Small sont déployables immédiatement en autonomie complète avec peu ou pas de support IT unitaire. "
-            "Vision : Les builders métiers doivent être 100% autonomes sur ce tiers. "
-            "Action : Concentrer l'effort de l'équipe centrale non pas sur la gestion de projet ou du support unitaire, mais sur l'enablement et l'acculturation (AI Academy, masterclasses de prompting, et mise à disposition de bibliothèques de prompts et de NotebookLM partagés par famille). "
-            "Indicateur : taux de couverture des formations et nombre de prompts actifs dupliqués inter-clusters.",
+            "Vision : Libérer l'innovation locale en rendant les builders métiers 100% autonomes grâce à une logique de self-service. "
+            "Action : L'équipe centrale ne doit pas gérer ces cas en mode projet, mais mettre à disposition un écosystème d'enablement (AI Academy, formations au prompting, partage de cas d'usage inspirants).\n"
+            "Exemple concret : Un synthétiseur de documents techniques ou un traducteur de contrats juridiques sur NotebookLM (ex. UC_0034). Le builder dépose ses fichiers PDF statiques dans son bloc-notes IA, rédige ses consignes (prompts) et partage instantanément le lien avec son équipe en moins de 2 heures, sans aucune ressource de développement.\n"
+            "Indicateur : taux de pénétration des formations (>70% de la communauté) et nombre de prompts actifs réutilisés inter-clusters.",
         ),
         (
             "Cibler les cas complexes (Medium & Large) en mode projet",
             f"Les use cases Medium ({tiers.get('Medium', 0)}) et Large ({tiers.get('Large', 0)}) représentent le cœur de cible opérationnel du programme en 'mode projet'. "
-            "Action : Mobiliser l'équipe centrale en mode projet sur ce périmètre structurant. Mettre en place des sprints de cadrage et de livraison dédiés avec les DSI locales et les correspondants IT pour chaque cas d'usage. "
+            "Vision : Apporter la rigueur méthodologique et l'expertise technique indispensables pour les projets à fort impact organisationnel. "
+            "Action : Mobiliser l'équipe centrale en mode projet sur des cycles de livraison courts de 8 à 12 semaines en collaboration directe avec les DSI locales et les correspondants IT pour garantir la sécurité et la scalabilité.\n"
+            "Exemple concret : Une application web de gestion des formations (ex. UC_0148) développée en Google Apps Script ou AppSheet, s'interfaçant avec les calendriers Google de l'équipe, créant des salons Google Meet, et réservant des salles de réunion physiques via des emails automatisés.\n"
             "Indicateur : taux de passage en production réelle sous 8 à 12 semaines.",
         ),
         (
             "Packager les sources de données (Accélérateur IT)",
-            "L'accès sécurisé à la donnée d'entreprise (ERP, CRM, BI, fichiers) est le goulot d'étranglement majeur des projets IA structurants. "
-            "Action : Basculer d'une logique d'intégration technique unitaire par projet à une logique de 'packaging DSI'. Mettre à disposition des builders des 'autoroutes de données' sécurisées et pré-autorisées : "
-            "(1) Package Documentaire (dossiers Drive indexés via Vertex AI Search), "
-            "(2) Package Transactionnel (connecteurs d'API sécurisés en lecture seule pour SAP et Salesforce), "
-            "(3) Package BI (datasets BigQuery et modèles de rapports Power BI documentés). "
+            "L'accès sécurisé à la donnée d'entreprise (ERP, CRM, BI, fichiers industriels) est le premier goulot d'étranglement technique des projets IA. "
+            "Vision : Basculer d'une approche d'intégration technique unitaire par projet à une logique de 'packages DSI' industriels. "
+            "Action : L'IT doit packager et pré-approuver des flux de données standardisés et sécurisés, éliminant le besoin de développer des connecteurs spécifiques pour chaque use case :\n"
+            "• Package Documentaire : Un dossier Google Drive partagé, indexé automatiquement via Vertex AI Search (RAG clé en main) pour interroger les procédures IMS de sécurité.\n"
+            "• Package Transactionnel : Des API sécurisées en lecture seule pour extraire les statuts de commandes SAP ou synthétiser les comptes clients Salesforce.\n"
+            "• Package BI : Des datasets qualifiés dans BigQuery ou des modèles de rapports Power BI documentés et structurés.\n"
             "Indicateur : temps moyen d'accès IT à une donnée sensible réduit de 6 mois à moins de 2 semaines.",
         ),
         (
             "Adresser les points d'attention IT & Sécurité",
-            f"{it_count} use cases du catalogue présentent des dépendances critiques (DCS, SCADA, CRM, ERP, base de données). "
-            "Action : Appliquer un principe de gouvernance différenciée (Exemption des Quick Wins) pour ne pas ralentir le self-service des cas Small. "
-            "Mettre en place un registre d'attention DSI et un comité de sécurité mensuel pour instruire et valider les accès aux données pour les cas Medium et Large. "
-            "Indicateur : taux d'instruction des dossiers de sécurité sous 15 jours.",
+            f"{it_count} use cases du catalogue présentent des dépendances système ou des risques de sécurité critiques. "
+            "Vision : Sécuriser les projets stratégiques tout en protégeant l'agilité du self-service local. "
+            "Action : Appliquer un principe de gouvernance différenciée. Les cas Small bénéficient d'une 'Exemption des Quick Wins' (pas d'IT_Flag pour éviter la lourdeur administrative). En revanche, les cas Medium et Large font l'objet d'une instruction obligatoire par un comité de sécurité DSI mensuel.\n"
+            "Exemple concret : Un cas d'usage extrayant des données financières ou RH confidentielles, ou requérant un hébergement hors de Google Workspace (ex. conteneur Cloud Run sur GCP). L'IT doit instruire les droits d'accès via le Single Sign-On (SSO) et les rôles IAM groupe.\n"
+            "Indicateur : taux d'instruction des dossiers de sécurité complexes sous 15 jours.",
         ),
         (
-            "Créer un parcours 'Data Champion' (F7)",
-            "La famille Data Engineering & Reporting (F7) est la plus dense et la plus complexe. "
-            "Les compétences Python, BigQuery et SQL requises dépassent le profil champion standard. "
-            "Action : Concevoir un parcours de certification 'Data Champion' pour faire le pont entre la DSI et les métiers, et former les champions à l'exploitation des packages de données sécurisés par l'IT. "
-            "Indicateur : nombre de Data Champions certifiés par cluster.",
+            "Créer un parcours 'Data Champion' & Acculturation (F7)",
+            "La famille Data Engineering & Reporting (F7) est la plus dense et requiert des compétences avancées. "
+            "Vision : Faire monter en compétences des champions métiers avancés pour soulager l'IT centrale et accélérer l'innovation analytique. "
+            "Action : Concevoir un parcours de certification 'Data Champion' axé sur la manipulation avancée des données et la création de rapports automatisés sécurisés, en s'appuyant sur les packages fournis par la DSI.\n"
+            "Exemple concret : Un analyste supply chain formé pour requêter de manière sécurisée un dataset BigQuery d'entreprise via des invites de code IA (Gemini in BigQuery), éliminant le besoin de solliciter un ingénieur data IT pour extraire des fichiers CSV manuels.\n"
+            "Indicateur : nombre de Data Champions certifiés par cluster et par région.",
         ),
     ]
 
