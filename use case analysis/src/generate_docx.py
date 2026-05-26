@@ -569,14 +569,35 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     )
 
     # Phase 4 — Signalement IT
-    add_sub_heading(doc, "Phase 4 — Détection des dépendances IT")
+    add_sub_heading(doc, "Phase 4 — Détection et gouvernance des dépendances IT")
     add_body_text(
         doc,
-        "Un algorithme de détection automatique identifie les use cases impliquant des systèmes "
-        "d'entreprise (SFDC, SAP, DCS, SCADA, Active Directory, OAuth, API keys, Cloud Run, "
-        "Vertex AI, BigQuery). Ces use cases reçoivent un drapeau IT obligatoire, signalant "
-        "qu'ils ne peuvent pas être conduits par un champion seul."
+        "La gouvernance technique repose sur la distinction entre deux indicateurs clés : "
+        "l'indicateur de visibilité passive (IT_Attention) et le drapeau d'action obligatoire (IT_Flag)."
     )
+    add_bullet(
+        doc,
+        "Trace tous les mots-clés techniques (ex: SFDC, SAP, API, SQL) "
+        "pour offrir à la DSI une visibilité complète et passive sur le patrimoine technologique touché, "
+        "indépendamment de la taille du projet.",
+        "IT_Attention (Visibilité)",
+    )
+    add_bullet(
+        doc,
+        "Désigne les projets nécessitant un accompagnement "
+        "et une validation formelle par la DSI avant tout déploiement. Ce drapeau impose des revues "
+        "de sécurité et d'architecture.",
+        "IT_Flag (Gouvernance)",
+    )
+    add_callout(
+        doc,
+        "Règle d'exemption pour les Quick Wins (Small) : Afin de ne pas freiner l'innovation sur le terrain "
+        "et d'éviter l'engorgement administratif de la DSI, tous les use cases classés dans la catégorie 'Small' "
+        "(Score Total <= 7) sont exemptés d'IT_Flag (qui reste vide), même s'ils contiennent des mots-clés "
+        "détectés dans IT_Attention. Ces petits projets locaux restent sous l'entière autonomie du champion.",
+        style="info",
+    )
+
 
     # Phase 5 — Architecture cible
     add_sub_heading(doc, "Phase 5 — Architecture cible Google-first")
@@ -1008,10 +1029,21 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
     add_callout(
         doc,
         "Ces use cases impliquent des dépendances systèmes (SFDC, SAP, DCS, SCADA, BigQuery, API) "
-        "ou ont un profil Large qui dépasse les capacités d'un champion seul. "
+            "ou ont un profil Large qui dépasse les capacités d'un champion seul. "
         "Une coordination avec les équipes IT locales est obligatoire avant tout déploiement.",
         style="warning",
     )
+
+    add_body_text(
+        doc,
+        "Pour optimiser les ressources de la DSI et accélérer le time-to-value, "
+        "nous appliquons un principe de gouvernance différenciée appelé 'Exemption des Quick Wins'. "
+        "La colonne IT_Attention assure une traçabilité exhaustive de tous les mots-clés techniques détectés. "
+        "En revanche, la colonne IT_Flag n'est activée que pour les projets d'envergure structurante "
+        "(Complexity Tier = Medium ou Large). Les petits projets autonomes (Small) sont exemptés d'IT_Flag "
+        "pour pouvoir être déployés rapidement et sans lourdeur administrative par les champions."
+    )
+
 
     it_df = df[df["IT_Flag"] != ""].copy()
     it_by_family = (
