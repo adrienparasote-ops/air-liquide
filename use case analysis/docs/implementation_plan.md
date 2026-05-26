@@ -1,107 +1,117 @@
 > Document Type: Implementation
 
-# Implementation Plan — Semantic Scoring v2, Maturity Overrides & L4 Data Tools
+# Implementation Plan — Data Sources Extraction & Functional Family Synthesis Table
 
-Update `src/generate_catalog.py` using Test-Driven Development (TDD) to implement the Semantic Scoring v2 rules, DONE-marker parsing logic, and L4 data tools override. This ensures that the generated spreadsheet matches the validated counts in `docs/use_cases_catalog.md`.
+Add a `Data_Sources` column at the end of the `use_cases_catalog.xlsx` file. This column is dynamically extracted from use case descriptions and tools using a robust rule-based parsing engine. We will then update the Google Apps Script (`create_analysis.gs`) to add a detailed summary table under the "Synthèse" sheet showing data source needs by functional family and their global percentage of occurrence.
 
 ## Assumptions
 
 | # | Assumption | Risk | Validation |
 |---|---|---|---|
-| 1 | Description markers match exactly the 3 target use cases | Low | Test against actual Excel rows and verify only 3 are marked `Partiel`. |
-| 2 | Complexity tiers are automatically derived from revised total scores | Low | Assert that recalculating `Score_Total` correctly yields Small/Medium/Large. |
-| 3 | Indexing format syncs with Apps Script charts | Low | Verify column order: `Maturity_Status` must be directly before long description. |
+| 1 | `Data_Sources` column can be appended safely at the end of `EXPORT_COLS` without breaking Apps Script | Low | The Apps Script retrieves columns dynamically via header mapping (`col[h] = i`). An appended column has zero impact on existing columns. |
+| 2 | Offline semantic rules are preferred over online LLM API calls | Low | The pipeline runs completely offline, deterministically, and in <1 second with 100% test coverage. Standardizing extraction using robust regex is highly reliable, cost-free, and avoids credential leakage or latency overhead. |
+| 3 | Use cases with no identified source default to "Non renseigné" | Low | Ensures no empty or null cells exist in the spreadsheet export. |
+| 4 | Multiple sources are split and counted unitarily in Apps Script | Low | By format spec, sources are comma-separated (e.g. `"SAP, Sheets"`). The Apps Script will split them and aggregate counts unitarily (no combined rows). |
 
-## User Review Required
+## Constraints
 
-> [!IMPORTANT]
-> The maturity overrides and L4 data tools minimum overrides are designed to be driven by semantic description markers and tool tag values rather than hardcoded row numbers. This preserves the script's robustness for future runs while ensuring perfect alignment with current counts:
-> - **Small**: 110 (44.4%)
-> - **Medium**: 130 (52.4%)
-> - **Large**: 8 (3.2%)
-> - **IT Flags**: 81
-> - **Maturity Status (Partiel)**: Exactly 3 use cases (`UC_0004`, `UC_0093`, `UC_0104`).
+| Tier | Examples |
+|------|----------|
+| **Always do** | Run the complete pytest suite before proposing any change; ensure 100% test coverage for new parsing functions. |
+| **Ask first** | Any change to core scoring weight dimensions (D1-D5). |
+| **Never do** | Hardcode specific UC_IDs for data source overrides; rules must be purely semantic and generic. |
 
 ## Anti-patterns
 
 | Anti-pattern | Consequence | Corrective Action |
 |--------------|-------------|-------------------|
-| **Hardcoding Row Numbers / UC_IDs** | Breaks robustness if the source Excel file rows are reordered or filtered. | Drive overrides purely via semantic markers and tool values. |
-| **Mutating Original DataFrame** | Violates immutability standards; makes debugging difficult and risks side effects. | Always operate on a copy via `.copy()` or return a new DataFrame. |
-| **Global Overrides for All Mature Markers** | Unintended side effects on other rows that might have similar words. | Restrict overrides to specific recognized markers. |
-| **Ignoring L4 Minimum Override for Mature Rows** | Setting mature scores blindly without checking if they have D3 L4 overrides. | Apply overrides in a clear, sequential priority list. |
-| **Appending Column at the End** | Breaks index alignment in downstream Apps Script dashboards. | Insert `"Maturity_Status"` precisely before the long description. |
+| **Hardcoding specific rows** | Breaks if the source Excel is updated or reordered. | Implement a robust, case-insensitive keyword regex extraction function. |
+| **Adding duplicate names** | E.g. "Google Drive, Drive" in the same list. | Deduplicate extracted tags in the parser before joining them. |
+| **Index-based Apps Script lookup** | If the Apps Script used hardcoded column indices, adding a column would shift everything and break the script. | Rely entirely on dynamic header indexing: `headers.forEach((h, i) => { col[h] = i; });`. |
+| **Failing to clean N/A values** | Null or empty values can cause cell parsing errors in Sheets. | Default empty sources to `"Non renseigné"`. |
+| **Missing unit tests for new regex** | Risks regressions or silent extraction failures. | Write a comprehensive suite of unit tests for all regex variations in `test_generate_catalog.py`. |
 
 ## Proposed Changes
 
-We will implement the following changes in the source code:
+---
+
+### Catalog Generation (Python)
+
+#### [MODIFY] [generate_catalog.py](file:///Users/adrien.parasote/Documents/Projects/Air%20Liquide/use%20case%20analysis/src/generate_catalog.py#L89)
+- Define a list of semantic rules for data source detection:
+  - **SAP**: `\bsap\b`, `s/4hana`, `erp`
+  - **Salesforce**: `\bsfdc\b`, `\bsalesforce\b`, `crm`
+  - **Power BI**: `\bpower\s?bi\b`
+  - **Sheets**: `\bsheet\b`, `\bexcel\b`, `\bspreadsheet\b`, `\bvba\b`
+  - **Google Drive**: `\bdrive\b`, `google drive`
+  - **BigQuery**: `\bbigquery\b`, `\bbq\b`
+  - **AVEVA**: `\baveva\b`
+  - **DCS**: `\bdcs\b`
+  - **SCADA**: `\bscada\b`
+  - **Maximo**: `\bmaximo\b`
+  - **CMMS**: `\bcmms\b`
+  - **Oracle**: `\boracle\b`
+  - **Lakehouse**: `\blakehouse\b`
+  - **Database**: `\bdatabase\b`, `\bsql\b`
+  - **PDF / Documents**: `\bpdf\b`, `\bdocument\b`, `\bcontract\b`, `\breport\b`, `\binvoice\b`, `\bletter\b`, `\bemail\b`, `\bmail\b`
+- Create a function `extract_data_sources(desc: str, tools: str) -> str` that:
+  - Scans both `Use Case Description (Long)` and `Tools` case-insensitively using regex.
+  - Returns a comma-separated list of identified data sources (e.g. `"SAP, Google Drive"`).
+  - Defaults to `"Non renseigné"` if no sources are found.
+- Append `"Data_Sources"` to the end of `EXPORT_COLS`.
+- Update `process_dataframe` to populate the `Data_Sources` column.
 
 ---
 
-### Core Data Processing & Export
+### Unit Test Suite (Python)
 
-#### [MODIFY] [generate_catalog.py](file:///Users/adrien.parasote/Documents/Projects/Air%20Liquide/src/generate_catalog.py#L1)
-- **Maturity Marker Detection**:
-  - Add logic to scan `Use Case Description (Long)` case-insensitively for explicit mature markers:
-    - Row 3 (`UC_0004`): `--DONE, SO FAR -`
-    - Row 92 (`UC_0093`): `I have already done this with PowerBI` or `I have already initiated the movement`
-    - Row 103 (`UC_0104`): `Project expanding on the existing tools already deployed`
-  - If a marker is detected, set `Maturity_Status` column to `"🔄 Partiel"`, otherwise set to `""`.
-- **Scoring Overrides**:
-  - For rows identified as mature, reduce their complexity scores to reflect only the prospective remaining effort:
-    - **Salesforce / Row 3**: Set `Score_Data = 1` and `Score_AI = 1`
-    - **CMMS/OneMaximo / Row 92**: Set `Score_Data = 2` and `Score_AI = 1`
-    - **AUQA Quoting / Row 103**: Set `Score_Data = 1`
-  - Ensure `Score_Total` is re-calculated as the sum of all 5 dimensions after overrides are applied.
-- **L4 Data Tools Override**:
-  - Update `score_data` logic to check if `Python on Fabric` or `Python on DataStudio` is in the tools tags, or if `BigQuery` is in tags or the description (case-insensitive).
-  - If present, ensure D3 (`Score_Data`) is at least 2.
-- **Export Columns**:
-  - Insert `"Maturity_Status"` in `EXPORT_COLS` list, immediately preceding `"Use Case Description (Long)"`.
+#### [MODIFY] [test_generate_catalog.py](file:///Users/adrien.parasote/Documents/Projects/Air%20Liquide/use%20case%20analysis/src/tests/test_generate_catalog.py#L627)
+- Add comprehensive unit tests in `src/tests/test_generate_catalog.py` to cover:
+  - `extract_data_sources` function for individual sources (SAP, Sheets, Power BI, Salesforce, Google Drive, SCADA, etc.).
+  - Deduplication and multi-source combination (e.g. `"SAP, Google Drive"`).
+  - Integration of `Data_Sources` column inside `process_dataframe`.
 
 ---
 
-### Unit Test Suite
+### Apps Script Dashboard (JavaScript)
 
-#### [MODIFY] [test_generate_catalog.py](file:///Users/adrien.parasote/Documents/Projects/Air%20Liquide/src/tests/test_generate_catalog.py#L1)
-- **TDD Requirement**: Add failing test cases in `src/tests/test_generate_catalog.py` *before* modifying `src/generate_catalog.py`:
-  - Test description-based split and marker detection (`Maturity_Status` calculation).
-  - Test the D3 override logic for `Python on Fabric`, `Python on DataStudio`, and `BigQuery` (L4 data tools minimum).
-  - Test the specific score overrides for all 3 mature use cases.
-  - Test the new `Maturity_Status` column population in `process_dataframe`.
+#### [MODIFY] [create_analysis.gs](file:///Users/adrien.parasote/Documents/Projects/Air%20Liquide/use%20case%20analysis/src/create_analysis.gs#L250)
+- In `buildSynthèse(sheet, rows, col)`:
+  - Add a call to `writeSourcesTable(sheet, rows, col, cursor, 1)`.
+- Create the `writeSourcesTable` function which:
+  - Dynamically extracts all unique individual data sources found in the `Data_Sources` column (excluding `"Non renseigné"` which is placed at the end).
+  - Groups use case counts by `Family_Label` (columns) and `Data Source` (rows).
+  - Computes the `Total` count and `% Global` (relative to the total of 248 use cases).
+  - Formats the table with the corporate blue header and alternating gray rows.
 
 ## Test Cases
 
 | Test ID | Name | Category | Description |
 |---|---|---|---|
-| **TC-001** | `test_maturity_status_none` | Unit | Verify descriptions without mature markers get empty string maturity status. |
-| **TC-002** | `test_maturity_status_sfdc` | Unit | Verify `--DONE, SO FAR -` sets status to `"🔄 Partiel"`. |
-| **TC-003** | `test_maturity_status_cmms` | Unit | Verify `I have already done this with PowerBI` or `I have already initiated the movement` sets status to `"🔄 Partiel"`. |
-| **TC-004** | `test_maturity_status_auqa` | Unit | Verify `Project expanding on the existing tools already deployed` sets status to `"🔄 Partiel"`. |
-| **TC-005** | `test_score_data_l4_override` | Unit | Verify `Python on DataStudio` and `BigQuery` force D3 >= 2. |
-| **IT-001** | `test_process_dataframe_maturity_overrides` | Integration | Verify specific score reductions for Salesforce, CMMS, and AUQA are applied and `Score_Total` is correctly recalculated. |
-| **IT-002** | `test_process_dataframe_l4_override` | Integration | Verify D3 >= 2 override works in the full pipeline for Fabric, DataStudio, and BigQuery. |
-| **IT-003** | `test_main_workflow_end_to_end` | Integration | Run process on a dummy DataFrame and verify that the `Maturity_Status` column is in the final export in the correct position. |
+| **TC-006** | `test_extract_data_sources_sap` | Unit | Verify description containing SAP is extracted as `"SAP"`. |
+| **TC-007** | `test_extract_data_sources_sheets` | Unit | Verify Sheets/Excel triggers `"Sheets"`. |
+| **TC-008** | `test_extract_data_sources_multiple` | Unit | Verify combining multiple sources (e.g. SAP and Google Drive). |
+| **TC-009** | `test_extract_data_sources_none` | Unit | Verify fallback to `"Non renseigné"` when no keywords match. |
+| **TC-010** | `test_extract_data_sources_case_insensitivity` | Unit | Verify case-insensitive detection of SAP and Sheets. |
+| **TC-011** | `test_extract_data_sources_deduplication` | Unit | Verify duplicate data sources are consolidated into one unique entry. |
+| **IT-004** | `test_process_dataframe_data_sources` | Integration | Verify that `Data_Sources` is correctly populated and exported at the end of the dataframe in `process_dataframe`. |
+| **IT-005** | `test_main_runs_completely_with_new_column` | Integration | Verify main pipeline completes without permission or formatting errors. |
+| **IT-006** | `test_generate_catalog_data_sources_coverage` | Integration | Verify all rows have a non-empty `Data_Sources` column in the output file. |
 
 ## Error Handling
 
 | Error | Response | Fallback | Logging |
 |---|---|---|---|
-| **Source file not found** | Exits with status 1 | None | Friendly terminal error message printed |
-| **Missing expected columns** | Exits with status 1 | None | KeyError trace / terminal error message printed |
-| **Excel write permission error** | Exits with status 1 | None | PermissionError / terminal error message printed |
-| **Invalid/Empty description rows** | Row is skipped | Skip row | Silence skip in dataframe filter |
+| **Empty or NaN values in source** | Handle gracefully in `extract_data_sources` | Return `"Non renseigné"` | Friendly return without throwing exceptions |
+| **Invalid tool tags format** | Skip and proceed | Return `"Non renseigné"` | Silence skip in dataframe mapping |
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `pytest src/tests/test_generate_catalog.py` to confirm that:
-  - Phase 1 (RED): Newly added tests fail due to missing logic.
-  - Phase 2 (GREEN): All unit tests pass once implementation is complete.
+- Run `python3 -m pytest src/tests/ -v --cov=src` to verify that all 220+ tests pass with 100% coverage.
 
 ### Manual Verification
-- Execute `python3 src/generate_catalog.py` to regenerate `docs/use_cases_catalog.xlsx`.
-- Confirm that the terminal summary matches the target stats exactly:
-  - Tiers: `{'Medium': 130, 'Small': 110, 'Large': 8}`
-  - IT Flags: `81`
-  - Exactly 3 rows with `"🔄 Partiel"` in the `"Maturity_Status"` column.
+- Run `python3 src/generate_catalog.py` to regenerate the catalog Excel sheet.
+- Inspect the generated spreadsheet's last column `Data_Sources` to confirm correct extraction.
+- Deploy the updated `create_analysis.gs` script to Google Sheets.
+- Trigger "Analyse complète" or "Créer les tableaux de synthèse" and verify the beautiful new data sources functional breakdown table.

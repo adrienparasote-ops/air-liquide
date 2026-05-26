@@ -710,6 +710,77 @@ class TestMaturityAndOverrides(unittest.TestCase):
 
 
 # ════════════════════════════════════════════════════════════════
+# Data Sources Extraction
+# ════════════════════════════════════════════════════════════════
+class TestExtractDataSources(unittest.TestCase):
+    def test_extract_data_sources_sap(self):
+        # TC-006
+        self.assertEqual(gc.extract_data_sources("Consolidates manual SAP data exports", ""), "SAP")
+        self.assertEqual(gc.extract_data_sources("SAP S/4HANA migration", ""), "SAP")
+
+    def test_extract_data_sources_sheets(self):
+        # TC-007
+        self.assertEqual(gc.extract_data_sources("central repository using Sheets", ""), "Sheets")
+        self.assertEqual(gc.extract_data_sources("VBA scripts", ""), "Sheets")
+
+    def test_extract_data_sources_multiple(self):
+        # TC-008
+        res = gc.extract_data_sources("An assistant for Salesforce, reading SAP and Sheets", "")
+        self.assertIn("SAP", res)
+        self.assertIn("Salesforce", res)
+        self.assertIn("Sheets", res)
+
+    def test_extract_data_sources_none(self):
+        # TC-009
+        self.assertEqual(gc.extract_data_sources("Translate this text", "Gemini"), "Non renseigné")
+
+    def test_extract_data_sources_case_insensitivity(self):
+        # TC-010
+        self.assertEqual(gc.extract_data_sources("sap data", ""), "SAP")
+        self.assertEqual(gc.extract_data_sources("powerbi dashboard", ""), "Power BI")
+
+    def test_extract_data_sources_deduplication(self):
+        # TC-011
+        self.assertEqual(gc.extract_data_sources("SAP and another SAP load", ""), "SAP")
+
+    def test_process_dataframe_data_sources(self):
+        # IT-004
+        df = _make_raw_df(**{
+            "Use Case Description (Long)": ["Automated SAP and Sheets consolidation"],
+            "Tools": ["Gemini"],
+        })
+        res = gc.process_dataframe(df)
+        self.assertIn("Data_Sources", res.columns)
+        self.assertEqual(res["Data_Sources"].iloc[0], "SAP, Sheets")
+
+    def test_main_runs_completely_with_new_column(self):
+        # IT-005
+        import tempfile
+        import os
+        fake_source = MagicMock(spec=Path)
+        fake_source.exists.return_value = True
+        raw_df = _make_raw_df(**{"Use Case Description (Long)": ["Read from SAP"]})
+        with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
+            tmp_path = Path(tmp.name)
+        try:
+            with patch("generate_catalog.pd.read_excel", return_value=raw_df):
+                gc.main(source=fake_source, output=tmp_path)
+            self.assertTrue(tmp_path.exists())
+            df_out = pd.read_excel(tmp_path, sheet_name="Catalogue")
+            self.assertIn("Data_Sources", df_out.columns)
+            self.assertEqual(df_out["Data_Sources"].iloc[0], "SAP")
+        finally:
+            if tmp_path.exists():
+                os.unlink(tmp_path)
+
+    def test_generate_catalog_data_sources_coverage(self):
+        # IT-006
+        df = _make_raw_df()
+        res = gc.process_dataframe(df)
+        self.assertTrue((res["Data_Sources"] != "").all())
+
+
+# ════════════════════════════════════════════════════════════════
 # main() — filesystem mocking
 # ════════════════════════════════════════════════════════════════
 class TestMain(unittest.TestCase):

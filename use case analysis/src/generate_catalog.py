@@ -93,7 +93,44 @@ EXPORT_COLS: list[str] = [
     "Tools_Tags","Nb_Tools","Max_Tool_Level","IT_Flag","IT_Attention",
     "Maturity_Status",
     "Use Case Description (Long)",
+    "Data_Sources",
 ]
+
+DATA_SOURCES_RULES: list[tuple[str, list[str]]] = [
+    ("SAP", [r"\bsap\b", r"s/4hana", r"erp"]),
+    ("Salesforce", [r"\bsfdc\b", r"\bsalesforce\b", r"crm"]),
+    ("Power BI", [r"\bpower\s?bi\b"]),
+    ("Sheets", [r"\bsheets?\b", r"\bexcel\b", r"\bspreadsheets?\b", r"\bvba\b"]),
+    ("Google Drive", [r"\bdrive\b", r"google drive"]),
+    ("BigQuery", [r"\bbigquery\b", r"\bbq\b"]),
+    ("AVEVA", [r"\baveva\b"]),
+    ("DCS", [r"\bdcs\b"]),
+    ("SCADA", [r"\bscada\b"]),
+    ("Maximo", [r"\bmaximo\b"]),
+    ("CMMS", [r"\bcmms\b"]),
+    ("Oracle", [r"\boracle\b"]),
+    ("Lakehouse", [r"\blakehouse\b"]),
+    ("Database", [r"\bdatabases?\b", r"\bsql\b"]),
+    ("PDF / Documents", [r"\bpdf\b", r"\bdocuments?\b", r"\bcontracts?\b", r"\breports?\b", r"\binvoices?\b", r"\bletters?\b", r"\bemails?\b", r"\bmails?\b"])
+]
+
+
+def extract_data_sources(desc: str, tools: str) -> str:
+    if not desc and not tools:
+        return "Non renseigné"
+    combined = f"{desc or ''} {tools or ''}".lower()
+    matched = []
+    for source, patterns in DATA_SOURCES_RULES:
+        if any(re.search(pat, combined) for pat in patterns):
+            matched.append(source)
+    # Deduplicate while preserving order of rules
+    seen = set()
+    unique_matched = []
+    for m in matched:
+        if m not in seen:
+            seen.add(m)
+            unique_matched.append(m)
+    return ", ".join(unique_matched) if unique_matched else "Non renseigné"
 
 
 def make_uc_id(text: str) -> str:
@@ -376,6 +413,9 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df["IT_Flag"] = df.apply(compute_it_flag, axis=1)
 
     df["Tools_Tags"] = df["Tools_Tags"].apply(lambda x: ", ".join(x) if x else "")
+
+    df["Data_Sources"] = df.apply(
+        lambda r: extract_data_sources(r["Use Case Description (Long)"], r["Tools"]), axis=1)
 
     return df[EXPORT_COLS]
 

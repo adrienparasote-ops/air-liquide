@@ -192,6 +192,17 @@ Ces colonnes ont été **calculées et ajoutées** lors de l'analyse. Elles n'ex
 
 ---
 
+### `Data_Sources`
+| | |
+|--|--|
+| **Source** | Calculé — classification sémantique de la description et des outils |
+| **Type** | Texte (liste séparée par des virgules) |
+| **Valeurs possibles** | `SAP`, `Salesforce`, `Power BI`, `Sheets`, `Google Drive`, `BigQuery`, `AVEVA`, `DCS`, `SCADA`, `Maximo`, `CMMS`, `Oracle`, `Lakehouse`, `Database`, `PDF / Documents`, `Non renseigné` |
+
+**Comment l'utiliser :** Identifier les systèmes d'information et les environnements de données requis pour chaque use case. Permet de dresser la cartographie unitaire des besoins par famille fonctionnelle.
+
+---
+
 ## Groupe 3 — Scoring de complexité
 
 Chaque colonne représente le score (1, 2 ou 3) d'une dimension du scoring. **La somme de ces 5 scores = `Score_Total`.**

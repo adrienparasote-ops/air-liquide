@@ -67,7 +67,7 @@ function runGraphiquesOnly() {
   const chartSheet = ss.insertSheet("Graphiques");
   buildGraphiques(ss, chartSheet, rows, col);
   ss.setActiveSheet(chartSheet);
-  SpreadsheetApp.getUi().alert("✅ Onglet 'Graphiques' créé avec 6 graphiques natifs.");
+  SpreadsheetApp.getUi().alert("✅ Onglet 'Graphiques' créé avec 9 graphiques natifs.");
 }
 
 /** Supprime les onglets générés (Synthèse et Graphiques). */
@@ -164,7 +164,7 @@ function createAnalysis() {
   buildGraphiques(ss, chartSheet, rows, col);
 
   ss.setActiveSheet(synthSheet);
-  SpreadsheetApp.getUi().alert("✅ Analyse créée !\n\nOnglets ajoutés :\n• Synthèse : tableaux croisés\n• Graphiques : 6 graphiques natifs");
+  SpreadsheetApp.getUi().alert("✅ Analyse créée !\n\nOnglets ajoutés :\n• Synthèse : tableaux croisés\n• Graphiques : 9 graphiques natifs (dont 3 focus Medium+Large)");
 }
 
 
@@ -249,6 +249,10 @@ function buildSynthèse(sheet, rows, col) {
 
   // ── Tableau 6 : Top 10 Quick Wins ────────────────────────────────────────
   cursor = writeQuickWins(sheet, rows, col, cursor, 1);
+  cursor += 2;
+
+  // ── Tableau 7 : Sources de données nécessaires par famille ──────────────────
+  cursor = writeSourcesTable(sheet, rows, col, cursor, 1);
 }
 
 
@@ -385,7 +389,7 @@ function writeQuickWins(sheet, rows, col, startRow, startCol) {
 // ════════════════════════════════════════════════════════════════════════════
 
 function buildGraphiques(ss, sheet, rows, col) {
-  const TOTAL_COLS = 60; // BH = colonne 60
+  const TOTAL_COLS = 68; // Extended for new M+L charts
 
   // Étendre la feuille si elle n'a pas assez de colonnes (défaut = 26)
   const currentCols = sheet.getMaxColumns();
@@ -531,6 +535,54 @@ function buildGraphiques(ss, sheet, rows, col) {
     });
   }
   const D6_END = dataRow - 1;
+  dataRow += 2;
+
+  // ─ D7 : Medium+Large filtré — Famille × Stage ─────────────────────────────
+  const mlRows = rows.filter(r => {
+    const tier = String(r[col["Complexity_Tier"]] || "");
+    return tier === "Medium" || tier === "Large";
+  });
+  const stageOrder = ["Ideation", "POC", "MVP", "Testing / Eval", "In Development", "Scale-up", "Production", "Non renseigné"];
+  const famStagePivot = crossTab(mlRows, col["Family_Label"], col["Stage"], stageOrder);
+  const D7_ROW = dataRow;
+  const D7_HEADERS = ["Famille", ...stageOrder];
+  D7_HEADERS.forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
+  dataRow++;
+  famStagePivot.forEach(([key, vals]) => {
+    sheet.getRange(dataRow, DATA_START_COL).setValue(key);
+    stageOrder.forEach((s, i) => sheet.getRange(dataRow, DATA_START_COL + 1 + i).setValue(vals[s] || 0));
+    dataRow++;
+  });
+  const D7_END = dataRow - 1;
+  dataRow += 2;
+
+  // ─ D9 : Medium vs Large donut ─────────────────────────────────────────────
+  const mlTierCounts = countBy(mlRows, col["Complexity_Tier"]);
+  const mlTierOrder = ["Medium", "Large"];
+  const D9_ROW = dataRow;
+  sheet.getRange(dataRow, DATA_START_COL).setValue("Tier");
+  sheet.getRange(dataRow, DATA_START_COL + 1).setValue("Count");
+  dataRow++;
+  mlTierOrder.forEach(t => {
+    sheet.getRange(dataRow, DATA_START_COL).setValue(t);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(mlTierCounts[t] || 0);
+    dataRow++;
+  });
+  const D9_END = dataRow - 1;
+  dataRow += 2;
+
+  // ─ D10 : Volume M+L par famille (Medium / Large séparés) ──────────────────
+  const mlFamTierPivot = crossTab(mlRows, col["Family_Label"], col["Complexity_Tier"], mlTierOrder);
+  const D10_ROW = dataRow;
+  ["Famille", "Medium", "Large"].forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
+  dataRow++;
+  mlFamTierPivot.forEach(([key, vals]) => {
+    sheet.getRange(dataRow, DATA_START_COL).setValue(key);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(vals["Medium"] || 0);
+    sheet.getRange(dataRow, DATA_START_COL + 2).setValue(vals["Large"] || 0);
+    dataRow++;
+  });
+  const D10_END = dataRow - 1;
 
   // ── Créer les 6 graphiques ─────────────────────────────────────────────────
 
@@ -636,6 +688,75 @@ function buildGraphiques(ss, sheet, rows, col) {
       "fontName":        "Calibri",
     }
   });
+
+  // ── Section Medium + Large ─────────────────────────────────────────────────
+
+  // Section separator
+  const sectionRow = 68;
+  const sepRange = sheet.getRange(sectionRow, 1, 1, TOTAL_COLS);
+  sepRange.merge();
+  sepRange.setValue("🔍  Focus Medium & Large — Use cases structurants et stratégiques");
+  sepRange.setBackground(COLORS.navy);
+  sepRange.setFontColor(COLORS.gold);
+  sepRange.setFontSize(13);
+  sepRange.setFontWeight("bold");
+  sepRange.setVerticalAlignment("middle");
+  sheet.setRowHeight(sectionRow, 36);
+  sheet.getRange(sectionRow + 1, 1, 1, TOTAL_COLS).setBackground(COLORS.gold);
+  sheet.setRowHeight(sectionRow + 1, 4);
+
+  // G7 : Donut — Medium vs Large
+  insertChart(sheet, Charts.ChartType.PIE, {
+    title:    "Répartition Medium vs Large",
+    dataRange: sheet.getRange(D9_ROW, DATA_START_COL, D9_END - D9_ROW + 1, 2),
+    anchorRow: 71, anchorCol: 2,
+    width: 400, height: 340,
+    options: {
+      "pieHole":         0.55,
+      "colors":          [COLORS.gold, COLORS.red],
+      "legend.position": "bottom",
+      "chartArea.left":  "10%",
+      "chartArea.width": "80%",
+      "fontName":        "Calibri",
+    }
+  });
+
+  // G8 : Stacked Column — Volume Medium + Large par famille
+  insertChart(sheet, Charts.ChartType.COLUMN, {
+    title:    "Volume Medium + Large par famille",
+    dataRange: sheet.getRange(D10_ROW, DATA_START_COL, D10_END - D10_ROW + 1, 3),
+    anchorRow: 71, anchorCol: 16,
+    width: 520, height: 360,
+    options: {
+      "isStacked":       true,
+      "colors":          [COLORS.gold, COLORS.red],
+      "legend.position": "top",
+      "vAxis.title":     "Nb use cases",
+      "chartArea.left":  "10%",
+      "chartArea.width": "80%",
+      "bar.groupWidth":  "65%",
+      "fontName":        "Calibri",
+    }
+  });
+
+  // G9 : Stacked column — Famille × Stage (M+L only)
+  insertChart(sheet, Charts.ChartType.COLUMN, {
+    title:    "Maturité par famille (Medium + Large)",
+    dataRange: sheet.getRange(D7_ROW, DATA_START_COL, D7_END - D7_ROW + 1, stageOrder.length + 1),
+    anchorRow: 92, anchorCol: 2,
+    width: 720, height: 420,
+    options: {
+      "isStacked":        true,
+      "colors":           ["#BDC3C7", COLORS.blue_light, COLORS.teal, COLORS.blue_mid, COLORS.blue_dark, COLORS.green, COLORS.purple, "#F0F0F0"],
+      "legend.position":  "top",
+      "vAxis.title":      "Nombre de use cases",
+      "chartArea.left":   "8%",
+      "chartArea.width":  "85%",
+      "bar.groupWidth":   "70%",
+      "fontName":         "Calibri",
+      "series":           { 7: { color: "#F0F0F0" } },
+    }
+  });
 }
 
 
@@ -689,3 +810,115 @@ function insertChart(sheet, chartType, { title, dataRange, anchorRow, anchorCol,
 
   sheet.insertChart(builder.build());
 }
+
+
+// ── Tableau des Sources de données nécessaires par famille ──────────────────
+function writeSourcesTable(sheet, rows, col, startRow, startCol) {
+  const families = ["F1", "F2", "F3", "F4", "F5", "F6", "F7"];
+  const famLabels = {
+    "F1": "Automatisation documentaire",
+    "F2": "Assistant BI & décisionnel",
+    "F3": "Customer & Sales Intelligence",
+    "F4": "Monitoring & Maintenance industrielle",
+    "F5": "Knowledge Management & Formation",
+    "F6": "Automatisation de workflows internes",
+    "F7": "Data Engineering & Reporting"
+  };
+
+  // Titre section
+  const colCount = families.length + 3; // Source + F1..F7 + Total + % Global
+  const titleRange = sheet.getRange(startRow, startCol, 1, colCount);
+  titleRange.merge();
+  titleRange.setValue("⑦ Sources de données nécessaires par famille (Comptage unitaire)");
+  titleRange.setBackground(COLORS.header_bg);
+  titleRange.setFontColor(COLORS.white);
+  titleRange.setFontWeight("bold");
+  titleRange.setFontSize(10);
+  sheet.setRowHeight(startRow, 26);
+  startRow++;
+
+  // En-têtes colonnes
+  const headers = ["Source de données", ...families, "Total", "% Global"];
+  const hRange = sheet.getRange(startRow, startCol, 1, headers.length);
+  hRange.setValues([headers]);
+  hRange.setBackground(COLORS.blue_mid);
+  hRange.setFontColor(COLORS.white);
+  hRange.setFontWeight("bold");
+  hRange.setHorizontalAlignment("center");
+  hRange.getCell(1, 1).setHorizontalAlignment("left");
+  startRow++;
+
+  // Calculer l'occurrence unitaire par famille et par source
+  const sourceFamilyCounts = {}; // { sourceName: { F1: count, F2: count, ... } }
+  const sourceTotals = {};
+  const globalTotalUseCases = rows.length;
+
+  rows.forEach(r => {
+    const rawSources = String(r[col["Data_Sources"]] || "Non renseigné");
+    const familyCode = String(r[col["Family"]] || "F1"); // F1-F7
+    
+    // Séparer les sources de données unitaires
+    const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
+    
+    individualSources.forEach(src => {
+      if (!sourceFamilyCounts[src]) {
+        sourceFamilyCounts[src] = {};
+        families.forEach(f => sourceFamilyCounts[src][f] = 0);
+        sourceTotals[src] = 0;
+      }
+      sourceFamilyCounts[src][familyCode] = (sourceFamilyCounts[src][familyCode] || 0) + 1;
+      sourceTotals[src]++;
+    });
+  });
+
+  // Trier les sources par total décroissant (avec "Non renseigné" à la fin)
+  const sortedSources = Object.keys(sourceFamilyCounts).sort((a, b) => {
+    if (a === "Non renseigné") return 1;
+    if (b === "Non renseigné") return -1;
+    return sourceTotals[b] - sourceTotals[a];
+  });
+
+  // Écrire les lignes
+  sortedSources.forEach((src, idx) => {
+    const rowData = [src];
+    families.forEach(f => {
+      rowData.push(sourceFamilyCounts[src][f] || 0);
+    });
+    rowData.push(sourceTotals[src]);
+    // Calculer le % global par rapport au total de tous les use cases
+    const pct = sourceTotals[src] / globalTotalUseCases;
+    rowData.push(pct);
+
+    const range = sheet.getRange(startRow, startCol, 1, rowData.length);
+    range.setValues([rowData]);
+    range.setHorizontalAlignment("center");
+    range.getCell(1, 1).setHorizontalAlignment("left");
+    
+    // Formater le pourcentage
+    const pctCell = range.getCell(1, rowData.length);
+    pctCell.setNumberFormat("0.0%");
+
+    if (idx % 2 === 0) range.setBackground(COLORS.gray_light);
+    startRow++;
+  });
+
+  // Légende explicative
+  startRow++;
+  const legTitle = sheet.getRange(startRow, startCol, 1, colCount);
+  legTitle.setValue("Légende des familles fonctionnelles :");
+  legTitle.setFontWeight("bold");
+  legTitle.setFontSize(9);
+  startRow++;
+
+  families.forEach(f => {
+    const legRange = sheet.getRange(startRow, startCol, 1, colCount);
+    legRange.merge();
+    legRange.setValue(`• ${f} : ${famLabels[f]}`);
+    legRange.setFontSize(9);
+    legRange.setFontColor("#555555");
+    startRow++;
+  });
+
+  return startRow;
+}
+
