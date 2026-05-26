@@ -60,8 +60,8 @@ Ces colonnes viennent du fichier source ou ont été calculées pour identifier 
 |--|--|
 | **Source** | Fichier source — colonne `Stage` |
 | **Type** | Texte |
-| **Valeurs possibles** | `Ideation`, `POC`, `MVP`, `Testing / Eval`, `In Development`, `Scale-up`, `Production`, `Non renseigné` |
-| **Note** | Les valeurs vides du fichier source sont remplacées par `"Non renseigné"` (141 cas) |
+| **Valeurs possibles** | `Ideation`, `POC`, `MVP`, `Testing / Eval`, `In Development`, `Scale-up`, `Production`, `A revoir avec le builder` |
+| **Note** | Les valeurs vides du fichier source sont remplacées par `"A revoir avec le builder"` (141 cas) |
 
 **Comment l'utiliser :** Combiner avec `Complexity_Tier` — un use case Large en `Ideation` est un signal d'alerte (sous-estimation probable). Un use case Small en `Production` est un Quick Win validé.
 
@@ -197,7 +197,7 @@ Ces colonnes ont été **calculées et ajoutées** lors de l'analyse. Elles n'ex
 |--|--|
 | **Source** | Calculé — classification sémantique de la description et des outils |
 | **Type** | Texte (liste séparée par des virgules) |
-| **Valeurs possibles** | `SAP`, `Salesforce`, `Power BI`, `Sheets`, `Google Drive`, `BigQuery`, `AVEVA`, `DCS`, `SCADA`, `Maximo`, `CMMS`, `Oracle`, `Lakehouse`, `Database`, `PDF / Documents`, `Non renseigné` |
+| **Valeurs possibles** | `SAP`, `Salesforce`, `Power BI`, `Sheets`, `Google Drive`, `BigQuery`, `AVEVA`, `DCS`, `SCADA`, `Maximo`, `CMMS`, `Oracle`, `Lakehouse`, `Database`, `PDF / Documents`, `A revoir avec le builder` |
 
 **Comment l'utiliser :** Identifier les systèmes d'information et les environnements de données requis pour chaque use case. Permet de dresser la cartographie unitaire des besoins par famille fonctionnelle.
 
@@ -347,7 +347,7 @@ Chaque colonne représente le score (1, 2 ou 3) d'une dimension du scoring. **La
 | Cluster spécifique | `Cluster = Airgas Cluster` |
 | Use cases prêts à scaler | `Stage = Scale-up` ou `Production` |
 | Use cases à fort impact | `Score_Economic = 3` |
-| Cas sans données manquantes | `Stage ≠ Non renseigné` |
+| Cas sans données manquantes | `Stage ≠ A revoir avec le builder` |
 
 ### Tableaux croisés utiles (Excel → Insertion → Tableau croisé dynamique)
 

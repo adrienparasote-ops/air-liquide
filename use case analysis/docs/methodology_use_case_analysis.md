@@ -28,7 +28,7 @@ Air Liquide a collecté 248 use cases IA portés par ses AI Champions (profils m
 | Problème détecté | Volume | Décision |
 |-----------------|--------|----------|
 | Valeurs `#REF!` dans `Cluster` et `Job Family` | 7 lignes | **Remplacer par `N/A`** (ne pas exclure) |
-| Use cases sans `Stage` renseigné | 141 lignes | **Inclure** — valeur = `"Non renseigné"` |
+| Use cases sans `Stage` renseigné | 141 lignes | **Inclure** — valeur = `"A revoir avec le builder"` |
 | Use cases sans `Economical Impact` | 193 lignes | **Inclure** — valeur = `"Non évalué"` |
 | `Tools` = liste libre multi-valeurs | Toutes lignes | **Normaliser** en tags individuels (ex: `"Gemini, App Script"` → 2 tags) |
 | Descriptions identiques, clusters différents | Ex: Voice Translation | **Grouper sous un UC_ID commun** — lignes conservées individuellement |
@@ -167,7 +167,7 @@ Critères déclencheurs du point d'attention :
 | In Development | Medium → Large | Investissement réel |
 | Scale-up | Large | Traction prouvée |
 | Production | Large | ROI mesurable |
-| Non renseigné | À scorer | Inclus dans l'analyse |
+| A revoir avec le builder | À scorer | Inclus dans l'analyse |
 
 ---
 
@@ -365,7 +365,7 @@ Les champions doivent savoir identifier les **signaux d'alerte** qui indiquent q
 | # | Sujet | Décision |
 |---|-------|----------|
 | D1 | Valeurs `#REF!` | Remplacées par `N/A` — lignes conservées |
-| D2 | Use cases sans Stage | Inclus — valeur `"Non renseigné"` |
+| D2 | Use cases sans Stage | Inclus — valeur `"A revoir avec le builder"` |
 | D3 | Use cases sans Impact éco | Inclus — valeur `"Non évalué"` |
 | D4 | Normalisation Tools | Tags individuels |
 | D5 | Doublons | Lignes conservées + UC_ID partagé |
