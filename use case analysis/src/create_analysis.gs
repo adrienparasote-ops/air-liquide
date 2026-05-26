@@ -276,6 +276,9 @@ function buildSynthèse(sheet, rows, col) {
 
 // ── Générateur de tableau croisé générique ───────────────────────────────────
 function writePivotTable(sheet, rows, col, startRow, startCol, title, rowField, colField, colOrder, colColors) {
+  const rowColLetter = getColumnLetter(col[rowField] + 1);
+  const colColLetter = getColumnLetter(col[colField] + 1);
+
   // Titre section
   const titleRange = sheet.getRange(startRow, startCol, 1, colOrder.length + 2);
   titleRange.merge();
@@ -299,6 +302,7 @@ function writePivotTable(sheet, rows, col, startRow, startCol, title, rowField, 
   });
 
   // En-têtes colonnes
+  const headerRowIndex = startRow;
   const headerRow = [rowField, ...colOrder, "Total"];
   const headerRange = sheet.getRange(startRow, startCol, 1, headerRow.length);
   headerRange.setValues([headerRow]);
@@ -323,16 +327,22 @@ function writePivotTable(sheet, rows, col, startRow, startCol, title, rowField, 
     return totB - totA;
   });
 
-  let grandTotal = 0;
-  const colTotals = {};
-  colOrder.forEach(c => colTotals[c] = 0);
+  const firstDataRowIndex = startRow;
 
   sortedKeys.forEach((key, idx) => {
-    const rowTotal = colOrder.reduce((s, c) => s + (pivot[key][c] || 0), 0);
-    grandTotal += rowTotal;
-    const dataRow = [key, ...colOrder.map(c => { colTotals[c] += (pivot[key][c] || 0); return pivot[key][c] || 0; }), rowTotal];
-    const range = sheet.getRange(startRow, startCol, 1, dataRow.length);
-    range.setValues([dataRow]);
+    const keyCellRef = "$" + getColumnLetter(startCol) + startRow;
+    const formulas = colOrder.map((c, i) => {
+      const headerCellRef = getColumnLetter(startCol + 1 + i) + "$" + headerRowIndex;
+      return `=COUNTIFS(Catalogue!$${rowColLetter}:$${rowColLetter}, ${keyCellRef}, Catalogue!$${colColLetter}:$${colColLetter}, ${headerCellRef})`;
+    });
+
+    const firstDataColLetter = getColumnLetter(startCol + 1);
+    const lastDataColLetter  = getColumnLetter(startCol + colOrder.length);
+    const rowSumFormula = `=SUM(${firstDataColLetter}${startRow}:${lastDataColLetter}${startRow})`;
+
+    const dataRowValues = [key, ...formulas, rowSumFormula];
+    const range = sheet.getRange(startRow, startCol, 1, dataRowValues.length);
+    range.setValues([dataRowValues]);
     range.setHorizontalAlignment("center");
     range.getCell(1, 1).setHorizontalAlignment("left");
     if (idx % 2 === 0) range.setBackground(COLORS.gray_light);
@@ -340,8 +350,16 @@ function writePivotTable(sheet, rows, col, startRow, startCol, title, rowField, 
   });
 
   // Ligne Total
-  const totalRow = ["TOTAL", ...colOrder.map(c => colTotals[c]), grandTotal];
-  const totalRange = sheet.getRange(startRow, startCol, 1, totalRow.length);
+  const totalRowIndex = startRow;
+  const totalRowFormulas = colOrder.map((c, i) => {
+    const colLetter = getColumnLetter(startCol + 1 + i);
+    return `=SUM(${colLetter}${firstDataRowIndex}:${colLetter}${totalRowIndex - 1})`;
+  });
+  const grandTotalColLetter = getColumnLetter(startCol + 1 + colOrder.length);
+  const grandTotalFormula = `=SUM(${grandTotalColLetter}${firstDataRowIndex}:${grandTotalColLetter}${totalRowIndex - 1})`;
+
+  const totalRow = ["TOTAL", ...totalRowFormulas, grandTotalFormula];
+  const totalRange = sheet.getRange(totalRowIndex, startCol, 1, totalRow.length);
   totalRange.setValues([totalRow]);
   totalRange.setBackground(COLORS.total_bg);
   totalRange.setFontWeight("bold");
@@ -434,8 +452,12 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
   const DATA_START_COL = 45; // AS - hors de la vue principale
   let dataRow = 5;
 
+  const tierLetter = getColumnLetter(col["Complexity_Tier"] + 1);
+  const toolLetter = getColumnLetter(col["Tools_Tags"] + 1);
+  const familyLetter = getColumnLetter(col["Family_Label"] + 1);
+  const clusterLetter = getColumnLetter(col["Cluster"] + 1);
+
   // D1 : Tier distribution
-  const tierCounts = countBy(rows, col["Complexity_Tier"]);
   const tierOrder  = ["Small", "Medium", "Large"];
   const D1_ROW = dataRow;
   sheet.getRange(dataRow, DATA_START_COL).setValue("Tier");
@@ -443,7 +465,7 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
   dataRow++;
   tierOrder.forEach(t => {
     sheet.getRange(dataRow, DATA_START_COL).setValue(t);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(tierCounts[t] || 0);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setFormula(`=COUNTIF(Catalogue!$${tierLetter}:$${tierLetter}, ${getColumnLetter(DATA_START_COL)}${dataRow})`);
     dataRow++;
   });
   const D1_END = dataRow - 1;
@@ -462,7 +484,7 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
   dataRow++;
   sortedTools.forEach(([tool, count]) => {
     sheet.getRange(dataRow, DATA_START_COL).setValue(tool);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(count);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setFormula(`=COUNTIF(Catalogue!$${toolLetter}:$${toolLetter}, "*" & ${getColumnLetter(DATA_START_COL)}${dataRow} & "*")`);
     dataRow++;
   });
   const D2_END = dataRow - 1;
@@ -476,7 +498,11 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
   dataRow++;
   famTierPivot.forEach(([key, vals]) => {
     sheet.getRange(dataRow, DATA_START_COL).setValue(key);
-    tierOrder.forEach((t, i) => sheet.getRange(dataRow, DATA_START_COL + 1 + i).setValue(vals[t] || 0));
+    tierOrder.forEach((t, i) => {
+      const headerCell = `${getColumnLetter(DATA_START_COL + 1 + i)}$${D3_ROW}`;
+      const rowLabelCell = `$${getColumnLetter(DATA_START_COL)}${dataRow}`;
+      sheet.getRange(dataRow, DATA_START_COL + 1 + i).setFormula(`=COUNTIFS(Catalogue!$${familyLetter}:$${familyLetter}, ${rowLabelCell}, Catalogue!$${tierLetter}:$${tierLetter}, ${headerCell})`);
+    });
     dataRow++;
   });
   const D3_END = dataRow - 1;
@@ -491,7 +517,11 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
   dataRow++;
   clTierPivot.forEach(([key, vals]) => {
     sheet.getRange(dataRow, DATA_START_COL).setValue(key);
-    tierOrder.forEach((t,i) => sheet.getRange(dataRow, DATA_START_COL+1+i).setValue(vals[t]||0));
+    tierOrder.forEach((t,i) => {
+      const headerCell = `${getColumnLetter(DATA_START_COL + 1 + i)}$${D4_ROW}`;
+      const rowLabelCell = `$${getColumnLetter(DATA_START_COL)}${dataRow}`;
+      sheet.getRange(dataRow, DATA_START_COL + 1 + i).setFormula(`=COUNTIFS(Catalogue!$${clusterLetter}:$${clusterLetter}, ${rowLabelCell}, Catalogue!$${tierLetter}:$${tierLetter}, ${headerCell})`);
+    });
     dataRow++;
   });
   const D4_END = dataRow - 1;
@@ -506,7 +536,7 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
   dataRow++;
   sortedFam.forEach(([fam, cnt]) => {
     sheet.getRange(dataRow, DATA_START_COL).setValue(fam);
-    sheet.getRange(dataRow, DATA_START_COL+1).setValue(cnt);
+    sheet.getRange(dataRow, DATA_START_COL+1).setFormula(`=COUNTIF(Catalogue!$${familyLetter}:$${familyLetter}, ${getColumnLetter(DATA_START_COL)}${dataRow})`);
     dataRow++;
   });
   const D5_END = dataRow - 1;
@@ -519,6 +549,8 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
       if (k.trim().toLowerCase().replace(" ", "_") === "it_flag") itFlagCol = k;
     });
   }
+  const itFlagLetter = getColumnLetter(col[itFlagCol] + 1);
+
   const itRows = rows.filter(r => {
     const val = col[itFlagCol] !== undefined ? String(r[col[itFlagCol]] || "") : "";
     return val.indexOf("IT") !== -1;
@@ -537,7 +569,7 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
   } else {
     sortedIT.forEach(([fam, cnt]) => {
       sheet.getRange(dataRow, DATA_START_COL).setValue(fam);
-      sheet.getRange(dataRow, DATA_START_COL+1).setValue(cnt);
+      sheet.getRange(dataRow, DATA_START_COL+1).setFormula(`=COUNTIFS(Catalogue!$${familyLetter}:$${familyLetter}, ${getColumnLetter(DATA_START_COL)}${dataRow}, Catalogue!$${itFlagLetter}:$${itFlagLetter}, "*IT*")`);
       dataRow++;
     });
   }
@@ -675,6 +707,11 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   const DATA_START_COL = 45; // AS - hors de la vue principale
   let dataRow = 5;
 
+  const tierLetter        = getColumnLetter(col["Complexity_Tier"] + 1);
+  const familyLetter      = getColumnLetter(col["Family_Label"] + 1);
+  const stageLetter       = getColumnLetter(col["Stage"] + 1);
+  const dataSourcesLetter = getColumnLetter(col["Data_Sources"] + 1);
+
   const mlRows = rows.filter(r => {
     const tier = String(r[col["Complexity_Tier"]] || "");
     return tier === "Medium" || tier === "Large";
@@ -690,21 +727,24 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   dataRow++;
   famStagePivot.forEach(([key, vals]) => {
     sheet.getRange(dataRow, DATA_START_COL).setValue(key);
-    stageOrder.forEach((s, i) => sheet.getRange(dataRow, DATA_START_COL + 1 + i).setValue(vals[s] || 0));
+    stageOrder.forEach((s, i) => {
+      const headerCell = `${getColumnLetter(DATA_START_COL + 1 + i)}$${D7_ROW}`;
+      const rowLabelCell = `$${getColumnLetter(DATA_START_COL)}${dataRow}`;
+      sheet.getRange(dataRow, DATA_START_COL + 1 + i).setFormula(`=COUNTIFS(Catalogue!$${familyLetter}:$${familyLetter}, ${rowLabelCell}, Catalogue!$${stageLetter}:$${stageLetter}, ${headerCell}, Catalogue!$${tierLetter}:$${tierLetter}, "Medium") + COUNTIFS(Catalogue!$${familyLetter}:$${familyLetter}, ${rowLabelCell}, Catalogue!$${stageLetter}:$${stageLetter}, ${headerCell}, Catalogue!$${tierLetter}:$${tierLetter}, "Large")`);
+    });
     dataRow++;
   });
   const D7_END = dataRow - 1;
   dataRow += 2;
 
   // D9 : Medium vs Large donut
-  const mlTierCounts = countBy(mlRows, col["Complexity_Tier"]);
   const D9_ROW = dataRow;
   sheet.getRange(dataRow, DATA_START_COL).setValue("Tier");
   sheet.getRange(dataRow, DATA_START_COL + 1).setValue("Count");
   dataRow++;
   mlTierOrder.forEach(t => {
     sheet.getRange(dataRow, DATA_START_COL).setValue(t);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(mlTierCounts[t] || 0);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setFormula(`=COUNTIF(Catalogue!$${tierLetter}:$${tierLetter}, ${getColumnLetter(DATA_START_COL)}${dataRow})`);
     dataRow++;
   });
   const D9_END = dataRow - 1;
@@ -717,8 +757,11 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   dataRow++;
   mlFamTierPivot.forEach(([key, vals]) => {
     sheet.getRange(dataRow, DATA_START_COL).setValue(key);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(vals["Medium"] || 0);
-    sheet.getRange(dataRow, DATA_START_COL + 2).setValue(vals["Large"] || 0);
+    mlTierOrder.forEach((t, i) => {
+      const headerCell = `${getColumnLetter(DATA_START_COL + 1 + i)}$${D10_ROW}`;
+      const rowLabelCell = `$${getColumnLetter(DATA_START_COL)}${dataRow}`;
+      sheet.getRange(dataRow, DATA_START_COL + 1 + i).setFormula(`=COUNTIFS(Catalogue!$${familyLetter}:$${familyLetter}, ${rowLabelCell}, Catalogue!$${tierLetter}:$${tierLetter}, ${headerCell})`);
+    });
     dataRow++;
   });
   const D10_END = dataRow - 1;
@@ -742,7 +785,7 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   dataRow++;
   sortedMlSources.forEach(([src, count]) => {
     sheet.getRange(dataRow, DATA_START_COL).setValue(src);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(count);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setFormula(`=COUNTIFS(Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${getColumnLetter(DATA_START_COL)}${dataRow} & "*", Catalogue!$${tierLetter}:$${tierLetter}, "Medium") + COUNTIFS(Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${getColumnLetter(DATA_START_COL)}${dataRow} & "*", Catalogue!$${tierLetter}:$${tierLetter}, "Large")`);
     dataRow++;
   });
   const D11_END = dataRow - 1;
@@ -754,20 +797,12 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   ["Source de données", "Medium", "Large"].forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
   dataRow++;
   top8Sources.forEach(src => {
-    let mediumCount = 0;
-    let largeCount = 0;
-    mlRows.forEach(r => {
-      const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
-      const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
-      if (individualSources.includes(src)) {
-        const tier = String(r[col["Complexity_Tier"]] || "");
-        if (tier === "Medium") mediumCount++;
-        else if (tier === "Large") largeCount++;
-      }
-    });
     sheet.getRange(dataRow, DATA_START_COL).setValue(src);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(mediumCount);
-    sheet.getRange(dataRow, DATA_START_COL + 2).setValue(largeCount);
+    mlTierOrder.forEach((t, i) => {
+      const headerCell = `${getColumnLetter(DATA_START_COL + 1 + i)}$${D12_ROW}`;
+      const rowLabelCell = `$${getColumnLetter(DATA_START_COL)}${dataRow}`;
+      sheet.getRange(dataRow, DATA_START_COL + 1 + i).setFormula(`=COUNTIFS(Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${rowLabelCell} & "*", Catalogue!$${tierLetter}:$${tierLetter}, ${headerCell})`);
+    });
     dataRow++;
   });
   const D12_END = dataRow - 1;
@@ -927,6 +962,9 @@ function writeSourcesTable(sheet, rows, col, startRow, startCol) {
     "F7": "Data Engineering & Reporting"
   };
 
+  const familyLetter = getColumnLetter(col["Family"] + 1);
+  const dataSourcesLetter = getColumnLetter(col["Data_Sources"] + 1);
+
   // Titre section
   const colCount = families.length + 3; // Source + F1..F7 + Total + % Global
   const titleRange = sheet.getRange(startRow, startCol, 1, colCount);
@@ -940,6 +978,7 @@ function writeSourcesTable(sheet, rows, col, startRow, startCol) {
   startRow++;
 
   // En-têtes colonnes
+  const headerRowIndex = startRow;
   const headers = ["Source de données", ...families, "Total", "% Global"];
   const hRange = sheet.getRange(startRow, startCol, 1, headers.length);
   hRange.setValues([headers]);
@@ -953,7 +992,6 @@ function writeSourcesTable(sheet, rows, col, startRow, startCol) {
   // Calculer l'occurrence unitaire par famille et par source
   const sourceFamilyCounts = {}; // { sourceName: { F1: count, F2: count, ... } }
   const sourceTotals = {};
-  const globalTotalUseCases = rows.length;
 
   rows.forEach(r => {
     const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
@@ -982,14 +1020,16 @@ function writeSourcesTable(sheet, rows, col, startRow, startCol) {
 
   // Écrire les lignes
   sortedSources.forEach((src, idx) => {
-    const rowData = [src];
-    families.forEach(f => {
-      rowData.push(sourceFamilyCounts[src][f] || 0);
+    const keyCellRef = "$" + getColumnLetter(startCol) + startRow;
+    const formulas = families.map((f, i) => {
+      const headerCellRef = getColumnLetter(startCol + 1 + i) + "$" + headerRowIndex;
+      return `=COUNTIFS(Catalogue!$${familyLetter}:$${familyLetter}, ${headerCellRef}, Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${keyCellRef} & "*")`;
     });
-    rowData.push(sourceTotals[src]);
-    // Calculer le % global par rapport au total de tous les use cases
-    const pct = sourceTotals[src] / globalTotalUseCases;
-    rowData.push(pct);
+
+    const totalFormula = `=SUM(${getColumnLetter(startCol + 1)}${startRow}:${getColumnLetter(startCol + families.length)}${startRow})`;
+    const pctFormula = `=${getColumnLetter(startCol + families.length + 1)}${startRow} / (COUNTA(Catalogue!$A:$A) - 1)`;
+
+    const rowData = [src, ...formulas, totalFormula, pctFormula];
 
     const range = sheet.getRange(startRow, startCol, 1, rowData.length);
     range.setValues([rowData]);
@@ -1023,4 +1063,22 @@ function writeSourcesTable(sheet, rows, col, startRow, startCol) {
 
   return startRow;
 }
+
+
+/**
+ * Convertit un index de colonne (1-based) en lettres de style A1 (ex. 1 -> A, 27 -> AA).
+ * @param {number} colIndex L'index de la colonne.
+ * @returns {string} La lettre correspondante.
+ */
+function getColumnLetter(colIndex) {
+  let letter = "";
+  let temp;
+  while (colIndex > 0) {
+    temp = (colIndex - 1) % 26;
+    letter = String.fromCharCode(65 + temp) + letter;
+    colIndex = Math.floor((colIndex - temp) / 26);
+  }
+  return letter;
+}
+
 
