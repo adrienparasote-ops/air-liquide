@@ -117,7 +117,7 @@ DATA_SOURCES_RULES: list[tuple[str, list[str]]] = [
 
 def extract_data_sources(desc: str, tools: str) -> str:
     if not desc and not tools:
-        return "Non renseigné"
+        return "A revoir avec le builder"
     combined = f"{desc or ''} {tools or ''}".lower()
     matched = []
     for source, patterns in DATA_SOURCES_RULES:
@@ -130,7 +130,8 @@ def extract_data_sources(desc: str, tools: str) -> str:
         if m not in seen:
             seen.add(m)
             unique_matched.append(m)
-    return ", ".join(unique_matched) if unique_matched else "Non renseigné"
+    return ", ".join(unique_matched) if unique_matched else "A revoir avec le builder"
+
 
 
 def make_uc_id(text: str) -> str:
@@ -340,7 +341,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["Use Case Description (Long)"].astype(str).str.strip() != ""]
     df = df.reset_index(drop=True)
 
-    df["Stage"]                 = df["Stage"].fillna("Non renseigné").astype(str).str.strip()
+    df["Stage"]                 = df["Stage"].fillna("A revoir avec le builder").astype(str).str.strip()
     df["Economical Impact"]     = df["Economical Impact"].fillna("Non évalué").astype(str).str.strip()
     df["Cluster"]               = df["Cluster"].fillna("N/A").astype(str).str.strip()
     df["Job Family"]            = df["Job Family"].fillna("N/A").astype(str).str.strip()

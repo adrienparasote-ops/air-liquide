@@ -542,7 +542,7 @@ function buildGraphiques(ss, sheet, rows, col) {
     const tier = String(r[col["Complexity_Tier"]] || "");
     return tier === "Medium" || tier === "Large";
   });
-  const stageOrder = ["Ideation", "POC", "MVP", "Testing / Eval", "In Development", "Scale-up", "Production", "Non renseigné"];
+  const stageOrder = ["Ideation", "POC", "MVP", "Testing / Eval", "In Development", "Scale-up", "Production", "A revoir avec le builder"];
   const famStagePivot = crossTab(mlRows, col["Family_Label"], col["Stage"], stageOrder);
   const D7_ROW = dataRow;
   const D7_HEADERS = ["Famille", ...stageOrder];
@@ -588,7 +588,7 @@ function buildGraphiques(ss, sheet, rows, col) {
   // ─ D11 : Top Sources de données (Medium & Large uniquement) ────────────────
   const mlSourceCounts = {};
   mlRows.forEach(r => {
-    const rawSources = String(r[col["Data_Sources"]] || "Non renseigné");
+    const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
     const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
     individualSources.forEach(src => {
       mlSourceCounts[src] = (mlSourceCounts[src] || 0) + 1;
@@ -616,7 +616,7 @@ function buildGraphiques(ss, sheet, rows, col) {
     let mediumCount = 0;
     let largeCount = 0;
     mlRows.forEach(r => {
-      const rawSources = String(r[col["Data_Sources"]] || "Non renseigné");
+      const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
       const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
       if (individualSources.includes(src)) {
         const tier = String(r[col["Complexity_Tier"]] || "");
@@ -938,10 +938,10 @@ function writeSourcesTable(sheet, rows, col, startRow, startCol) {
   const globalTotalUseCases = rows.length;
 
   rows.forEach(r => {
-    const rawSources = String(r[col["Data_Sources"]] || "Non renseigné");
+    const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
     const familyCode = String(r[col["Family"]] || "F1"); // F1-F7
     
-    // Séparer les sources de données unitaires
+    // Separer les sources de donnees unitaires
     const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
     
     individualSources.forEach(src => {
@@ -955,10 +955,10 @@ function writeSourcesTable(sheet, rows, col, startRow, startCol) {
     });
   });
 
-  // Trier les sources par total décroissant (avec "Non renseigné" à la fin)
+  // Trier les sources par total décroissant (avec "A revoir avec le builder" à la fin)
   const sortedSources = Object.keys(sourceFamilyCounts).sort((a, b) => {
-    if (a === "Non renseigné") return 1;
-    if (b === "Non renseigné") return -1;
+    if (a === "A revoir avec le builder") return 1;
+    if (b === "A revoir avec le builder") return -1;
     return sourceTotals[b] - sourceTotals[a];
   });
 

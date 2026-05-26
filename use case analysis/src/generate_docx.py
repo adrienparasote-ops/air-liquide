@@ -464,7 +464,7 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         ["Anomalie", "Volume", "Décision"],
         [
             ["Valeurs #REF! (Cluster, Job Family)", "7 lignes", "Remplacé par N/A"],
-            ["Stage non renseigné", "141 lignes", "Valeur : Non renseigné"],
+            ["Stage non renseigné", "141 lignes", "Valeur : A revoir avec le builder"],
             ["Impact économique absent", "193 lignes", "Valeur : Non évalué"],
             ["Outils multi-valeurs", "Toutes lignes", "Normalisation en tags"],
             ["Descriptions identiques, clusters différents", "Variable", "UC_ID partagé"],

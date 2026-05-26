@@ -579,7 +579,7 @@ class TestProcessDataframe(unittest.TestCase):
     def test_nan_stage_filled(self):
         df = _make_raw_df(**{"Stage": [None]})
         result = gc.process_dataframe(df)
-        self.assertEqual(result["Stage"].iloc[0], "Non renseigné")
+        self.assertEqual(result["Stage"].iloc[0], "A revoir avec le builder")
 
     def test_nan_economic_impact_filled(self):
         df = _make_raw_df(**{"Economical Impact": [None]})
@@ -732,7 +732,7 @@ class TestExtractDataSources(unittest.TestCase):
 
     def test_extract_data_sources_none(self):
         # TC-009
-        self.assertEqual(gc.extract_data_sources("Translate this text", "Gemini"), "Non renseigné")
+        self.assertEqual(gc.extract_data_sources("Translate this text", "Gemini"), "A revoir avec le builder")
 
     def test_extract_data_sources_case_insensitivity(self):
         # TC-010
