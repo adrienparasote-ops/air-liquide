@@ -9,7 +9,7 @@ Style : Rapport de consulting — cabinet Tier-1 (méthodologie, cadre d'analyse
         recommandations structurées, narrative professionnelle).
 
 Usage : python3 src/generate_docx.py
-Output: output/rapport_ai_champions.docx
+Output: output/[REPORT] AI builders.docx
 """
 import sys
 from pathlib import Path
@@ -29,7 +29,7 @@ except ImportError as e:  # pragma: no cover
 # ── Chemins ───────────────────────────────────────────────────────────────────
 PROJECT_DIR = Path(__file__).parent.parent
 CATALOG_FILE = PROJECT_DIR / "output" / "use_cases_catalog.xlsx"
-OUTPUT_FILE = PROJECT_DIR / "output" / "rapport_ai_champions.docx"
+OUTPUT_FILE = PROJECT_DIR / "output" / "[REPORT] AI builders.docx"
 
 # ── Palette Pyl.Tech officielle ───────────────────────────────────────────────
 PYL_NAVY_DARK = RGBColor(0x0B, 0x13, 0x2B)

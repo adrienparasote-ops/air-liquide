@@ -9,7 +9,7 @@ graph TD
     CatalogScript -->|Semantic Scoring v2 + DONE-marker| OutputExcel[output/use_cases_catalog.xlsx]
     OutputExcel -->|python-docx| DocxScript[src/generate_docx.py]
     OutputExcel -->|python-pptx| PptxScript[src/generate_pptx.py]
-    DocxScript -->|Corporate Report| OutputDocx[output/rapport_ai_champions.docx]
+    DocxScript -->|Corporate Report| OutputDocx["output/[REPORT] AI builders.docx"]
     PptxScript -->|Premium Presentation| OutputPptx[output/presentation_ai_champions.pptx]
 ```
 
@@ -22,5 +22,5 @@ graph TD
    - Evaluates enterprise security exposure (IT Flag & IT Attention triggers).
 3. **Generation**:
    - `output/use_cases_catalog.xlsx`: Cleaned, structured database for downstream use.
-   - `output/rapport_ai_champions.docx`: Structured corporate report summarizing key statistics, families, and recommendations.
+   - `output/[REPORT] AI builders.docx`: Structured corporate report summarizing key statistics, families, and recommendations.
    - `output/presentation_ai_champions.pptx`: Polished slideshow presenting the analysis to executives.

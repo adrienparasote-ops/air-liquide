@@ -13,7 +13,7 @@ src/generate_catalog.py   →  docs/use_cases_catalog.xlsx  (248 UC enrichis)
         ↓
 src/create_analysis.gs    →  Onglets "Synthèse" + "Graphiques généraux" + "Focus Medium & Large" (menu 🤖 AI Champions)
         ↓
-src/generate_docx.py      →  docs/rapport_ai_champions.docx   (rapport Word 7 sections)
+src/generate_docx.py      →  docs/[REPORT] AI builders.docx   (rapport Word 7 sections)
 src/generate_pptx.py      →  docs/presentation_ai_champions.pptx  (9 slides Pyl.Tech)
 ```
 
@@ -23,7 +23,7 @@ src/generate_pptx.py      →  docs/presentation_ai_champions.pptx  (9 slides Py
 .
 ├── docs/
 │   ├── use_cases_catalog.xlsx          # Catalogue enrichi (248 use cases)
-│   ├── rapport_ai_champions.docx       # Rapport Word de synthèse
+│   ├── [REPORT] AI builders.docx       # Rapport Word de synthèse
 │   ├── presentation_ai_champions.pptx  # Présentation PowerPoint (charte Pyl.Tech)
 │   ├── methodology_use_case_analysis.md # Méthodologie de scoring (5 dimensions)
 │   └── catalog_column_dictionary.md    # Dictionnaire des colonnes du catalogue
