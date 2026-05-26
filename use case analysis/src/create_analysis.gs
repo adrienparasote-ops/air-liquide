@@ -68,7 +68,7 @@ function runGraphiquesGénérauxOnly() {
   const genChartSheet = ss.insertSheet("Graphiques généraux");
   buildGraphiquesGénéraux(ss, genChartSheet, rows, col);
   ss.setActiveSheet(genChartSheet);
-  SpreadsheetApp.getUi().alert("✅ Onglet 'Graphiques généraux' créé avec 7 graphiques natifs.");
+  SpreadsheetApp.getUi().alert("✅ Onglet 'Graphiques généraux' créé avec 6 graphiques natifs.");
 }
 
 /** Crée uniquement l'onglet Focus Medium & Large. */
@@ -83,7 +83,7 @@ function runFocusMediumLargeOnly() {
   const mlChartSheet = ss.insertSheet("Focus Medium & Large");
   buildFocusMediumLarge(ss, mlChartSheet, rows, col);
   ss.setActiveSheet(mlChartSheet);
-  SpreadsheetApp.getUi().alert("✅ Onglet 'Focus Medium & Large' créé avec 5 graphiques dédiés.");
+  SpreadsheetApp.getUi().alert("✅ Onglet 'Focus Medium & Large' créé avec 6 graphiques dédiés (dont la répartition des sources de données par famille).");
 }
 
 /** Supprime les onglets générés. */
@@ -182,7 +182,7 @@ function createAnalysis() {
   buildFocusMediumLarge(ss, mlChartSheet, rows, col);
 
   ss.setActiveSheet(synthSheet);
-  SpreadsheetApp.getUi().alert("✅ Analyse créée !\n\nOnglets ajoutés :\n• Synthèse : tableaux croisés\n• Graphiques généraux : 7 graphiques généraux (dont la répartition des sources de données par famille)\n• Focus Medium & Large : 5 graphiques dédiés aux cas d'usage complexes (dont 2 sur les sources de données)");
+  SpreadsheetApp.getUi().alert("✅ Analyse créée !\n\nOnglets ajoutés :\n• Synthèse : tableaux croisés\n• Graphiques généraux : 6 graphiques généraux\n• Focus Medium & Large : 6 graphiques dédiés aux cas d'usage complexes (dont la répartition des sources par famille)");
 }
 
 
@@ -464,8 +464,6 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
   const toolLetter = getColumnLetter(col["Tools_Tags"] + 1);
   const familyLetter = getColumnLetter(col["Family_Label"] + 1);
   const clusterLetter = getColumnLetter(col["Cluster"] + 1);
-  const familyCodeLetter = getColumnLetter(col["Family"] + 1);
-  const dataSourcesLetter = getColumnLetter(col["Data_Sources"] + 1);
 
   // D1 : Tier distribution
   const tierOrder  = ["Small", "Medium", "Large"];
@@ -584,42 +582,6 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
     });
   }
   const D6_END = dataRow - 1;
-  dataRow += 2;
-
-  // D7 : Répartition des sources de données par famille (Top 8 sources)
-  const allSourceCounts = {};
-  rows.forEach(r => {
-    const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
-    const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
-    individualSources.forEach(src => {
-      if (src !== "A revoir avec le builder") {
-        allSourceCounts[src] = (allSourceCounts[src] || 0) + 1;
-      }
-    });
-  });
-  const topSources = Object.entries(allSourceCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8)
-    .map(e => e[0]);
-
-  const D7_ROW = dataRow;
-  const families = ["F1", "F2", "F3", "F4", "F5", "F6", "F7"];
-  const D7_HEADERS = ["Famille", ...topSources];
-  D7_HEADERS.forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
-  dataRow++;
-
-  families.forEach(fam => {
-    sheet.getRange(dataRow, DATA_START_COL).setValue(fam);
-    topSources.forEach((src, i) => {
-      const headerCell = `${getColumnLetter(DATA_START_COL + 1 + i)}$${D7_ROW}`;
-      const rowLabelCell = `$${getColumnLetter(DATA_START_COL)}${dataRow}`;
-      sheet.getRange(dataRow, DATA_START_COL + 1 + i).setFormula(
-        `=COUNTIFS(Catalogue!$${familyCodeLetter}:$${familyCodeLetter}, ${rowLabelCell}, Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${headerCell} & "*")`
-      );
-    });
-    dataRow++;
-  });
-  const D7_END = dataRow - 1;
 
   // G1 : Donut — Répartition par complexité
   insertChart(sheet, Charts.ChartType.PIE, {
@@ -723,24 +685,6 @@ function buildGraphiquesGénéraux(ss, sheet, rows, col) {
       "fontName":        "Calibri",
     }
   });
-
-  // G7 : Stacked Column — Répartition des sources de données par famille
-  insertChart(sheet, Charts.ChartType.COLUMN, {
-    title:    "Répartition des sources de données par famille",
-    dataRange: sheet.getRange(D7_ROW, DATA_START_COL, D7_END - D7_ROW + 1, topSources.length + 1),
-    anchorRow: 70, anchorCol: 2,
-    width: 960, height: 400,
-    options: {
-      "isStacked":        true,
-      "colors":           [COLORS.blue_dark, COLORS.blue_mid, COLORS.blue_light, COLORS.teal, COLORS.purple, COLORS.orange, COLORS.green, COLORS.gold],
-      "legend.position":  "top",
-      "vAxis.title":      "Nombre de sollicitations",
-      "chartArea.left":   "8%",
-      "chartArea.width":  "85%",
-      "bar.groupWidth":   "70%",
-      "fontName":         "Calibri",
-    }
-  });
 }
 
 function buildFocusMediumLarge(ss, sheet, rows, col) {
@@ -775,6 +719,7 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   const familyLetter      = getColumnLetter(col["Family_Label"] + 1);
   const stageLetter       = getColumnLetter(col["Stage"] + 1);
   const dataSourcesLetter = getColumnLetter(col["Data_Sources"] + 1);
+  const familyCodeLetter  = getColumnLetter(col["Family"] + 1);
 
   const mlRows = rows.filter(r => {
     const tier = String(r[col["Complexity_Tier"]] || "");
@@ -870,6 +815,29 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
     dataRow++;
   });
   const D12_END = dataRow - 1;
+  dataRow += 2;
+
+  // D13 : Répartition des sources de données par famille (Medium & Large uniquement)
+  const top8MlSources = sortedMlSources.slice(0, 8).map(e => e[0]);
+  const D13_ROW = dataRow;
+  const families = ["F1", "F2", "F3", "F4", "F5", "F6", "F7"];
+  const D13_HEADERS = ["Famille", ...top8MlSources];
+  D13_HEADERS.forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
+  dataRow++;
+
+  families.forEach(fam => {
+    sheet.getRange(dataRow, DATA_START_COL).setValue(fam);
+    top8MlSources.forEach((src, i) => {
+      const headerCell = `${getColumnLetter(DATA_START_COL + 1 + i)}$${D13_ROW}`;
+      const rowLabelCell = `$${getColumnLetter(DATA_START_COL)}${dataRow}`;
+      sheet.getRange(dataRow, DATA_START_COL + 1 + i).setFormula(
+        `=COUNTIFS(Catalogue!$${familyCodeLetter}:$${familyCodeLetter}, ${rowLabelCell}, Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${headerCell} & "*", Catalogue!$${tierLetter}:$${tierLetter}, "Medium") + ` +
+        `COUNTIFS(Catalogue!$${familyCodeLetter}:$${familyCodeLetter}, ${rowLabelCell}, Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${headerCell} & "*", Catalogue!$${tierLetter}:$${tierLetter}, "Large")`
+      );
+    });
+    dataRow++;
+  });
+  const D13_END = dataRow - 1;
 
   // G7 : Donut — Medium vs Large
   insertChart(sheet, Charts.ChartType.PIE, {
@@ -955,6 +923,24 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
       "chartArea.left":   "10%",
       "chartArea.width":  "80%",
       "bar.groupWidth":   "65%",
+      "fontName":         "Calibri",
+    }
+  });
+
+  // G12 : Stacked Column — Répartition des sources de données par famille (Medium & Large)
+  insertChart(sheet, Charts.ChartType.COLUMN, {
+    title:    "Répartition des sources de données par famille (Medium + Large)",
+    dataRange: sheet.getRange(D13_ROW, DATA_START_COL, D13_END - D13_ROW + 1, top8MlSources.length + 1),
+    anchorRow: 62, anchorCol: 2,
+    width: 960, height: 400,
+    options: {
+      "isStacked":        true,
+      "colors":           [COLORS.blue_dark, COLORS.blue_mid, COLORS.blue_light, COLORS.teal, COLORS.purple, COLORS.orange, COLORS.green, COLORS.gold],
+      "legend.position":  "top",
+      "vAxis.title":      "Nombre de sollicitations",
+      "chartArea.left":   "8%",
+      "chartArea.width":  "85%",
+      "bar.groupWidth":   "70%",
       "fontName":         "Calibri",
     }
   });
