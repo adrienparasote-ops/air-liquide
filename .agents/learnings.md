@@ -76,3 +76,31 @@
   4. Construct the formula string using template literals (e.g. `Catalogue!$${tierLetter}:$${tierLetter}`) to ensure the formulas will never break if Catalogue columns are added, removed, or reordered.
 - **Anti-pattern:** Writing formulas with hardcoded column letters (e.g., `=COUNTIFS(Catalogue!$C:$C, ...)`) or hardcoded row counts. This immediately breaks if columns are reordered or if new rows are added to the source catalog.
 
+### L092: Dynamic Multi-Category Comma-Separated Data Representation in Google Sheets Charts
+- **Date:** 2026-05-26
+- **Source:** Air Liquide — create_analysis.gs (G7 Stacked Column Chart)
+- **Evidence:** Added a 100% dynamic stacked column chart (G7) showing the distribution of the top 8 data sources across the 7 functional families (F1..F7), automatically updating on Catalogue changes.
+- **Pattern to reproduce:** When creating a native stacked chart to represent the distribution of a comma-separated column (e.g. `Data_Sources`) across another categorical field (e.g. `Family`):
+  1. Dynamically extract the top $N$ unique items from the dataset at runtime (excluding stubs/placeholders like "A revoir avec le builder") to serve as the chart series.
+  2. Structure the hidden data preparation table with categories (e.g. Families F1..F7) in **rows** and the top $N$ items as **columns**. This matches Sheets' native categorical chart orientation (row headers = X-axis, column headers = series) without requiring manual transpositions.
+  3. Use wildcard `COUNTIFS` formulas (e.g. `=COUNTIFS(Catalogue!$Family, $RowLabel, Catalogue!$DataSources, "*" & ColumnHeader & "*")`) to dynamically search for each item inside the comma-separated strings.
+- **Anti-pattern:** Including "Total" or "% Global" columns inside the stacked chart's data range, which heavily distorts the visual proportions by competing with the individual stacked parts.
+
+### L093: XML-Level Sequential Splitting for Segmented Document Generation
+- **Date:** 2026-05-26
+- **Source:** Air Liquide — generate_report_table.py
+- **Evidence:** 11 segmented documents successfully split from a master `[REPORT] AI builders.docx` file, preserving all inline formatting, margins, list numbering, and headers/footers with zero schema errors.
+- **Pattern to reproduce:** When a master document needs to be split sequentially based on Heading sections:
+  1. Load a copy of the master document, and clear all body paragraphs and tables (e.g. using `remove()` on their XML parents). This preserves the Document styles, settings, headers, and footers as a blank template.
+  2. Iterate sequentially over `doc.element.body` to preserve the exact relative order of paragraphs and tables.
+  3. Deep copy each XML element using `copy.deepcopy(element)`.
+  4. Append the duplicated elements using `sectPr[0].addprevious(new_element)` inside the cleared template body to ensure the final section properties (`w:sectPr`) remain at the very end of the body, guaranteeing standard-compliant XML.
+
+### L094: Split Complex Deliverables to Accommodate Shared Online Documents
+- **Date:** 2026-05-26
+- **Source:** Air Liquide — generate_report_table.py
+- **Evidence:** Overwriting a client-shared Google Doc by re-importing a full `.docx` would wipe out active comments, revision history, and link IDs. Splitting the document into 11 section-based `.docx` files allowed the user to copy-paste updated parts safely.
+- **Anti-pattern:** Assuming that automated report generation scripts should only output a single monolithic file. In real-world enterprise environments, deliverables are uploaded to platforms like Google Drive or SharePoint, converted to online formats, and shared with clients. Re-generating the full monolith blocks local-to-cloud updates.
+- **Fix:** For any automation script generating report-style outputs, verify if the deliverable will be shared online. If yes, the script must support a "split mode" or automatically output section-segmented files, enabling users to copy-paste updated components cleanly into their shared cloud documents.
+
+
