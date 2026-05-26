@@ -393,22 +393,30 @@ function writeQuickWins(sheet, rows, col, startRow, startCol) {
 
   const seenIds = new Set();
   let count = 0;
-  rows.filter(r =>
+  
+  const matchingRows = rows.filter(r =>
     String(r[col["Complexity_Tier"]]) === "Small" &&
     Number(r[col["Nb_Tools"]]) <= 1
-  ).forEach((r, idx) => {
+  );
+
+  matchingRows.forEach((r, idx) => {
     if (count >= 10) return;
     const ucId = String(r[col["UC_ID"]]);
     if (seenIds.has(ucId)) return;
     seenIds.add(ucId);
+
+    const rangeRange = `Catalogue!$A:$AE`;
+    const ucIdRef = `$${getColumnLetter(startCol)}${startRow}`;
+    
     const row = [
       ucId,
-      String(r[col["Family_Label"]] || ""),
-      String(r[col["Cluster"]] || ""),
-      String(r[col["Tools"]] || "").substring(0, 40),
-      Number(r[col["Score_Total"]] || 0),
-      String(r[col["Stage"]] || ""),
+      `=VLOOKUP(${ucIdRef}, ${rangeRange}, ${col["Family_Label"] + 1}, FALSE)`,
+      `=VLOOKUP(${ucIdRef}, ${rangeRange}, ${col["Cluster"] + 1}, FALSE)`,
+      `=LEFT(VLOOKUP(${ucIdRef}, ${rangeRange}, ${col["Tools"] + 1}, FALSE), 40)`,
+      `=VLOOKUP(${ucIdRef}, ${rangeRange}, ${col["Score_Total"] + 1}, FALSE)`,
+      `=VLOOKUP(${ucIdRef}, ${rangeRange}, ${col["Stage"] + 1}, FALSE)`
     ];
+
     const range = sheet.getRange(startRow, startCol, 1, row.length);
     range.setValues([row]);
     if (idx % 2 === 0) range.setBackground(COLORS.small_bg);
