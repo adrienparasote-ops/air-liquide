@@ -20,8 +20,9 @@ Raw Excel (`assets/`) → `generate_catalog.py` → Cleaned Excel (`output/`) �
 
 ### Document Generator
 * **File**: `src/generate_docx.py` (~1380 lines)
-* **Responsibility**: Reads the cleaned Excel catalog and generates the corporate DOCX report with styled tables, statistics, IT governance classifications, and domain recommendations.
+* **Responsibility**: Reads the cleaned Excel catalog and generates the corporate DOCX report with styled tables, statistics, IT governance classifications, and domain recommendations. Leverages `assets/template.docx` dynamically to preserve custom styles and embedded fonts.
 * **Key Libraries**: `python-docx`
+* **Assets**: `assets/template.docx` (style template with Poppins/Roboto)
 
 ### Presentation Generator
 * **File**: `src/generate_pptx.py` (~560 lines)

@@ -37,7 +37,9 @@ src/generate_pptx.py      →  docs/presentation_ai_champions.pptx  (9 slides Py
 │       ├── test_generate_docx.py     # 33 tests, 99% coverage
 │       └── test_generate_pptx.py     # 36 tests, 100% coverage
 ├── Skill-Theme/                        # Charte graphique Pyl.Tech
-└── assets/                             # Assets statiques
+└── assets/                             # Données sources et gabarits de style
+    ├── Advanced AI Champions - Action Monitoring.xlsx # Base de données Excel source
+    └── template.docx                   # Gabarit Word personnalisé (styles et polices Poppins/Roboto)
 ```
 
 ## Prérequis
