@@ -24,11 +24,11 @@ Raw Excel (`assets/`) → `generate_catalog.py` → Cleaned Excel (`output/`) �
 * **Key Libraries**: `python-docx`
 
 ### Presentation Generator
-* **File**: `src/generate_pptx.py` (~1442 lines)
+* **File**: `src/generate_pptx.py` (~560 lines)
 * **Responsibility**: Reads the cleaned Excel catalog and creates a styled slideshow based on custom layout coordinates and the corporate theme.
 * **Key Libraries**: `python-pptx`
 
 ## Test Suite
-* **`src/tests/test_generate_catalog.py`** (~710 lines): Tests scoring formulas, overrides, IT flagging, data sources extraction, and full pipeline outputs.
-* **`src/tests/test_generate_docx.py`** (~346 lines): Tests document table layout, paragraph formatting, IT governance sections, and export generation.
-* **`src/tests/test_generate_pptx.py`** (~280 lines): Tests presentation slide count, placeholder mappings, and template creation.
+* **`src/tests/test_generate_catalog.py`** (~840 lines): Tests scoring formulas, overrides, IT flagging, data sources extraction, and full pipeline outputs.
+* **`src/tests/test_generate_docx.py`** (~345 lines): Tests document table layout, paragraph formatting, IT governance sections, and export generation.
+* **`src/tests/test_generate_pptx.py`** (~390 lines): Tests presentation slide count, placeholder mappings, and template creation.

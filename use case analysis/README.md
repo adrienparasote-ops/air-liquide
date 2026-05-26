@@ -58,7 +58,7 @@ python3 src/generate_docx.py
 # 3. Générer la présentation PowerPoint
 python3 src/generate_pptx.py
 
-# 4. Lancer les tests (220 tests, 100% coverage)
+# 4. Lancer les tests (229 tests, 100% coverage)
 python3 -m pytest src/tests/ -v --cov=src
 ```
 
