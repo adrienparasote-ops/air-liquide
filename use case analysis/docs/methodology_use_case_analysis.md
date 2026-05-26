@@ -139,16 +139,22 @@ F7 Data Engineering               ████          ~6%
 > [!NOTE]
 > La proportion de Large (3%) est volontairement faible : les champions IA sont des profils métiers, pas IT. Les use cases véritablement Large impliquent des architectures agents autonomes, du ML/fine-tuning, ou des intégrations enterprise multi-systèmes (SFDC + Power BI + Python).
 
-### 3.3 Signal d'alerte — Dépendance IT
+### 3.3 Signalement et gouvernance des dépendances IT
 
-> [!WARNING]
-> Pour les use cases **Medium et Large** impliquant des intégrations système (SFDC, DCS, AVEVA, SAP, Active Directory, etc.), remonter un **point d'attention IT** explicite dans le livrable. La population de champions n'étant pas IT, ces cas ne peuvent pas être conduits sans un accompagnement technique dédié.
+La gouvernance technique repose sur la distinction entre deux indicateurs complémentaires pour assurer à la fois traçabilité et agilité :
+
+* **`IT_Attention` (Visibilité passive)** : Moteur de recherche sémantique qui trace tous les mots-clés techniques sensibles (ex: `sap`, `sfdc`, `database`, `api`, `sql`) dans la description ou les outils, indépendamment de la taille du projet. Il offre à la DSI une visibilité passive complète sur le patrimoine technologique touché.
+* **`IT_Flag` (Action et escalade obligatoire)** : Drapeau d'action (valeur = `⚠️ IT`) qui désigne les projets de complexité significatrice nécessitant un accompagnement technique et une validation formelle par la DSI avant tout déploiement.
+
+> [!IMPORTANT]
+> **Règle d'exemption pour les Quick Wins (Small)** : Afin de libérer l'innovation sur le terrain et d'éviter l'engorgement administratif de la DSI, tous les use cases classés dans la catégorie **`Small`** (Score Total <= 7) sont **exemptés d'IT_Flag** (qui reste vide), même s'ils contiennent des mots-clés techniques détectés dans `IT_Attention`. Ces petits projets locaux restent sous l'entière autonomie du champion.
 
 Critères déclencheurs du point d'attention :
 - Connexion à un système d'entreprise (ERP, CRM, SCADA, BI enterprise)
 - Authentification / gestion des droits (SSO, API keys, OAuth)
 - Hébergement hors Google Workspace (Cloud Run, Vertex AI, bases de données)
 - Volume de données > ce qu'un Google Sheet peut supporter (> 100K lignes)
+
 
 ### 3.4 Corrélation Stage / Tier (signal de cohérence)
 
@@ -371,3 +377,6 @@ Les champions doivent savoir identifier les **signaux d'alerte** qui indiquent q
 | **D11** | **Analyse sémantique DONE-marker** | **Les descriptions sont parsées pour détecter les marqueurs `--DONE SO FAR`, `Already built/deployed`, etc. Le scoring prospectif porte uniquement sur le scope futur. Implémenté en Python sur le corpus complet (248 UCs).** |
 | **D12** | **Correction D3 — outils L4 data** | **Si `Python on Power BI (Fabric)` ou `Python on DataStudio` dans les outils → D3 ≥ 2 automatiquement (données enterprise connectées).** |
 | **D13** | **Incohérence Stage/Tier** | **Production/Scale-up + Small tier = non incohérent. Le tier reflète l'effort de construction, pas le niveau de déploiement atteint.** |
+| **D14** | **Extraction des Data Sources** | **Ajout d'une colonne `Data_Sources` extraite via règles regex unitaires sur la description et les outils (SAP, Salesforce, Power BI, BigQuery, etc.).** |
+| **D15** | **Exemption IT Quick Wins** | **Les projets `Small` sont exemptés d' `IT_Flag` (visibilité passive conservée via `IT_Attention`) pour accélérer le déploiement des Quick Wins.** |
+
