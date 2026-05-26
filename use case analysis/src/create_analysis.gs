@@ -583,8 +583,57 @@ function buildGraphiques(ss, sheet, rows, col) {
     dataRow++;
   });
   const D10_END = dataRow - 1;
+  dataRow += 2;
+
+  // ─ D11 : Top Sources de données (Medium & Large uniquement) ────────────────
+  const mlSourceCounts = {};
+  mlRows.forEach(r => {
+    const rawSources = String(r[col["Data_Sources"]] || "Non renseigné");
+    const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
+    individualSources.forEach(src => {
+      mlSourceCounts[src] = (mlSourceCounts[src] || 0) + 1;
+    });
+  });
+  const sortedMlSources = Object.entries(mlSourceCounts).sort((a, b) => b[1] - a[1]);
+  const D11_ROW = dataRow;
+  sheet.getRange(dataRow, DATA_START_COL).setValue("Source de données");
+  sheet.getRange(dataRow, DATA_START_COL + 1).setValue("Total");
+  dataRow++;
+  sortedMlSources.forEach(([src, count]) => {
+    sheet.getRange(dataRow, DATA_START_COL).setValue(src);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(count);
+    dataRow++;
+  });
+  const D11_END = dataRow - 1;
+  dataRow += 2;
+
+  // ─ D12 : Top 8 Sources × Complexité (Medium & Large uniquement) ────────────
+  const top8Sources = sortedMlSources.slice(0, 8).map(e => e[0]);
+  const D12_ROW = dataRow;
+  ["Source de données", "Medium", "Large"].forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
+  dataRow++;
+  top8Sources.forEach(src => {
+    let mediumCount = 0;
+    let largeCount = 0;
+    mlRows.forEach(r => {
+      const rawSources = String(r[col["Data_Sources"]] || "Non renseigné");
+      const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
+      if (individualSources.includes(src)) {
+        const tier = String(r[col["Complexity_Tier"]] || "");
+        if (tier === "Medium") mediumCount++;
+        else if (tier === "Large") largeCount++;
+      }
+    });
+    sheet.getRange(dataRow, DATA_START_COL).setValue(src);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(mediumCount);
+    sheet.getRange(dataRow, DATA_START_COL + 2).setValue(largeCount);
+    dataRow++;
+  });
+  const D12_END = dataRow - 1;
+  dataRow += 2;
 
   // ── Créer les 6 graphiques ─────────────────────────────────────────────────
+
 
   // G1 : Donut — Répartition par complexité
   insertChart(sheet, Charts.ChartType.PIE, {
@@ -755,6 +804,41 @@ function buildGraphiques(ss, sheet, rows, col) {
       "bar.groupWidth":   "70%",
       "fontName":         "Calibri",
       "series":           { 7: { color: "#F0F0F0" } },
+    }
+  });
+
+  // G10 : Bar horizontal — Top sources de données (Medium & Large)
+  insertChart(sheet, Charts.ChartType.BAR, {
+    title:    "Top des sources de données (Medium + Large)",
+    dataRange: sheet.getRange(D11_ROW, DATA_START_COL, D11_END - D11_ROW + 1, 2),
+    anchorRow: 115, anchorCol: 2,
+    width: 480, height: 380,
+    options: {
+      "colors":           [COLORS.blue_mid],
+      "legend.position":  "none",
+      "hAxis.title":      "Nombre de sollicitations",
+      "chartArea.left":   "30%",
+      "chartArea.width":  "60%",
+      "bar.groupWidth":   "70%",
+      "fontName":         "Calibri",
+    }
+  });
+
+  // G11 : Stacked Column — Top 8 sources × Complexité (Medium vs Large)
+  insertChart(sheet, Charts.ChartType.COLUMN, {
+    title:    "Complexité par source de données (Top 8)",
+    dataRange: sheet.getRange(D12_ROW, DATA_START_COL, D12_END - D12_ROW + 1, 3),
+    anchorRow: 115, anchorCol: 18,
+    width: 520, height: 380,
+    options: {
+      "isStacked":        true,
+      "colors":           [COLORS.gold, COLORS.red],
+      "legend.position":  "top",
+      "vAxis.title":      "Nombre de use cases",
+      "chartArea.left":   "10%",
+      "chartArea.width":  "80%",
+      "bar.groupWidth":   "65%",
+      "fontName":         "Calibri",
     }
   });
 }
