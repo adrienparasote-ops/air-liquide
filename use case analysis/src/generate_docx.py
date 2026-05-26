@@ -1121,40 +1121,40 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
 
     recommendations = [
         (
-            "Industrialiser les Quick Wins (Small)",
-            f"{tiers.get('Small', 0)} use cases Small sont déployables immédiatement avec peu ou pas de support IT. "
-            "Action : constituer une bibliothèque de Gems et de Prompts partagés par famille fonctionnelle. "
-            "Cible : dupliquer les 10 meilleures pratiques à l'ensemble des clusters en 3 mois. "
-            "Indicateur : nombre de Gems partagés et taux de réutilisation inter-clusters.",
+            "Industrialiser les Quick Wins (Small) : Self-Service & Enablement",
+            f"{tiers.get('Small', 0)} use cases Small sont déployables immédiatement en autonomie complète avec peu ou pas de support IT unitaire. "
+            "Vision : Les builders métiers doivent être 100% autonomes sur ce tiers. "
+            "Action : Concentrer l'effort de l'équipe centrale non pas sur la gestion de projet ou du support unitaire, mais sur l'enablement et l'acculturation (AI Academy, masterclasses de prompting, et mise à disposition de bibliothèques de prompts et de NotebookLM partagés par famille). "
+            "Indicateur : taux de couverture des formations et nombre de prompts actifs dupliqués inter-clusters.",
         ),
         (
-            "Structurer l'accompagnement des Medium",
-            f"{tiers.get('Medium', 0)} use cases Medium nécessitent un encadrement léger "
-            "(champion + support IT local). "
-            "Action : mettre en place des sprints de 4 semaines avec un champion référent par cluster. "
-            "NotebookLM et App Script sont les vecteurs principaux pour ces cas. "
-            "Indicateur : taux de passage Medium -> Production en 8 semaines.",
+            "Cibler les cas complexes (Medium & Large) en mode projet",
+            f"Les use cases Medium ({tiers.get('Medium', 0)}) et Large ({tiers.get('Large', 0)}) représentent le cœur de cible opérationnel du programme en 'mode projet'. "
+            "Action : Mobiliser l'équipe centrale en mode projet sur ce périmètre structurant. Mettre en place des sprints de cadrage et de livraison dédiés avec les DSI locales et les correspondants IT pour chaque cas d'usage. "
+            "Indicateur : taux de passage en production réelle sous 8 à 12 semaines.",
         ),
         (
-            "Créer une filière IT pour les Large",
-            f"{tiers.get('Large', 0)} projets stratégiques nécessitent une équipe projet dédiée. "
-            "Action : identifier les sponsors métier et les correspondants IT pour chaque projet. "
-            "Investissements 3-12 mois avec gouvernance de programme. "
-            "Indicateur : nombre de projets Large lancés avec sponsor identifié.",
+            "Packager les sources de données (Accélérateur IT)",
+            "L'accès sécurisé à la donnée d'entreprise (ERP, CRM, BI, fichiers) est le goulot d'étranglement majeur des projets IA structurants. "
+            "Action : Basculer d'une logique d'intégration technique unitaire par projet à une logique de 'packaging DSI'. Mettre à disposition des builders des 'autoroutes de données' sécurisées et pré-autorisées : "
+            "(1) Package Documentaire (dossiers Drive indexés via Vertex AI Search), "
+            "(2) Package Transactionnel (connecteurs d'API sécurisés en lecture seule pour SAP et Salesforce), "
+            "(3) Package BI (datasets BigQuery et modèles de rapports Power BI documentés). "
+            "Indicateur : temps moyen d'accès IT à une donnée sensible réduit de 6 mois à moins de 2 semaines.",
         ),
         (
-            "Adresser les points d'attention IT",
-            f"{it_count} use cases présentent des dépendances systèmes critiques. "
-            "Action : organiser un atelier de priorisation avec les équipes IT avant tout engagement. "
-            "Créer un registre de dépendances partagé entre les champions et l'IT. "
-            "Indicateur : taux de résolution des blocages IT en 30 jours.",
+            "Adresser les points d'attention IT & Sécurité",
+            f"{it_count} use cases du catalogue présentent des dépendances critiques (DCS, SCADA, CRM, ERP, base de données). "
+            "Action : Appliquer un principe de gouvernance différenciée (Exemption des Quick Wins) pour ne pas ralentir le self-service des cas Small. "
+            "Mettre en place un registre d'attention DSI et un comité de sécurité mensuel pour instruire et valider les accès aux données pour les cas Medium et Large. "
+            "Indicateur : taux d'instruction des dossiers de sécurité sous 15 jours.",
         ),
         (
-            "Créer un track Data Champion (F7)",
-            "La famille Data Engineering (F7) est la plus dense et la plus complexe. "
-            "Les compétences Python/BigQuery dépassent le profil champion standard. "
-            "Action : concevoir un parcours de certification 'Data Champion' avec des modules "
-            "spécifiques. Indicateur : nombre de Data Champions certifiés par cluster.",
+            "Créer un parcours 'Data Champion' (F7)",
+            "La famille Data Engineering & Reporting (F7) est la plus dense et la plus complexe. "
+            "Les compétences Python, BigQuery et SQL requises dépassent le profil champion standard. "
+            "Action : Concevoir un parcours de certification 'Data Champion' pour faire le pont entre la DSI et les métiers, et former les champions à l'exploitation des packages de données sécurisés par l'IT. "
+            "Indicateur : nombre de Data Champions certifiés par cluster.",
         ),
     ]
 
