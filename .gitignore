@@ -12,7 +12,7 @@ __pycache__/
 .DS_Store
 
 # Fichiers générés
-output/
+use case analysis/output/
 
 # Agents (installation locale — sauf learnings)
 .agents/
@@ -20,7 +20,7 @@ output/
 GEMINI.md
 .sentrux/rules.toml
 .gitignore
-assets/Advanced AI Champions - Action Monitoring.xlsx
+use case analysis/assets/Advanced AI Champions - Action Monitoring.xlsx
 .sc-spec-gate-passed
 brain/
 .sc-verify-passed
