@@ -30,13 +30,14 @@ Raw Excel (`assets/`) → `generate_catalog.py` → Cleaned Excel (`output/`) �
 * **Key Libraries**: `python-pptx`
 
 ### Interactive Dashboard (Google Apps Script)
-* **File**: `src/create_analysis.gs` (~1025 lines)
-* **Responsibility**: Custom Apps Script for Google Sheets. Parses catalog data to construct interactive pivot tables ("Synthèse" tab), 6 native general charts ("Graphiques généraux" tab), and 5 focused charts for complex use cases ("Focus Medium & Large" tab) with premium styling.
+* **File**: `src/create_analysis.gs` (~1093 lines)
+* **Responsibility**: Custom Apps Script for Google Sheets. Parses catalog data to construct interactive pivot tables ("Synthèse" tab), 6 native general charts ("Graphiques généraux" tab), and 5 focused charts for complex use cases ("Focus Medium & Large" tab) with premium styling. All tables and charts use dynamic Sheets formulas to automatically recalculate on Catalog edits.
 * **Key Functions**:
   - `createAnalysis()`: Main orchestrator to construct all three tabs in one flow.
   - `buildSynthèse(sheet, rows, col)`: Generates summary statistics and data tables.
-  - `buildGraphiquesGénéraux(ss, sheet, rows, col)`: Builds 6 general charts.
+  - `buildGraphiquesGénéraux(ss, sheet, rows, col)`: Builds 6 general charts using COUNTIF/COUNTIFS.
   - `buildFocusMediumLarge(ss, sheet, rows, col)`: Builds 5 focused charts starting at Row 4.
+  - `getColumnLetter(colIndex)`: Helper function to convert 1-based column indices to A1 notation column letters.
 
 ## Test Suite
 * **`src/tests/test_generate_catalog.py`** (~840 lines): Tests scoring formulas, overrides, IT flagging, data sources extraction, and full pipeline outputs.

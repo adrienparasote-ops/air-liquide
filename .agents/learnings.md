@@ -47,3 +47,32 @@
 - **Evidence:** A previous HARDEN cycle completed and committed without running `pytest`. The 34-test regression (from `gp.SLIDE_W` missing) persisted undetected across at least one session. The user had to explicitly ask "on est toujours à 99 sur les tests u?" to surface it.
 - **Anti-pattern:** Treating "HARDEN completed" as equivalent to "tests pass". The Commit Gate lists `verify.py` as item 1 — but without a local `verify.py` script, the agent substituted a softer check and silently moved on. Human enforcement was required.
 - **Fix:** When `verify.py` is unavailable (class (d) waiver), the mandatory substitute is `python3 -m pytest --tb=short -q` and the output MUST appear in the HARDEN log before the commit step. Absence of pytest output in HARDEN = gate not passed. Add this as an explicit fallback in the Skip/Waiver Register template: "verify.py unavailable → run pytest, paste output, confirm N passed 0 failed."
+
+### L089: Top-Align Visual Charts in Dashboard-Style Apps Script Sheets
+- **Date:** 2026-05-26
+- **Source:** Air Liquide — create_analysis.gs
+- **Evidence:** The split "Focus Medium & Large" tab generated successfully, but the charts were placed starting at Row 71 (historical location) leaving Rows 4-70 completely empty, causing the user to think the charts were not created. Repositioning them to start at Row 4 resolved the issue immediately.
+- **Anti-pattern:** Anchoring visual charts at historical/legacy rows (e.g., Row 71) when the data tables they depend on are moved to hidden/out-of-view columns (e.g., Column AS/45). This leaves the top of the worksheet blank and breaks the user experience.
+- **Fix:** When moving data source tables to hidden columns to create a clean visual dashboard, always ensure that charts are top-aligned starting from Row 4 (or immediately below the header banner), and lay them out in a clean, side-by-side grid structure.
+
+### L090: Use Blank Style Templates to Preserve User-Customized Styles and Embedded Fonts in Generation Scripts
+- **Date:** 2026-05-26
+- **Source:** Air Liquide — generate_docx.py
+- **Evidence:** The user customized the Word report by embedding two Google Fonts (Poppins, Roboto, totaling 600 KB of TTF files) and adjusting layout margins. A naive script rerun would overwrite the file, wiping out all these changes. Generating a blank style template `assets/template.docx` (all paragraphs and tables cleared) and loading it in Python via `Document(template_path)` completely preserved all custom designs and embedded fonts.
+- **Pattern to reproduce:** For any automated document generation script (Word, PowerPoint, PDF) where the output is subject to manual user customization (such as font embedding, custom margins, or headers/footers):
+  1. Create a blank template (`assets/template.docx` or `.pptx`) by programmatically loading the user's styled output and stripping all text content (paragraphs and tables) while keeping styles, settings, and media.
+  2. Modify the script to check for this template, load it, and clear any single placeholder paragraph if present, instead of starting from `Document()`.
+  3. Keep the styling code inside a fallback block `if not TEMPLATE_FILE.exists(): apply_base_styles(doc)` to ensure backward compatibility and clean testing.
+- **Anti-pattern:** Overwriting a customized output file from scratch, which silently destroys all manual styles, custom theme adjustments, and embedded fonts.
+
+### L091: Dynamic Column Letter Resolution for Formula-Based Apps Script Dashboards
+- **Date:** 2026-05-26
+- **Source:** Air Liquide — create_analysis.gs
+- **Evidence:** Refactored 100% of the Synthèse and Focus Sheets to use COUNTIF, COUNTIFS, SUM, and VLOOKUP formulas. 4 test scenarios passing with 100% dynamic updates.
+- **Pattern:** When generating Google Sheets formulas programmatically in Apps Script (such as `=COUNTIF(Catalogue!$C:$C, AS6)`):
+  1. Never hardcode column letters inside formula templates.
+  2. Implement a `getColumnLetter(colIndex)` helper to dynamically resolve 1-based column indices into A1 notation column letters.
+  3. Resolve all target column letters dynamically using dynamic header indices (e.g. `col["Complexity_Tier"] + 1`).
+  4. Construct the formula string using template literals (e.g. `Catalogue!$${tierLetter}:$${tierLetter}`) to ensure the formulas will never break if Catalogue columns are added, removed, or reordered.
+- **Anti-pattern:** Writing formulas with hardcoded column letters (e.g., `=COUNTIFS(Catalogue!$C:$C, ...)`) or hardcoded row counts. This immediately breaks if columns are reordered or if new rows are added to the source catalog.
+
