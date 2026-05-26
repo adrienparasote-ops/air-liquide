@@ -20,6 +20,7 @@ use case analysis/output/
 GEMINI.md
 .sentrux/rules.toml
 .gitignore
+Operationalizing AI Builder Community/assets/*
 use case analysis/assets/Advanced AI Champions - Action Monitoring.xlsx
 .sc-spec-gate-passed
 brain/
