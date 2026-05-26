@@ -1155,13 +1155,15 @@ def build_document(doc: Document, df: pd.DataFrame) -> None:
         ),
         (
             "Packager les sources de données (Accélérateur IT)",
-            "L'accès sécurisé à la donnée d'entreprise (ERP, CRM, BI, fichiers industriels) est le premier goulot d'étranglement technique des projets IA. "
-            "Vision : Basculer d'une approche d'intégration technique unitaire par projet à une logique de 'packages DSI' industriels. "
-            "Action : L'IT doit packager et pré-approuver des flux de données standardisés et sécurisés, éliminant le besoin de développer des connecteurs spécifiques pour chaque use case :\n"
-            "• Package Documentaire : Un dossier Google Drive partagé, indexé automatiquement via Vertex AI Search (RAG clé en main) pour interroger les procédures IMS de sécurité.\n"
-            "• Package Transactionnel : Des API sécurisées en lecture seule pour extraire les statuts de commandes SAP ou synthétiser les comptes clients Salesforce.\n"
-            "• Package BI : Des datasets qualifiés dans BigQuery ou des modèles de rapports Power BI documentés et structurés.\n"
-            "Indicateur : temps moyen d'accès IT à une donnée sensible réduit de 6 mois à moins de 2 semaines.",
+            "L'accès sécurisé à la donnée d'entreprise (ERP, CRM, BI, fichiers industriels) est le premier goulot d'étranglement technique des projets IA.\n"
+            "Vision : Basculer d'une approche d'intégration technique unitaire par projet à une logique de 'packages DSI' industriels.\n"
+            "Action : L'IT doit packager et pré-approuver des flux de données standardisés, sécurisés et réutilisables, en exploitant deux options technologiques complémentaires :\n"
+            "• Option 1 : L'écosystème Gemini Enterprise (GE) & Connecteurs natifs : Déployer des serveurs de connecteurs personnalisés basés sur le protocole standardisé MCP (Model Context Protocol) sur Google Cloud Run. Ces serveurs exposent des outils directement à Gemini Enterprise Agent Designer via la Discovery Engine API. Ils gèrent la résolution d'identité native (Double-OAuth) permettant à l'agent de requêter SAP ou Salesforce au nom de l'utilisateur avec ses droits propres, sans mot de passe en clair.\n"
+            "• Option 2 : Offres de services packagés sur GCP : Mettre à disposition des builders des briques GCP clés en main :\n"
+            "  - Package Documentaire : Instances Vertex AI Agent Builder indexées automatiquement sur des dossiers Google Drive ou Cloud Storage (RAG clé en main).\n"
+            "  - Package Transactionnel : Microservices sécurisés hébergés sur Google Cloud Run/Cloud Functions, jouant le rôle de passerelles d'API sécurisées et encapsulées.\n"
+            "  - Package BI & Analytics : Requêtes SQL assistées par IA via Gemini in BigQuery ou intégration de BigQuery Remote Functions pour interroger des données externes.\n"
+            "Indicateur : temps moyen de mise à disposition d'une source de données sensible réduit de 6 mois à moins de 2 semaines.",
         ),
         (
             "Adresser les points d'attention IT & Sécurité",
