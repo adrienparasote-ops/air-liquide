@@ -719,7 +719,6 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   const familyLetter      = getColumnLetter(col["Family_Label"] + 1);
   const stageLetter       = getColumnLetter(col["Stage"] + 1);
   const dataSourcesLetter = getColumnLetter(col["Data_Sources"] + 1);
-  const familyCodeLetter  = getColumnLetter(col["Family"] + 1);
 
   const mlRows = rows.filter(r => {
     const tier = String(r[col["Complexity_Tier"]] || "");
@@ -818,6 +817,16 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   dataRow += 2;
 
   // D13 : Répartition des sources de données par famille (Medium & Large uniquement)
+  const famLabels = {
+    "F1": "Automatisation documentaire",
+    "F2": "Assistant BI & décisionnel",
+    "F3": "Customer & Sales Intelligence",
+    "F4": "Monitoring & Maintenance industrielle",
+    "F5": "Knowledge Management & Formation",
+    "F6": "Automatisation de workflows internes",
+    "F7": "Data Engineering & Reporting"
+  };
+
   const top8MlSources = sortedMlSources.slice(0, 8).map(e => e[0]);
   const D13_ROW = dataRow;
   const families = ["F1", "F2", "F3", "F4", "F5", "F6", "F7"];
@@ -826,13 +835,13 @@ function buildFocusMediumLarge(ss, sheet, rows, col) {
   dataRow++;
 
   families.forEach(fam => {
-    sheet.getRange(dataRow, DATA_START_COL).setValue(fam);
+    sheet.getRange(dataRow, DATA_START_COL).setValue(famLabels[fam]);
     top8MlSources.forEach((src, i) => {
       const headerCell = `${getColumnLetter(DATA_START_COL + 1 + i)}$${D13_ROW}`;
       const rowLabelCell = `$${getColumnLetter(DATA_START_COL)}${dataRow}`;
       sheet.getRange(dataRow, DATA_START_COL + 1 + i).setFormula(
-        `=COUNTIFS(Catalogue!$${familyCodeLetter}:$${familyCodeLetter}, ${rowLabelCell}, Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${headerCell} & "*", Catalogue!$${tierLetter}:$${tierLetter}, "Medium") + ` +
-        `COUNTIFS(Catalogue!$${familyCodeLetter}:$${familyCodeLetter}, ${rowLabelCell}, Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${headerCell} & "*", Catalogue!$${tierLetter}:$${tierLetter}, "Large")`
+        `=COUNTIFS(Catalogue!$${familyLetter}:$${familyLetter}, ${rowLabelCell}, Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${headerCell} & "*", Catalogue!$${tierLetter}:$${tierLetter}, "Medium") + ` +
+        `COUNTIFS(Catalogue!$${familyLetter}:$${familyLetter}, ${rowLabelCell}, Catalogue!$${dataSourcesLetter}:$${dataSourcesLetter}, "*" & ${headerCell} & "*", Catalogue!$${tierLetter}:$${tierLetter}, "Large")`
       );
     });
     dataRow++;
