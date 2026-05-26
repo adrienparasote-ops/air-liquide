@@ -26,10 +26,11 @@
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu("🤖 AI Champions")
-    .addItem("▶ Analyse complète (Synthèse + Graphiques)", "runFullAnalysis")
+    .addItem("▶ Analyse complète (Synthèse + Tous les graphiques)", "runFullAnalysis")
     .addSeparator()
-    .addItem("📊 Créer les tableaux de synthèse", "runSynthèseOnly")
-    .addItem("📈 Créer les graphiques", "runGraphiquesOnly")
+    .addItem("📋 Créer les tableaux de synthèse", "runSynthèseOnly")
+    .addItem("📊 Créer les graphiques généraux", "runGraphiquesGénérauxOnly")
+    .addItem("📈 Créer le focus Medium & Large", "runFocusMediumLargeOnly")
     .addSeparator()
     .addItem("🗑️ Réinitialiser (supprimer les onglets)", "resetSheets")
     .addToUi();
@@ -55,34 +56,49 @@ function runSynthèseOnly() {
   SpreadsheetApp.getUi().alert("✅ Onglet 'Synthèse' créé avec les tableaux croisés.");
 }
 
-/** Crée uniquement l'onglet Graphiques. */
-function runGraphiquesOnly() {
+/** Crée uniquement l'onglet Graphiques généraux. */
+function runGraphiquesGénérauxOnly() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const existing = ss.getSheetByName("Graphiques");
+  const existing = ss.getSheetByName("Graphiques généraux");
   if (existing) ss.deleteSheet(existing);
 
   const { rows, col } = _loadCatalogue(ss);
   if (!rows) return;
 
-  const chartSheet = ss.insertSheet("Graphiques");
-  buildGraphiques(ss, chartSheet, rows, col);
-  ss.setActiveSheet(chartSheet);
-  SpreadsheetApp.getUi().alert("✅ Onglet 'Graphiques' créé avec 9 graphiques natifs.");
+  const genChartSheet = ss.insertSheet("Graphiques généraux");
+  buildGraphiquesGénéraux(ss, genChartSheet, rows, col);
+  ss.setActiveSheet(genChartSheet);
+  SpreadsheetApp.getUi().alert("✅ Onglet 'Graphiques généraux' créé avec 6 graphiques natifs.");
 }
 
-/** Supprime les onglets générés (Synthèse et Graphiques). */
+/** Crée uniquement l'onglet Focus Medium & Large. */
+function runFocusMediumLargeOnly() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const existing = ss.getSheetByName("Focus Medium & Large");
+  if (existing) ss.deleteSheet(existing);
+
+  const { rows, col } = _loadCatalogue(ss);
+  if (!rows) return;
+
+  const mlChartSheet = ss.insertSheet("Focus Medium & Large");
+  buildFocusMediumLarge(ss, mlChartSheet, rows, col);
+  ss.setActiveSheet(mlChartSheet);
+  SpreadsheetApp.getUi().alert("✅ Onglet 'Focus Medium & Large' créé avec 5 graphiques dédiés.");
+}
+
+/** Supprime les onglets générés. */
 function resetSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const ui = SpreadsheetApp.getUi();
 
   const response = ui.alert(
     "🗑️ Réinitialiser",
-    "Supprimer les onglets 'Synthèse' et 'Graphiques' ?",
+    "Supprimer les onglets 'Synthèse', 'Graphiques généraux' et 'Focus Medium & Large' ?",
     ui.ButtonSet.YES_NO
   );
   if (response !== ui.Button.YES) return;
 
-  ["Synthèse", "Graphiques"].forEach(name => {
+  ["Synthèse", "Graphiques généraux", "Focus Medium & Large", "Graphiques"].forEach(name => {
     const sheet = ss.getSheetByName(name);
     if (sheet) ss.deleteSheet(sheet);
   });
@@ -149,7 +165,7 @@ function createAnalysis() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
   // Supprimer les onglets existants si relance
-  ["Synthèse", "Graphiques"].forEach(name => {
+  ["Synthèse", "Graphiques généraux", "Focus Medium & Large", "Graphiques"].forEach(name => {
     const existing = ss.getSheetByName(name);
     if (existing) ss.deleteSheet(existing);
   });
@@ -157,14 +173,16 @@ function createAnalysis() {
   const { rows, col } = _loadCatalogue(ss);
   if (!rows) return;
 
-  const synthSheet  = ss.insertSheet("Synthèse");
-  const chartSheet  = ss.insertSheet("Graphiques");
+  const synthSheet      = ss.insertSheet("Synthèse");
+  const genChartSheet   = ss.insertSheet("Graphiques généraux");
+  const mlChartSheet    = ss.insertSheet("Focus Medium & Large");
 
   buildSynthèse(synthSheet, rows, col);
-  buildGraphiques(ss, chartSheet, rows, col);
+  buildGraphiquesGénéraux(ss, genChartSheet, rows, col);
+  buildFocusMediumLarge(ss, mlChartSheet, rows, col);
 
   ss.setActiveSheet(synthSheet);
-  SpreadsheetApp.getUi().alert("✅ Analyse créée !\n\nOnglets ajoutés :\n• Synthèse : tableaux croisés\n• Graphiques : 9 graphiques natifs (dont 3 focus Medium+Large)");
+  SpreadsheetApp.getUi().alert("✅ Analyse créée !\n\nOnglets ajoutés :\n• Synthèse : tableaux croisés\n• Graphiques généraux : 6 graphiques généraux\n• Focus Medium & Large : 5 graphiques dédiés aux cas d'usage complexes (dont 2 sur les sources de données)");
 }
 
 
@@ -385,13 +403,12 @@ function writeQuickWins(sheet, rows, col, startRow, startCol) {
 
 
 // ════════════════════════════════════════════════════════════════════════════
-// ONGLET GRAPHIQUES
+// ONGLET GRAPHIQUES GÉNÉRAUX
 // ════════════════════════════════════════════════════════════════════════════
 
-function buildGraphiques(ss, sheet, rows, col) {
-  const TOTAL_COLS = 68; // Extended for new M+L charts
+function buildGraphiquesGénéraux(ss, sheet, rows, col) {
+  const TOTAL_COLS = 55;
 
-  // Étendre la feuille si elle n'a pas assez de colonnes (défaut = 26)
   const currentCols = sheet.getMaxColumns();
   if (currentCols < TOTAL_COLS) {
     sheet.insertColumnsAfter(currentCols, TOTAL_COLS - currentCols);
@@ -400,10 +417,10 @@ function buildGraphiques(ss, sheet, rows, col) {
   sheet.setTabColor(COLORS.blue_mid);
   sheet.setColumnWidths(1, TOTAL_COLS, 35);
 
-  // En-tête banner (colonnes 1 → TOTAL_COLS)
+  // En-tête banner
   const hdr = sheet.getRange(1, 1, 1, TOTAL_COLS);
   hdr.merge();
-  hdr.setValue("AIR LIQUIDE  ·  AI Champions Use Cases  ·  Analyse visuelle");
+  hdr.setValue("AIR LIQUIDE  ·  AI Champions Use Cases  ·  Graphiques généraux");
   hdr.setBackground(COLORS.navy);
   hdr.setFontColor(COLORS.white);
   hdr.setFontSize(14);
@@ -411,19 +428,13 @@ function buildGraphiques(ss, sheet, rows, col) {
   hdr.setVerticalAlignment("middle");
   sheet.setRowHeight(1, 36);
 
-  // Bande teal
   sheet.getRange(2, 1, 1, TOTAL_COLS).setBackground(COLORS.teal);
   sheet.setRowHeight(2, 4);
 
-
-  // ── Données intermédiaires pour les graphiques ────────────────────────────
-  // On écrit les données dans une zone cachée à droite (colonnes 50+)
-  // et on pointe les graphiques dessus
-
-  const DATA_START_COL = 50; // colonne AX — hors de la vue principale
+  const DATA_START_COL = 45; // AS - hors de la vue principale
   let dataRow = 5;
 
-  // ─ D1 : Tier distribution ─────────────────────────────────────────────────
+  // D1 : Tier distribution
   const tierCounts = countBy(rows, col["Complexity_Tier"]);
   const tierOrder  = ["Small", "Medium", "Large"];
   const D1_ROW = dataRow;
@@ -438,7 +449,7 @@ function buildGraphiques(ss, sheet, rows, col) {
   const D1_END = dataRow - 1;
   dataRow += 2;
 
-  // ─ D2 : Top outils ────────────────────────────────────────────────────────
+  // D2 : Top outils
   const toolCounts = {};
   rows.forEach(r => {
     const tags = String(r[col["Tools_Tags"]] || "").split(",").map(t => t.trim()).filter(Boolean);
@@ -457,7 +468,7 @@ function buildGraphiques(ss, sheet, rows, col) {
   const D2_END = dataRow - 1;
   dataRow += 2;
 
-  // ─ D3 : Famille × Tier ────────────────────────────────────────────────────
+  // D3 : Famille × Tier
   const famTierPivot = crossTab(rows, col["Family_Label"], col["Complexity_Tier"], tierOrder);
   const D3_ROW = dataRow;
   const D3_HEADERS = ["Famille", "Small", "Medium", "Large"];
@@ -471,7 +482,7 @@ function buildGraphiques(ss, sheet, rows, col) {
   const D3_END = dataRow - 1;
   dataRow += 2;
 
-  // ─ D4 : Cluster × Tier ────────────────────────────────────────────────────
+  // D4 : Cluster × Tier
   const clusterCounts = countBy(rows, col["Cluster"]);
   const top9Clusters  = Object.entries(clusterCounts).sort((a,b) => b[1]-a[1]).slice(0,9).map(e => e[0]);
   const clTierPivot   = crossTab(rows, col["Cluster"], col["Complexity_Tier"], tierOrder, top9Clusters);
@@ -486,7 +497,7 @@ function buildGraphiques(ss, sheet, rows, col) {
   const D4_END = dataRow - 1;
   dataRow += 2;
 
-  // ─ D5 : Volume par famille ────────────────────────────────────────────────
+  // D5 : Volume par famille
   const famCounts = countBy(rows, col["Family_Label"]);
   const sortedFam = Object.entries(famCounts).sort((a,b) => b[1]-a[1]);
   const D5_ROW = dataRow;
@@ -501,14 +512,13 @@ function buildGraphiques(ss, sheet, rows, col) {
   const D5_END = dataRow - 1;
   dataRow += 2;
 
-  // ─ D6 : IT par famille ────────────────────────────────────────────────────
+  // D6 : IT par famille
   let itFlagCol = "IT_Flag";
   if (col[itFlagCol] === undefined) {
     Object.keys(col).forEach(k => {
       if (k.trim().toLowerCase().replace(" ", "_") === "it_flag") itFlagCol = k;
     });
   }
-
   const itRows = rows.filter(r => {
     const val = col[itFlagCol] !== undefined ? String(r[col[itFlagCol]] || "") : "";
     return val.indexOf("IT") !== -1;
@@ -524,9 +534,6 @@ function buildGraphiques(ss, sheet, rows, col) {
     sheet.getRange(dataRow, DATA_START_COL).setValue("Aucune donnée IT");
     sheet.getRange(dataRow, DATA_START_COL+1).setValue(0);
     dataRow++;
-    if (col[itFlagCol] === undefined) {
-      SpreadsheetApp.getUi().alert("⚠️ La colonne 'IT_Flag' est introuvable dans l'onglet Catalogue.\n\nAvez-vous bien collé les données du dernier fichier Excel généré ?\nLe graphique 6 sera vide en attendant.");
-    }
   } else {
     sortedIT.forEach(([fam, cnt]) => {
       sheet.getRange(dataRow, DATA_START_COL).setValue(fam);
@@ -535,105 +542,6 @@ function buildGraphiques(ss, sheet, rows, col) {
     });
   }
   const D6_END = dataRow - 1;
-  dataRow += 2;
-
-  // ─ D7 : Medium+Large filtré — Famille × Stage ─────────────────────────────
-  const mlRows = rows.filter(r => {
-    const tier = String(r[col["Complexity_Tier"]] || "");
-    return tier === "Medium" || tier === "Large";
-  });
-  const stageOrder = ["Ideation", "POC", "MVP", "Testing / Eval", "In Development", "Scale-up", "Production", "A revoir avec le builder"];
-  const famStagePivot = crossTab(mlRows, col["Family_Label"], col["Stage"], stageOrder);
-  const D7_ROW = dataRow;
-  const D7_HEADERS = ["Famille", ...stageOrder];
-  D7_HEADERS.forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
-  dataRow++;
-  famStagePivot.forEach(([key, vals]) => {
-    sheet.getRange(dataRow, DATA_START_COL).setValue(key);
-    stageOrder.forEach((s, i) => sheet.getRange(dataRow, DATA_START_COL + 1 + i).setValue(vals[s] || 0));
-    dataRow++;
-  });
-  const D7_END = dataRow - 1;
-  dataRow += 2;
-
-  // ─ D9 : Medium vs Large donut ─────────────────────────────────────────────
-  const mlTierCounts = countBy(mlRows, col["Complexity_Tier"]);
-  const mlTierOrder = ["Medium", "Large"];
-  const D9_ROW = dataRow;
-  sheet.getRange(dataRow, DATA_START_COL).setValue("Tier");
-  sheet.getRange(dataRow, DATA_START_COL + 1).setValue("Count");
-  dataRow++;
-  mlTierOrder.forEach(t => {
-    sheet.getRange(dataRow, DATA_START_COL).setValue(t);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(mlTierCounts[t] || 0);
-    dataRow++;
-  });
-  const D9_END = dataRow - 1;
-  dataRow += 2;
-
-  // ─ D10 : Volume M+L par famille (Medium / Large séparés) ──────────────────
-  const mlFamTierPivot = crossTab(mlRows, col["Family_Label"], col["Complexity_Tier"], mlTierOrder);
-  const D10_ROW = dataRow;
-  ["Famille", "Medium", "Large"].forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
-  dataRow++;
-  mlFamTierPivot.forEach(([key, vals]) => {
-    sheet.getRange(dataRow, DATA_START_COL).setValue(key);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(vals["Medium"] || 0);
-    sheet.getRange(dataRow, DATA_START_COL + 2).setValue(vals["Large"] || 0);
-    dataRow++;
-  });
-  const D10_END = dataRow - 1;
-  dataRow += 2;
-
-  // ─ D11 : Top Sources de données (Medium & Large uniquement) ────────────────
-  const mlSourceCounts = {};
-  mlRows.forEach(r => {
-    const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
-    const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
-    individualSources.forEach(src => {
-      mlSourceCounts[src] = (mlSourceCounts[src] || 0) + 1;
-    });
-  });
-  const sortedMlSources = Object.entries(mlSourceCounts).sort((a, b) => b[1] - a[1]);
-  const D11_ROW = dataRow;
-  sheet.getRange(dataRow, DATA_START_COL).setValue("Source de données");
-  sheet.getRange(dataRow, DATA_START_COL + 1).setValue("Total");
-  dataRow++;
-  sortedMlSources.forEach(([src, count]) => {
-    sheet.getRange(dataRow, DATA_START_COL).setValue(src);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(count);
-    dataRow++;
-  });
-  const D11_END = dataRow - 1;
-  dataRow += 2;
-
-  // ─ D12 : Top 8 Sources × Complexité (Medium & Large uniquement) ────────────
-  const top8Sources = sortedMlSources.slice(0, 8).map(e => e[0]);
-  const D12_ROW = dataRow;
-  ["Source de données", "Medium", "Large"].forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
-  dataRow++;
-  top8Sources.forEach(src => {
-    let mediumCount = 0;
-    let largeCount = 0;
-    mlRows.forEach(r => {
-      const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
-      const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
-      if (individualSources.includes(src)) {
-        const tier = String(r[col["Complexity_Tier"]] || "");
-        if (tier === "Medium") mediumCount++;
-        else if (tier === "Large") largeCount++;
-      }
-    });
-    sheet.getRange(dataRow, DATA_START_COL).setValue(src);
-    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(mediumCount);
-    sheet.getRange(dataRow, DATA_START_COL + 2).setValue(largeCount);
-    dataRow++;
-  });
-  const D12_END = dataRow - 1;
-  dataRow += 2;
-
-  // ── Créer les 6 graphiques ─────────────────────────────────────────────────
-
 
   // G1 : Donut — Répartition par complexité
   insertChart(sheet, Charts.ChartType.PIE, {
@@ -655,7 +563,7 @@ function buildGraphiques(ss, sheet, rows, col) {
   insertChart(sheet, Charts.ChartType.BAR, {
     title:    "Outils les plus utilisés",
     dataRange: sheet.getRange(D2_ROW, DATA_START_COL, D2_END - D2_ROW + 1, 2),
-    anchorRow: 4,  anchorCol: 16,
+    anchorRow: 4,  anchorCol: 15,
     width: 480, height: 380,
     options: {
       "colors":           [COLORS.blue_mid],
@@ -690,7 +598,7 @@ function buildGraphiques(ss, sheet, rows, col) {
   insertChart(sheet, Charts.ChartType.BAR, {
     title:    "Mix de complexité par cluster",
     dataRange: sheet.getRange(D4_ROW, DATA_START_COL, D4_END - D4_ROW + 1, 4),
-    anchorRow: 26, anchorCol: 20,
+    anchorRow: 26, anchorCol: 19,
     width: 520, height: 400,
     options: {
       "isStacked":        true,
@@ -725,7 +633,7 @@ function buildGraphiques(ss, sheet, rows, col) {
   insertChart(sheet, Charts.ChartType.COLUMN, {
     title:    "⚠️ Points d'attention IT par famille",
     dataRange: sheet.getRange(D6_ROW, DATA_START_COL, D6_END - D6_ROW + 1, 2),
-    anchorRow: 48, anchorCol: 20,
+    anchorRow: 48, anchorCol: 19,
     width: 490, height: 360,
     options: {
       "colors":          [COLORS.red],
@@ -737,22 +645,130 @@ function buildGraphiques(ss, sheet, rows, col) {
       "fontName":        "Calibri",
     }
   });
+}
 
-  // ── Section Medium + Large ─────────────────────────────────────────────────
+function buildFocusMediumLarge(ss, sheet, rows, col) {
+  const TOTAL_COLS = 55;
 
-  // Section separator
-  const sectionRow = 68;
-  const sepRange = sheet.getRange(sectionRow, 1, 1, TOTAL_COLS);
-  sepRange.merge();
-  sepRange.setValue("🔍  Focus Medium & Large — Use cases structurants et stratégiques");
-  sepRange.setBackground(COLORS.navy);
-  sepRange.setFontColor(COLORS.gold);
-  sepRange.setFontSize(13);
-  sepRange.setFontWeight("bold");
-  sepRange.setVerticalAlignment("middle");
-  sheet.setRowHeight(sectionRow, 36);
-  sheet.getRange(sectionRow + 1, 1, 1, TOTAL_COLS).setBackground(COLORS.gold);
-  sheet.setRowHeight(sectionRow + 1, 4);
+  const currentCols = sheet.getMaxColumns();
+  if (currentCols < TOTAL_COLS) {
+    sheet.insertColumnsAfter(currentCols, TOTAL_COLS - currentCols);
+  }
+
+  sheet.setTabColor(COLORS.gold);
+  sheet.setColumnWidths(1, TOTAL_COLS, 35);
+
+  // En-tête banner
+  const hdr = sheet.getRange(1, 1, 1, TOTAL_COLS);
+  hdr.merge();
+  hdr.setValue("AIR LIQUIDE  ·  AI Champions Use Cases  ·  Focus Medium & Large");
+  hdr.setBackground(COLORS.navy);
+  hdr.setFontColor(COLORS.gold);
+  hdr.setFontSize(14);
+  hdr.setFontWeight("bold");
+  hdr.setVerticalAlignment("middle");
+  sheet.setRowHeight(1, 36);
+
+  sheet.getRange(2, 1, 1, TOTAL_COLS).setBackground(COLORS.gold);
+  sheet.setRowHeight(2, 4);
+
+  const DATA_START_COL = 45; // AS - hors de la vue principale
+  let dataRow = 5;
+
+  const mlRows = rows.filter(r => {
+    const tier = String(r[col["Complexity_Tier"]] || "");
+    return tier === "Medium" || tier === "Large";
+  });
+  const mlTierOrder = ["Medium", "Large"];
+  const stageOrder = ["Ideation", "POC", "MVP", "Testing / Eval", "In Development", "Scale-up", "Production", "A revoir avec le builder"];
+
+  // D7 : Famille × Stage
+  const famStagePivot = crossTab(mlRows, col["Family_Label"], col["Stage"], stageOrder);
+  const D7_ROW = dataRow;
+  const D7_HEADERS = ["Famille", ...stageOrder];
+  D7_HEADERS.forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
+  dataRow++;
+  famStagePivot.forEach(([key, vals]) => {
+    sheet.getRange(dataRow, DATA_START_COL).setValue(key);
+    stageOrder.forEach((s, i) => sheet.getRange(dataRow, DATA_START_COL + 1 + i).setValue(vals[s] || 0));
+    dataRow++;
+  });
+  const D7_END = dataRow - 1;
+  dataRow += 2;
+
+  // D9 : Medium vs Large donut
+  const mlTierCounts = countBy(mlRows, col["Complexity_Tier"]);
+  const D9_ROW = dataRow;
+  sheet.getRange(dataRow, DATA_START_COL).setValue("Tier");
+  sheet.getRange(dataRow, DATA_START_COL + 1).setValue("Count");
+  dataRow++;
+  mlTierOrder.forEach(t => {
+    sheet.getRange(dataRow, DATA_START_COL).setValue(t);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(mlTierCounts[t] || 0);
+    dataRow++;
+  });
+  const D9_END = dataRow - 1;
+  dataRow += 2;
+
+  // D10 : Volume M+L par famille (Medium / Large séparés)
+  const mlFamTierPivot = crossTab(mlRows, col["Family_Label"], col["Complexity_Tier"], mlTierOrder);
+  const D10_ROW = dataRow;
+  ["Famille", "Medium", "Large"].forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
+  dataRow++;
+  mlFamTierPivot.forEach(([key, vals]) => {
+    sheet.getRange(dataRow, DATA_START_COL).setValue(key);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(vals["Medium"] || 0);
+    sheet.getRange(dataRow, DATA_START_COL + 2).setValue(vals["Large"] || 0);
+    dataRow++;
+  });
+  const D10_END = dataRow - 1;
+  dataRow += 2;
+
+  // D11 : Top Sources de données (Medium & Large uniquement)
+  const mlSourceCounts = {};
+  mlRows.forEach(r => {
+    const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
+    const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
+    individualSources.forEach(src => {
+      mlSourceCounts[src] = (mlSourceCounts[src] || 0) + 1;
+    });
+  });
+  const sortedMlSources = Object.entries(mlSourceCounts).sort((a, b) => b[1] - a[1]);
+  const D11_ROW = dataRow;
+  sheet.getRange(dataRow, DATA_START_COL).setValue("Source de données");
+  sheet.getRange(dataRow, DATA_START_COL + 1).setValue("Total");
+  dataRow++;
+  sortedMlSources.forEach(([src, count]) => {
+    sheet.getRange(dataRow, DATA_START_COL).setValue(src);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(count);
+    dataRow++;
+  });
+  const D11_END = dataRow - 1;
+  dataRow += 2;
+
+  // D12 : Top 8 Sources × Complexité (Medium & Large uniquement)
+  const top8Sources = sortedMlSources.slice(0, 8).map(e => e[0]);
+  const D12_ROW = dataRow;
+  ["Source de données", "Medium", "Large"].forEach((h, i) => sheet.getRange(dataRow, DATA_START_COL + i).setValue(h));
+  dataRow++;
+  top8Sources.forEach(src => {
+    let mediumCount = 0;
+    let largeCount = 0;
+    mlRows.forEach(r => {
+      const rawSources = String(r[col["Data_Sources"]] || "A revoir avec le builder");
+      const individualSources = rawSources.split(",").map(s => s.trim()).filter(Boolean);
+      if (individualSources.includes(src)) {
+        const tier = String(r[col["Complexity_Tier"]] || "");
+        if (tier === "Medium") mediumCount++;
+        else if (tier === "Large") largeCount++;
+      }
+    });
+    sheet.getRange(dataRow, DATA_START_COL).setValue(src);
+    sheet.getRange(dataRow, DATA_START_COL + 1).setValue(mediumCount);
+    sheet.getRange(dataRow, DATA_START_COL + 2).setValue(largeCount);
+    dataRow++;
+  });
+  const D12_END = dataRow - 1;
 
   // G7 : Donut — Medium vs Large
   insertChart(sheet, Charts.ChartType.PIE, {
