@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-21 | Files scanned: 3 | Token estimate: ~300 -->
+<!-- Generated: 2026-05-26 | Files scanned: 7 | Token estimate: ~380 -->
 
 # High-Level Architecture — Use Cases AI Champions
 
@@ -11,6 +11,10 @@ graph TD
     OutputExcel -->|python-pptx| PptxScript[src/generate_pptx.py]
     DocxScript -->|Corporate Report| OutputDocx["output/[REPORT] AI builders.docx"]
     PptxScript -->|Premium Presentation| OutputPptx[output/presentation_ai_champions.pptx]
+    
+    OutputExcel -->|python-docx| TableScript[src/generate_report_table.py]
+    OutputDocx -->|Update Table| TableScript
+    TableScript -->|Idempotent Splitting| SegmentDocs["output/[REPORT] AI builders - [01-11] - ...docx"]
 ```
 
 ## Data Flow & Processing Pipeline
@@ -24,3 +28,5 @@ graph TD
    - `output/use_cases_catalog.xlsx`: Cleaned, structured database for downstream use.
    - `output/[REPORT] AI builders.docx`: Structured corporate report summarizing key statistics, families, and recommendations.
    - `output/presentation_ai_champions.pptx`: Polished slideshow presenting the analysis to executives.
+4. **Table & Split Generation**:
+   - `src/generate_report_table.py`: Dynamically updates the data source breakdown table in the main report and splits the document into 11 section-based `.docx` files to facilitate copy-pasting into shared cloud documents.

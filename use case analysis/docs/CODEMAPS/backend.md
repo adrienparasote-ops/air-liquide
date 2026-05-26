@@ -1,9 +1,10 @@
-<!-- Generated: 2026-05-26 | Files scanned: 6 | Token estimate: ~420 -->
+<!-- Generated: 2026-05-26 | Files scanned: 7 | Token estimate: ~480 -->
 
 # Backend Pipeline Map
 
 ## Data Pipeline
 Raw Excel (`assets/`) → `generate_catalog.py` → Cleaned Excel (`output/`) → `generate_docx.py` & `generate_pptx.py` → DOCX Report & PPTX Presentation (`output/`)
+Additionally, `generate_report_table.py` updates the main Word report and splits it into 11 section-based documents (`output/[REPORT] AI builders - [01-11] - ...docx`) for easy copy-pasting into Google Docs.
 
 ## Module Index
 
@@ -38,6 +39,15 @@ Raw Excel (`assets/`) → `generate_catalog.py` → Cleaned Excel (`output/`) �
   - `buildGraphiquesGénéraux(ss, sheet, rows, col)`: Builds 6 general charts using COUNTIF/COUNTIFS.
   - `buildFocusMediumLarge(ss, sheet, rows, col)`: Builds 5 focused charts starting at Row 4.
   - `getColumnLetter(colIndex)`: Helper function to convert 1-based column indices to A1 notation column letters.
+
+### Report Table & Split Generator
+* **File**: `src/generate_report_table.py` (~240 lines)
+* **Responsibility**: Dynamically updates the data source table in `output/[REPORT] AI builders.docx` based on the latest entries in `use_cases_catalog.xlsx` (filtering on Medium/Large tiers and excluding builder-specific reviews). Then, automatically splits the main report into 11 section-based `.docx` files to facilitate manual copy-pasting of updated sections into the shared client Google Doc.
+* **Key Functions**:
+  - `main()`: Orchestrates the dynamic table update and the 11-way document splitting.
+  - `clean_filename(text)`: Formats section titles into standard filenames.
+  - `add_element_to_doc(doc, element)`: Copies XML paragraph/table elements into a new template document while preserving all styles.
+  - `insert_table_after(para, rows, cols)`: Inserts a dynamic table XML element into a document body with custom size parameters.
 
 ## Test Suite
 * **`src/tests/test_generate_catalog.py`** (~840 lines): Tests scoring formulas, overrides, IT flagging, data sources extraction, and full pipeline outputs.
