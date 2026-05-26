@@ -11,7 +11,7 @@ src/generate_catalog.py   →  docs/use_cases_catalog.xlsx  (248 UC enrichis)
         ↓
 [Upload Google Drive → convertir en Google Sheet]
         ↓
-src/create_analysis.gs    →  Onglets "Synthèse" + "Graphiques" (menu 🤖 AI Champions)
+src/create_analysis.gs    →  Onglets "Synthèse" + "Graphiques généraux" + "Focus Medium & Large" (menu 🤖 AI Champions)
         ↓
 src/generate_docx.py      →  docs/rapport_ai_champions.docx   (rapport Word 7 sections)
 src/generate_pptx.py      →  docs/presentation_ai_champions.pptx  (9 slides Pyl.Tech)
